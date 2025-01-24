@@ -52,7 +52,7 @@ The deployed version of the application can be found at: **\_**
 
 ### Frontend
 
-Make sure you have node and npm is installed.
+Make sure you have nodeJS installed. (When you download nodeJS from the official website it normally comes with npm)
 
 ```
 npm run dev

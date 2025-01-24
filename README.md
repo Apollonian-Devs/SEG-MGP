@@ -52,9 +52,11 @@ The deployed version of the application can be found at: **\_**
 
 ### Frontend
 
-Make sure you have nodeJS installed. (When you download nodeJS from the official website it normally comes with npm)
+1. Make sure you have nodeJS installed. (When you download nodeJS from the official website it normally comes with npm)
+2. After cloning the repository, run the following command to install dependencies:
 
 ```
+npm install
 npm run dev
 ```
 

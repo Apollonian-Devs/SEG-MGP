@@ -23,6 +23,8 @@ const RegisterForm = () => {
         last_name,
         email,
         password,
+        is_staff: false,
+        is_superuser: false,
       });
 
       if (response.status === 201) {

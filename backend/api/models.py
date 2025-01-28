@@ -1,32 +1,28 @@
 from django.db import models
 from django.db.models import Q, F
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 
 class Department(models.Model):
     name = models.CharField(max_length=50, unique=True)
     description = models.CharField(max_length=255, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
 
 class Officer(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    department = models.ForeignKey(Department, on_delete=models.PROTECT)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    departments = models.ManyToManyField(Department)
 
     def __str__(self):
-        return f"{self.user.username} - {self.department.name}"   
+        return self.user.username
     
 class Category(models.Model):
-    category_name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100, unique=True)
     description = models.CharField(max_length=255, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.category_name
+        return self.name
 
 class Ticket(models.Model):
     STATUS_CHOICES = [
@@ -43,12 +39,12 @@ class Ticket(models.Model):
     subject = models.CharField(max_length=255)
     description = models.TextField()
 
-    created_by_profile = models.ForeignKey(
+    created_by = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='tickets_created'
     )
-    assigned_to_profile = models.ForeignKey(
+    assigned_to = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
         null=True,
@@ -65,92 +61,89 @@ class Ticket(models.Model):
     due_date = models.DateTimeField(null=True, blank=True)
     is_overdue = models.BooleanField(default=False)
 
-    class Meta:
-        constraints = [
-            models.CheckConstraint(
-                check=~Q(author__is_staff=True),
-                name="non_staff_users_only"
-            )
-        ]
+    def save(self, *args, **kwargs):
+        if self.created_by.is_staff or self.created_by.is_superuser:
+            raise ValidationError("Only student users can create tickets.")
+        super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.subject} (ID: {self.ticket_id})"
+        return self.subject
 
-class TicketMessage(models.Model):
-    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
-    sender_profile = models.ForeignKey(User, on_delete=models.CASCADE)
-    message_body = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    is_internal = models.BooleanField(default=False)
+# class TicketMessage(models.Model):
+#     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
+#     sender_profile = models.ForeignKey(User, on_delete=models.CASCADE)
+#     message_body = models.TextField()
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     is_internal = models.BooleanField(default=False)
 
-    def __str__(self):
-        return f"Msg {self.message_id} on Ticket {self.ticket_id}"
+#     def __str__(self):
+#         return f"Msg {self.message_id} on Ticket {self.ticket_id}"
     
 
-class TicketStatusHistory(models.Model):
-    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
-    old_status = models.CharField(max_length=50, null=True)
-    new_status = models.CharField(max_length=50)
-    changed_by_profile = models.ForeignKey(User, on_delete=models.CASCADE)
-    changed_at = models.DateTimeField(auto_now_add=True)
-    notes = models.CharField(max_length=255, null=True, blank=True)
+# class TicketStatusHistory(models.Model):
+#     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
+#     old_status = models.CharField(max_length=50, null=True)
+#     new_status = models.CharField(max_length=50)
+#     changed_by_profile = models.ForeignKey(User, on_delete=models.CASCADE)
+#     changed_at = models.DateTimeField(auto_now_add=True)
+#     notes = models.CharField(max_length=255, null=True, blank=True)
 
-    def __str__(self):
-        return f"Ticket #{self.ticket.ticket_id} from {self.old_status} to {self.new_status}"
+#     def __str__(self):
+#         return f"Ticket #{self.ticket.ticket_id} from {self.old_status} to {self.new_status}"
     
 
-class TicketRedirect(models.Model):
-    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
-    from_profile = models.ForeignKey(User, on_delete=models.CASCADE, related_name='redirect_from')
-    to_profile = models.ForeignKey(User, on_delete=models.CASCADE, related_name='redirect_to')
-    reason = models.CharField(max_length=255, null=True, blank=True)
-    redirected_at = models.DateTimeField(auto_now_add=True)
+# class TicketRedirect(models.Model):
+#     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
+#     from_profile = models.ForeignKey(User, on_delete=models.CASCADE, related_name='redirect_from')
+#     to_profile = models.ForeignKey(User, on_delete=models.CASCADE, related_name='redirect_to')
+#     reason = models.CharField(max_length=255, null=True, blank=True)
+#     redirected_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"Redirect #{self.redirect_id} for Ticket #{self.ticket.ticket_id}"
+#     def __str__(self):
+#         return f"Redirect #{self.redirect_id} for Ticket #{self.ticket.ticket_id}"
 
-class TicketAttachment(models.Model):
-    message = models.ForeignKey(TicketMessage, on_delete=models.CASCADE)
-    file_name = models.CharField(max_length=255)
-    file_path = models.CharField(max_length=255)  # or FileField
-    mime_type = models.CharField(max_length=100)
-    uploaded_at = models.DateTimeField(auto_now_add=True)
+# class TicketAttachment(models.Model):
+#     message = models.ForeignKey(TicketMessage, on_delete=models.CASCADE)
+#     file_name = models.CharField(max_length=255)
+#     file_path = models.CharField(max_length=255)  # or FileField
+#     mime_type = models.CharField(max_length=100)
+#     uploaded_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"Attachment #{self.attachment_id} on Msg {self.message_id}"
+#     def __str__(self):
+#         return f"Attachment #{self.attachment_id} on Msg {self.message_id}"
     
 
-class AIResponse(models.Model):
-    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
-    prompt_text = models.TextField(null=True, blank=True)
-    response_text = models.TextField(null=True, blank=True)
-    confidence = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+# class AIResponse(models.Model):
+#     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
+#     prompt_text = models.TextField(null=True, blank=True)
+#     response_text = models.TextField(null=True, blank=True)
+#     confidence = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+#     created_at = models.DateTimeField(auto_now_add=True)
 
-    verified_by_profile = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    verification_status = models.CharField(max_length=50, null=True, blank=True)
+#     verified_by_profile = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+#     verification_status = models.CharField(max_length=50, null=True, blank=True)
 
-    class Meta:
-        constraints = [
-            models.CheckConstraint(
-                check=(
-                    Q(confidence__isnull=True)
-                    | (Q(confidence__gte=0) & Q(confidence__lte=100))
-                ),
-                name='ai_confidence_range_0_100'
-            )
-        ]
+#     class Meta:
+#         constraints = [
+#             models.CheckConstraint(
+#                 check=(
+#                     Q(confidence__isnull=True)
+#                     | (Q(confidence__gte=0) & Q(confidence__lte=100))
+#                 ),
+#                 name='ai_confidence_range_0_100'
+#             )
+#         ]
     
-    def __str__(self):
-        return f"AI Response #{self.ai_response_id} for Ticket #{self.ticket.ticket_id}"
+#     def __str__(self):
+#         return f"AI Response #{self.ai_response_id} for Ticket #{self.ticket.ticket_id}"
     
-class Notification(models.Model):
-    user_profile = models.ForeignKey(User, on_delete=models.CASCADE)
-    ticket= models.ForeignKey(Ticket, on_delete=models.CASCADE, null=True, blank=True)
-    message = models.CharField(max_length=255)
-    created_at = models.DateTimeField(auto_now_add=True)   
-    read_status = models.BooleanField(default=False)
+# class Notification(models.Model):
+#     user_profile = models.ForeignKey(User, on_delete=models.CASCADE)
+#     ticket= models.ForeignKey(Ticket, on_delete=models.CASCADE, null=True, blank=True)
+#     message = models.CharField(max_length=255)
+#     created_at = models.DateTimeField(auto_now_add=True)   
+#     read_status = models.BooleanField(default=False)
 
-    def __str__(self):
-        return f"Notification #{self.notification_id} for {self.user_profile.user.username}"
+#     def __str__(self):
+#         return f"Notification #{self.notification_id} for {self.user_profile.user.username}"
 

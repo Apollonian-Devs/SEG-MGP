@@ -107,6 +107,26 @@ def redirect_query(ticket, from_user, to_user, new_status=None, new_priority=Non
 
 
 
+def view_ticket_details(ticket):
+    """
+    Return a dictionary or object containing key info about the given ticket.
+    """
+    details = {
+        "ticket_id": ticket.id,
+        "subject": ticket.subject,
+        "description": ticket.description,
+        "created_by": ticket.created_by.username,
+        "assigned_to": ticket.assigned_to.username if ticket.assigned_to else None,
+        "status": ticket.status,
+        "priority": ticket.priority,
+        "created_at": ticket.created_at,
+        "updated_at": ticket.updated_at,
+        "closed_at": ticket.closed_at,
+        "due_date": ticket.due_date,
+        "is_overdue": ticket.is_overdue,
+    }
+    return details
+
 
 
 

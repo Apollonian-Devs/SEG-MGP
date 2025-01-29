@@ -128,6 +128,36 @@ def view_ticket_details(ticket):
     return details
 
 
+def get_message_history(ticket):
+    """
+    Return a list of all messages for a given ticket, sorted by creation date ascending.
+    """
+    messages = TicketMessage.objects.filter(ticket=ticket).order_by("created_at")
+
+    msg_list = []
+    for m in messages:
+        msg_list.append({
+            "message_id": m.id,
+            "sender": m.sender_profile.username,
+            "body": m.message_body,
+            "created_at": m.created_at,
+            "is_internal": m.is_internal,
+        })
+    return msg_list
+
+def get_notifications(user):
+    """
+    Retrieve unread notifications for the user, or all notifications if you prefer.
+    """
+    notifications = Notification.objects.filter(
+        user_profile=user, 
+        read_status=False).order_by("-created_at")
+    
+    return notifications
+
+
+
+
 
 
 

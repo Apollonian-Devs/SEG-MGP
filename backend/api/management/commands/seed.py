@@ -73,7 +73,7 @@ class Command(BaseCommand):
             is_staff=data['is_staff'],
         )
 
-        if data['is_staff']:
+        if data['is_staff'] and not data['is_superuser']:
             department_objects = Department.objects.filter(name__in=data['departments'])
             officer = Officer.objects.create(user=user)
             officer.departments.set(department_objects)

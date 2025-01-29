@@ -3,14 +3,14 @@ from django.core.exceptions import ValidationError, PermissionDenied
 from django.db.models import Count
 from api.models import (
     Ticket, TicketMessage, TicketStatusHistory, TicketRedirect, 
-    TicketAttachment, AIResponse, Notification, Officer, Department
+    TicketAttachment, Notification
 )
 
 def send_query(student_user, subject, description, message_body, attachments=None):
     """
-    Create a new ticket on behalf of a 'student' user.
-    Then create an initial TicketMessage with the student's message.
-    Optionally attach files if 'attachments' is provided.
+    Creates a new ticket for 'student' user.
+    creates an initial TicketMessage with the student's message.
+    Optionally attaches files if is provided.
     """
 
     if student_user is None or student_user.is_staff or student_user.is_superuser:
@@ -36,15 +36,22 @@ def send_query(student_user, subject, description, message_body, attachments=Non
     )
 
 
-     # 'att' should be a dictionary with file_name, file_path, and mime_type
+    
+    #---------------------------------------------------------
+    #written by gpt
+    # 'att' should be a dictionary with file_name, file_path, and mime_type
     if attachments:
         for att in attachments:
+            if not att.get("file_name") or not att.get("file_path"):
+                raise ValidationError("Attachment must have a valid file_name and file_path.")
             TicketAttachment.objects.create(
                 message=msg,
-                file_name=att.get("file_name", "unknown_file"),
-                file_path=att.get("file_path", ""),
-                mime_type=att.get("mime_type", "application/octet-stream")
+                file_name=att["file_name"],
+                file_path=att["file_path"],
+                mime_type=att.get("mime_type", "application/octet-stream"),
             )
+    #---------------------------------------------------------
+
 
 
 
@@ -59,32 +66,46 @@ def send_query(student_user, subject, description, message_body, attachments=Non
     return ticket
 
 
+
+def validate_redirection(from_user, to_user):
+    if not from_user.is_staff:
+        raise PermissionDenied("Only officers or admins can redirect tickets.")
+    if not from_user.is_superuser and from_user.officer.department != to_user.officer.department:
+        raise ValidationError("Officers can only redirect tickets within their department.")
+    if from_user == to_user:
+        raise ValidationError("Redirection failed: Cannot redirect the ticket to the same user.")
+
+
+
+
 def redirect_query(ticket, from_user, to_user, new_status=None, new_priority=None, reason=None):
     """
-    Redirect the given 'ticket' from one user to another.
-    Update the ticket's assigned_to, status, priority, and log the redirection + status history.
+    Redirect ticket' from one user to another.
+    Officers can redirect within the same department
+    admins can redirect across departments.
     """
 
-    if not from_user.is_staff and not from_user.is_superuser:
-        raise PermissionDenied("Only officers or admins can redirect tickets.")
+
+    if ticket.status == "Closed":
+        raise ValidationError("Redirection failed: Closed tickets cannot be redirected.")
+    
+    validate_redirection(from_user, to_user)
+
 
     old_status = ticket.status
 
     ticket.assigned_to = to_user
-    if new_status:
-        ticket.status = new_status
-    if new_priority:
-        ticket.priority = new_priority
+    ticket.status = new_status or old_status
+    ticket.priority = new_priority or ticket.priority
     ticket.updated_at = timezone.now()
     ticket.save()
 
     TicketStatusHistory.objects.create(
         ticket=ticket,
         old_status=old_status,
-        new_status=new_status,
+        new_status=ticket.status,
         changed_by_profile=from_user,
-        changed_at=timezone.now(),
-        notes=f"Redirect triggered. {reason or ''}"
+        notes=f"Redirected by {from_user.username}. {reason or ''}",
     )
 
     TicketRedirect.objects.create(
@@ -92,24 +113,27 @@ def redirect_query(ticket, from_user, to_user, new_status=None, new_priority=Non
         from_profile=from_user,
         to_profile=to_user,
         reason=reason,
-        redirected_at=timezone.now()
+        redirected_at=timezone.now(),
     )
 
- 
     Notification.objects.create(
         user_profile=to_user,
         ticket=ticket,
-        message=f"You have been assigned Ticket #{ticket.id}",
+        message=f"Ticket #{ticket.id} has been redirected to you by {from_user.username}.",
     )
 
 
+    return ticket
 
 
 
 
+
+#---------------------------------------------------------
+#written by gpt
 def view_ticket_details(ticket):
     """
-    Return a dictionary or object containing key info about the given ticket.
+    This returns dictionary containing the key details about ticket.
     """
     details = {
         "ticket_id": ticket.id,
@@ -126,34 +150,95 @@ def view_ticket_details(ticket):
         "is_overdue": ticket.is_overdue,
     }
     return details
-
+#---------------------------------------------------------
 
 def get_message_history(ticket):
     """
-    Return a list of all messages for a given ticket, sorted by creation date ascending.
+    Return a list of all messages for a given ticket sorted by creation date ascending
+    and it distinguishes between Student, Officer, and Admin roles.
     """
     messages = TicketMessage.objects.filter(ticket=ticket).order_by("created_at")
 
     msg_list = []
     for m in messages:
+        # Determine the sender role
+        if not m.sender_profile.is_staff:
+            sender_role = "Student"
+        elif m.sender_profile.is_superuser:
+            sender_role = "Admin"
+        else:
+            sender_role = "Officer"
+        
         msg_list.append({
             "message_id": m.id,
             "sender": m.sender_profile.username,
+            "sender_role": sender_role,
             "body": m.message_body,
             "created_at": m.created_at,
             "is_internal": m.is_internal,
         })
     return msg_list
 
-def get_notifications(user):
+
+
+
+
+def get_ticket_history(admin_user, ticket):
     """
-    Retrieve unread notifications for the user, or all notifications if you prefer.
+    Return list of all status changes for a given ticket sorted by change date descending.
     """
-    notifications = Notification.objects.filter(
-        user_profile=user, 
-        read_status=False).order_by("-created_at")
+    if not admin_user.is_staff and not admin_user.is_superuser:
+        raise PermissionDenied("Only officers or admins can view ticket history.")
+
+    history = TicketStatusHistory.objects.filter(ticket=ticket).order_by("-changed_at")
+
+    #---------------------------------------------------------
+    #helped by gpt
+    hist_list = []
+    for h in history:
+        hist_list.append({
+            "old_status": h.old_status,
+            "new_status": h.new_status,
+            "changed_by": h.changed_by_profile.username,
+            "changed_at": h.changed_at,
+            "notes": h.notes,
+        })
+    return hist_list
+    #---------------------------------------------------------
     
-    return notifications
+
+
+def get_notifications(user, limit=10):
+    """
+    Retrieve 'limit' number of unread latest notifications for the user.
+    """
+    return Notification.objects.filter(
+        user_profile=user,
+        read_status=False
+    ).order_by("-created_at")[:limit]
+
+
+
+def mark_notification_as_read(notification):
+    """
+    Mark single notification as read.
+    """
+    notification.read_status = True
+    notification.save()
+
+
+def mark_all_notifications_as_read(user):
+    """
+    Mark all unread notifications for the user as read 
+    """
+    Notification.objects.filter(user_profile=user, read_status=False).update(
+        read_status=True,
+        updated_at=timezone.now()
+    )
+
+
+
+
 
 
 

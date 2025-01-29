@@ -57,3 +57,60 @@ def send_query(student_user, subject, description, message_body, attachments=Non
     )
 
     return ticket
+
+
+def redirect_query(ticket, from_user, to_user, new_status=None, new_priority=None, reason=None):
+    """
+    Redirect the given 'ticket' from one user to another.
+    Update the ticket's assigned_to, status, priority, and log the redirection + status history.
+    """
+
+    if not from_user.is_staff and not from_user.is_superuser:
+        raise PermissionDenied("Only officers or admins can redirect tickets.")
+
+    old_status = ticket.status
+
+    ticket.assigned_to = to_user
+    if new_status:
+        ticket.status = new_status
+    if new_priority:
+        ticket.priority = new_priority
+    ticket.updated_at = timezone.now()
+    ticket.save()
+
+    TicketStatusHistory.objects.create(
+        ticket=ticket,
+        old_status=old_status,
+        new_status=new_status,
+        changed_by_profile=from_user,
+        changed_at=timezone.now(),
+        notes=f"Redirect triggered. {reason or ''}"
+    )
+
+    TicketRedirect.objects.create(
+        ticket=ticket,
+        from_profile=from_user,
+        to_profile=to_user,
+        reason=reason,
+        redirected_at=timezone.now()
+    )
+
+ 
+    Notification.objects.create(
+        user_profile=to_user,
+        ticket=ticket,
+        message=f"You have been assigned Ticket #{ticket.id}",
+    )
+
+
+
+
+
+
+
+
+
+
+
+
+

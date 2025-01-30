@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { ACCESS_TOKEN } from "../constants";
 import api from "../api";
+import TicketsCard from "../components/TicketsCard";
+import UserDropdown from "../components/UserDropdown";
+import AddTicketPopup from "../components/AddTicketPopup";
 
 const Dashboard = () => {
   const [current_user, setCurrent_user] = useState(null);
@@ -32,30 +35,16 @@ const Dashboard = () => {
     fetchCurrentUser();
   }, []);
 
+  // Ensure current_user is available before rendering
+  if (!current_user) {
+    return <p>Loading user details...</p>;
+  }
+
   return (
     <div>
-      <h1>Current User Details</h1>
-      <p>
-        <strong>ID:</strong> {current_user.id}
-      </p>
-      <p>
-        <strong>Username:</strong> {current_user.username}
-      </p>
-      <p>
-        <strong>First Name:</strong> {current_user.first_name}
-      </p>
-      <p>
-        <strong>Last Name:</strong> {current_user.last_name}
-      </p>
-      <p>
-        <strong>Email:</strong> {current_user.email}
-      </p>
-      <p>
-        <strong>Is Staff:</strong> {current_user.is_staff ? "Yes" : "No"}
-      </p>
-      <p>
-        <strong>Is Superuser:</strong> {current_user.is_superuser ? "Yes" : "No"}
-      </p>
+      <UserDropdown user={current_user} />
+      <TicketsCard />
+      {!current_user?.is_staff && <AddTicketPopup />}
     </div>
   );
 };

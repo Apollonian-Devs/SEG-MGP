@@ -6,6 +6,10 @@ from .serializers import UserSerializer, TicketSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Ticket
 
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from .helpers import *
+
 
 class TicketListCreate(generics.ListCreateAPIView):
     serializer_class = TicketSerializer

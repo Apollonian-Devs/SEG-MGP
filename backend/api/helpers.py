@@ -238,9 +238,33 @@ def mark_all_notifications_as_read(user):
 
 
 
+def get_tickets_for_user(user):
+    """
+    Retrieve all tickets associated with a user.
+    If the user is a student, return tickets they created.
+    If the user is an officer, return tickets assigned to them.
+    If the user is an admin, return all tickets.
+    """
+    if user.is_superuser:
+        tickets = Ticket.objects.all()  # Admin gets all tickets
+    elif user.is_staff:
+        tickets = Ticket.objects.filter(assigned_to=user)  # Officers get assigned tickets
+    else:
+        tickets = Ticket.objects.filter(created_by=user)  # Students get their own tickets
 
-
-
+    return [
+        {
+            "id": ticket.id,
+            "subject": ticket.subject,
+            "description": ticket.description,
+            "status": ticket.status,
+            "priority": ticket.priority,
+            "created_at": ticket.created_at,
+            "updated_at": ticket.updated_at,
+            "assigned_to": ticket.assigned_to.username if ticket.assigned_to else None
+        }
+        for ticket in tickets
+    ]
 
 
 

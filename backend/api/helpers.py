@@ -66,7 +66,6 @@ def send_query(student_user, subject, description, message_body, attachments=Non
     return ticket
 
 
-
 def validate_redirection(from_user, to_user):
     if not from_user.is_staff:
         raise PermissionDenied("Only officers or admins can redirect tickets.")
@@ -74,8 +73,6 @@ def validate_redirection(from_user, to_user):
         raise ValidationError("Officers can only redirect tickets within their department.")
     if from_user == to_user:
         raise ValidationError("Redirection failed: Cannot redirect the ticket to the same user.")
-
-
 
 
 def redirect_query(ticket, from_user, to_user, new_status=None, new_priority=None, reason=None):
@@ -124,9 +121,6 @@ def redirect_query(ticket, from_user, to_user, new_status=None, new_priority=Non
 
 
     return ticket
-
-
-
 
 
 #---------------------------------------------------------
@@ -181,8 +175,6 @@ def get_message_history(ticket):
 
 
 
-
-
 def get_ticket_history(admin_user, ticket):
     """
     Return list of all status changes for a given ticket sorted by change date descending.
@@ -207,7 +199,6 @@ def get_ticket_history(admin_user, ticket):
     #---------------------------------------------------------
     
 
-
 def get_notifications(user, limit=10):
     """
     Retrieve 'limit' number of unread latest notifications for the user.
@@ -216,7 +207,6 @@ def get_notifications(user, limit=10):
         user_profile=user,
         read_status=False
     ).order_by("-created_at")[:limit]
-
 
 
 def mark_notification_as_read(notification):

@@ -50,3 +50,18 @@ class CurrentUserView(views.APIView):
         user = request.user
         serializer = UserSerializer(user)  # Use your UserSerializer to serialize the user data
         return Response(serializer.data)
+    
+
+    
+class UserTicketsView(views.APIView):
+    """
+    API endpoint to get all tickets associated with the logged-in user.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        tickets = get_tickets_for_user(user)  # Call helper function
+        return Response({"tickets": tickets})
+
+

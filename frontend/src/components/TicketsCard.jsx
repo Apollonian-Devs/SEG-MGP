@@ -41,7 +41,7 @@ const TicketsCard = ({ user }) => {
               <thead>
                 <tr>
                   <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">
-                    Subject
+                    Title
                   </th>
                   <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">
                     Status
@@ -65,7 +65,7 @@ const TicketsCard = ({ user }) => {
                   tickets.map((ticket) => (
                     <tr key={ticket.id} className="hover:bg-gray-100">
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">
-                        {ticket.subject}
+                        {ticket.title}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
                         {ticket.status}

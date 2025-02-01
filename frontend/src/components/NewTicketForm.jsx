@@ -1,39 +1,46 @@
 import { AppleIcon } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../api"
+import { Navigate } from "react-router-dom";
 
 const NewTicketForm = ({ user }) => {
 
     const[title, setTitle] = useState("");
     const[description, setDescription] = useState("");
     const[attachments, setAttachments] = useState(null);
+    const[loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
-        // setLoading(true);
+        setLoading(true);
         e.preventDefault();
 
         try {
             const response = await api.post("api/tickets/", {
                 title,
                 description,
-                attachments,
-                user
+                attachments
             })
 
             if (response.status === 201) {
                 alert("Your ticket has been sent and will be reviewed as soon as possible.")
+                navigate("/")
             }
         }
         catch (error) {
             alert("Sorry, there was an error trying to send this ticket.")
             console.log(error)
         }
+        finally {
+            setLoading(false)
+        }
     }
 
 
     return (
         <>
-        <h1> Send Query {user.username} </h1>
+        <h1> Send Query </h1>
         <form onSubmit={handleSubmit}>
            <label>
                 Title 

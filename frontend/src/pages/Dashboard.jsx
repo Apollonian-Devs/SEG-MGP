@@ -17,15 +17,7 @@ const Dashboard = () => {
         },
       });
       console.log("Current User:", response.data);
-      setCurrent_user({
-        id: response.data.id,
-        username: response.data.username,
-        first_name: response.data.first_name,
-        last_name: response.data.last_name,
-        email: response.data.email,
-        is_staff: response.data.is_staff,
-        is_superuser: response.data.is_superuser,
-      });
+      setCurrent_user(response.data); // No need to manually restructure the object
     } catch (error) {
       console.error("Error fetching current user:", error.response?.data || error.message);
     }
@@ -43,8 +35,9 @@ const Dashboard = () => {
   return (
     <div>
       <UserDropdown user={current_user} />
-      <TicketsCard />
-      {!current_user?.is_staff && <AddTicketPopup user={current_user}/>} 
+      {/* Pass current_user as a prop to TicketsCard */}
+      <TicketsCard user={current_user} />
+      {!current_user.is_staff && <AddTicketPopup />}
     </div>
   );
 };

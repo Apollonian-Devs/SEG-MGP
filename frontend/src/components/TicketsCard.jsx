@@ -35,7 +35,7 @@ const TicketsCard = ({ user }) => {
     <div className="flex flex-col bg-white rounded-3xl drop-shadow-[0_20px_50px_rgba(0,0,0,0.1)]">
       <div className="-m-1.5 overflow-x-auto">
         <div className="p-10 min-w-full inline-block align-middle">
-          <h1 className="felx w-full text-left mb-5">Tickets</h1>
+          <h1 className="felx w-full text-center mb-5">Tickets</h1>
           <div className="overflow-hidden">
             <table className="min-w-full divide-y divide-gray-200">
               <thead>

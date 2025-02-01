@@ -50,3 +50,5 @@ class CurrentUserView(views.APIView):
         user = request.user
         serializer = UserSerializer(user)  # Use your UserSerializer to serialize the user data
         return Response(serializer.data)
+    
+

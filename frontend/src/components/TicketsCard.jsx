@@ -36,7 +36,6 @@ const TicketsCard = ({ user }) => {
       <div className="-m-1.5 overflow-x-auto">
         <div className="p-10 min-w-full inline-block align-middle">
           <h1 className="felx w-full text-left mb-5">Tickets</h1>
-          <AddTicketPopup />
           <div className="overflow-hidden">
             <table className="min-w-full divide-y divide-gray-200">
               <thead>

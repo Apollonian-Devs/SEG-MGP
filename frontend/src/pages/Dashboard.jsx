@@ -44,7 +44,7 @@ const Dashboard = () => {
     <div>
       <UserDropdown user={current_user} />
       <TicketsCard />
-      {!current_user?.is_staff && <AddTicketPopup />}
+      {!current_user?.is_staff && <AddTicketPopup user={current_user}/>} 
     </div>
   );
 };

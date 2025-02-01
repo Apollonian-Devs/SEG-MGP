@@ -31,5 +31,5 @@ class UserSerializer(serializers.ModelSerializer):
 class TicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticket
-        fields = ["id", "title", "description", "created_at", "student"]
-        extra_kwargs = {"student": {"read_only": True}}
+        fields = ["id", "title", "description", "created_at", "created_by"]
+        extra_kwargs = {"created_by": {"read_only": True}}

@@ -5,6 +5,8 @@ import TicketsCard from "../components/TicketsCard";
 import UserDropdown from "../components/UserDropdown";
 import AddTicketPopup from "../components/AddTicketPopup";
 import NotificationsTab from "../components/Notification";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBell } from "@fortawesome/free-solid-svg-icons";
 
 const Dashboard = () => {
   const [current_user, setCurrent_user] = useState(null);
@@ -36,26 +38,22 @@ const Dashboard = () => {
     setShowNotifications(!showNotifications);
   };
   return (
-    <div style={{ position: 'relative' }}>
-      <UserDropdown user={current_user} />
-      {/* Pass current_user as a prop to TicketsCard */}
-      <button
+    <div >
+      <div className="flex items-stretch justify-between  w-full mb-5">
         
-        style={{
-          // position: "absolute",
-          // top: "10px",
-          // right: "10px",
-          // borderRadius: "50%",
-          backgroundColor: "#fff",
-          padding: "10px",
-          border: "1px solid #ccc",
-          boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-          cursor: "pointer",
-          zIndex: 1000,
-        }}
-      >
-      see
-      </button>
+    
+      <UserDropdown user={current_user}/>
+
+        <button className="w-20 rounded-l-full rounded-r-full text-white items-center justify-center bg-customOrange-dark hover:bg-customOrange-light" >
+          
+        <FontAwesomeIcon icon={faBell} />
+        </button>
+       
+  
+      </div>
+      
+      {/* Pass current_user as a prop to TicketsCard */}
+      
       <TicketsCard user={current_user} />
       {!current_user.is_staff && <AddTicketPopup />}
       

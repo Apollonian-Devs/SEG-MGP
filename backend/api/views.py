@@ -65,3 +65,13 @@ class UserTicketsView(views.APIView):
         return Response({"tickets": tickets})
 
 
+class UserNotificationsView(views.APIView):
+    """
+    API endpoint to get all notifications associated with the logged-in user.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        notifications = get_notifications(user)  # Call helper function
+        return Response({"notifications": notifications})

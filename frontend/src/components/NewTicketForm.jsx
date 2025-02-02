@@ -3,10 +3,11 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api"
 import { Navigate } from "react-router-dom";
+import "../forms.css"
 
-const NewTicketForm = ({ user }) => {
+const NewTicketForm = () => {
 
-    const[title, setTitle] = useState("");
+    const[subject, setSubject] = useState("");
     const[description, setDescription] = useState("");
     const[attachments, setAttachments] = useState(null);
     const[loading, setLoading] = useState(false);
@@ -18,7 +19,7 @@ const NewTicketForm = ({ user }) => {
 
         try {
             const response = await api.post("api/tickets/", {
-                title,
+                subject,
                 description,
                 attachments
             })
@@ -40,32 +41,45 @@ const NewTicketForm = ({ user }) => {
 
     return (
         <>
-        <h1> Send Query </h1>
-        <form onSubmit={handleSubmit}>
-           <label>
-                Title 
+        <h1 className='text-left mb-10'> Send Query </h1>
+        <form className='space-y-3' onSubmit={handleSubmit}>
+            <label className='flex text-sm text-left font-medium text-black'>
+                Subject 
             </label>
+            <div className="mt-2">
                 <input
                     type="text"
-                    onChange={(e) => setTitle(e.target.value)}
+                    required
+                    onChange={(e) => setSubject(e.target.value)}
+                    placeholder="Enter the subject of your query"
+                    className='block w-full rounded-md bg-white px-3 py-1.5 text-base text-black outline outline-1 -outline-offset-1 outline-customGray-light placeholder:text-customGray-light focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-customOrange-dark sm:text-sm'
                 ></input>
-            <label>
+            </div>
+            <label className='flex text-sm text-left font-medium text-black'>
                 Description
             </label>
+            <div className="mt-2">
                 <input 
                     type="text"
+                    required
                     onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Enter the details of your query"
+                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-black outline outline-1 -outline-offset-1 outline-customGray-light placeholder:text-customGray-light focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-customOrange-dark sm:text-sm"
                 ></input>
-            <label>
+            </div>
+            <label className='flex text-sm text-left font-medium text-black'>
                 Attachments
             </label>
+            <div className="mt-2">
                 <input 
                     type="file"
                     multiple
                     onChange={(e) => setAttachments(e.target.files)}
                 ></input>
+            </div>
             <button
                 type="submit"
+                className='flex w-full justify-center rounded-md bg-customOrange-dark mt-5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-customOrange-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-customOrange-dark'
             >Send Ticket</button>
         </form>
         

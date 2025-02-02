@@ -20,10 +20,20 @@ class TicketListCreate(generics.ListCreateAPIView):
         return Ticket.objects.filter(created_by=user)
 
     def perform_create(self, serializer):
-        if serializer.is_valid():
-            serializer.save(created_by=self.request.user)
-        else:
-            print(serializer.errors)
+        # if serializer.is_valid():
+        #     serializer.save(created_by=self.request.user)
+        # else:
+        #     print(serializer.errors)
+        data = serializer.validated_data
+        new_ticket = send_query(
+            student_user=self.request.user,
+            subject=data.get("subject"),
+            description=data.get("description"),
+            message_body="",
+            attachments=data.get("attachments", None)
+        )
+
+        return new_ticket
 
 
 class TicketDelete(generics.DestroyAPIView):

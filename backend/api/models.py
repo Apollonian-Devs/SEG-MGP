@@ -52,7 +52,7 @@ class Ticket(models.Model):
         ("Medium", "Medium"),
         ("High", "High"),
     ]
-    title = models.CharField(max_length=255)
+    subject = models.CharField(max_length=255)
     description = models.TextField()
 
     created_by = models.ForeignKey(
@@ -84,7 +84,7 @@ class Ticket(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.title
+        return self.subject
 
 class TicketMessage(models.Model):
      ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)

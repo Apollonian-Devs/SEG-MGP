@@ -6,7 +6,7 @@ from api.models import (
     TicketAttachment, Notification
 )
 
-def send_query(student_user, title, description, message_body, attachments=None):
+def send_query(student_user, subject, description, message_body, attachments=None):
     """
     Creates a new ticket for 'student' user.
     creates an initial TicketMessage with the student's message.
@@ -17,7 +17,7 @@ def send_query(student_user, title, description, message_body, attachments=None)
         raise PermissionDenied("Only student users can create tickets.")
 
     ticket = Ticket(
-        title=title,
+        subject=subject,
         description=description,
         created_by=student_user,  
         status="Open", 
@@ -131,7 +131,7 @@ def view_ticket_details(ticket):
     """
     details = {
         "ticket_id": ticket.id,
-        "title": ticket.title,
+        "subject": ticket.subject,
         "description": ticket.description,
         "created_by": ticket.created_by.username,
         "assigned_to": ticket.assigned_to.username if ticket.assigned_to else None,
@@ -245,7 +245,7 @@ def get_tickets_for_user(user):
     return [
         {
             "id": ticket.id,
-            "title": ticket.title,
+            "subject": ticket.subject,
             "description": ticket.description,
             "status": ticket.status,
             "priority": ticket.priority,

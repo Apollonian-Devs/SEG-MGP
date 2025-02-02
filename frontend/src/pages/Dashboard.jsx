@@ -3,7 +3,7 @@ import { ACCESS_TOKEN } from "../constants";
 import api from "../api";
 import TicketsCard from "../components/TicketsCard";
 import UserDropdown from "../components/UserDropdown";
-import AddTicketPopup from "../components/AddTicketPopup";
+import NewTicketButton from "../components/NewTicketButton";
 
 const Dashboard = () => {
   const [current_user, setCurrent_user] = useState(null);
@@ -37,7 +37,7 @@ const Dashboard = () => {
       <UserDropdown user={current_user} />
       {/* Pass current_user as a prop to TicketsCard */}
       <TicketsCard user={current_user} />
-      {!current_user.is_staff && <AddTicketPopup />}
+      {!current_user.is_staff && <NewTicketButton />}
     </div>
   );
 };

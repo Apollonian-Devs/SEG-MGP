@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api"
 import { Navigate } from "react-router-dom";
-import "../forms.css"
 
 const NewTicketForm = () => {
 
@@ -26,7 +25,7 @@ const NewTicketForm = () => {
 
             if (response.status === 201) {
                 alert("Your ticket has been sent and will be reviewed as soon as possible.")
-                navigate("/")
+                navigate("/dashboard")
             }
         }
         catch (error) {
@@ -41,7 +40,7 @@ const NewTicketForm = () => {
 
     return (
         <>
-        <h1 className='text-left mb-10'> Send Query </h1>
+        <h1 className='text-left font-poppins mb-10'> Send Query </h1>
         <form className='space-y-3' onSubmit={handleSubmit}>
             <label className='flex text-sm text-left font-medium text-black'>
                 Subject 

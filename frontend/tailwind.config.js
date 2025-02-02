@@ -13,6 +13,9 @@ export default {
           dark: "#808080",
         },
       },
+      fontFamily: {
+        poppins: ['Poppins', 'sans-serif'],
+      },
     },
   },
   plugins: [],

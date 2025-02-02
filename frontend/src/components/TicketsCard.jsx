@@ -65,7 +65,7 @@ const TicketsCard = ({ user, openPopup }) => {
                     <tr 
                       key={ticket.id} 
                       className="hover:bg-gray-100 cursor-pointer" 
-                      onClick={() => openPopup(ticket)}
+                      onClick={() => openPopup("viewTicket", ticket)}
                     >
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">
                         {ticket.subject}

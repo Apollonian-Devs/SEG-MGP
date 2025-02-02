@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import api from "../api";
 import { ACCESS_TOKEN } from "../constants";
 
-const TicketsCard = ({ user }) => {
+const TicketsCard = ({ user, openPopup }) => {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -62,7 +62,11 @@ const TicketsCard = ({ user }) => {
                   </tr>
                 ) : (
                   tickets.map((ticket) => (
-                    <tr key={ticket.id} className="hover:bg-gray-100">
+                    <tr 
+                      key={ticket.id} 
+                      className="hover:bg-gray-100 cursor-pointer" 
+                      onClick={() => openPopup(ticket)}
+                    >
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">
                         {ticket.subject}
                       </td>

@@ -5,12 +5,10 @@ import TicketsCard from "../components/TicketsCard";
 import UserDropdown from "../components/UserDropdown";
 import AddTicketPopup from "../components/AddTicketPopup";
 import NotificationsTab from "../components/Notification";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBell } from "@fortawesome/free-solid-svg-icons";
+
 
 const Dashboard = () => {
   const [current_user, setCurrent_user] = useState(null);
-  const [Notifications, setShowNotifications] = useState(false);
   const fetchCurrentUser = async () => {
     try {
       const access = localStorage.getItem(ACCESS_TOKEN);
@@ -34,20 +32,15 @@ const Dashboard = () => {
   if (!current_user) {
     return <p>Loading user details...</p>;
   }
-  const toggleNotifications = () => {
-    setShowNotifications(!showNotifications);
-  };
+
   return (
     <div >
-      <div className="flex items-stretch justify-between  w-full mb-5">
+      <div className="flex items-stretch justify-between w-full mb-5">
         
     
       <UserDropdown user={current_user}/>
-
-        <button className="w-20 rounded-l-full rounded-r-full text-white items-center justify-center bg-customOrange-dark hover:bg-customOrange-light" >
-          
-        <FontAwesomeIcon icon={faBell} />
-        </button>
+      
+      <NotificationsTab user={current_user}/>
        
   
       </div>

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework import generics, views
 from rest_framework.response import Response
-from .serializers import UserSerializer, TicketSerializer
+from .serializers import UserSerializer, TicketSerializer,NotificationSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Ticket
 
@@ -74,4 +74,5 @@ class UserNotificationsView(views.APIView):
     def get(self, request):
         user = request.user
         notifications = get_notifications(user)  # Call helper function
-        return Response({"notifications": notifications})
+        serializer = NotificationSerializer(notifications, many=True)
+        return Response({"notifications": serializer.data})

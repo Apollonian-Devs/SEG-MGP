@@ -2,10 +2,13 @@ import React, { useState, useEffect } from "react";
 import api from "../api";
 import { ACCESS_TOKEN } from "../constants";
 
-const Chat = ({ ticket, onClose }) => {
+const Chat = ({ ticket, onClose , user}) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  
+
 
   // Fetch messages for the given ticket
   useEffect(() => {
@@ -44,7 +47,7 @@ const Chat = ({ ticket, onClose }) => {
           ) : (
             messages.map((msg) => (
               <div key={msg.message_id} className={`message ${msg.sender_role.toLowerCase()}`}>
-                <strong>{msg.sender} ({msg.sender_role}):</strong>
+                <strong>{msg.sender === user.username ? "You" : msg.sender} ({msg.sender_role}):</strong>
                 <p>{msg.body}</p>
                 <small>{new Date(msg.created_at).toLocaleString()}</small>
               </div>

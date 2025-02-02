@@ -39,7 +39,7 @@ const TicketsCard = ({ user }) => {
     {/* Chat Component: Only Show When A Ticket is Selected */}
     {selectedTicket && (
   <div>
-    <Chat ticket={selectedTicket} onClose={() => setSelectedTicket(null)} />
+    <Chat ticket={selectedTicket} onClose={() => setSelectedTicket(null)} user={user} />
   </div>
 )}
 

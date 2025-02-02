@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework import generics, views
 from rest_framework.response import Response
-from .serializers import UserSerializer, TicketSerializer
+from .serializers import UserSerializer, TicketSerializer, OfficerSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Ticket
 
@@ -50,7 +50,6 @@ class CurrentUserView(views.APIView):
         user = request.user
         serializer = UserSerializer(user)  # Use your UserSerializer to serialize the user data
         return Response(serializer.data)
-    
 
     
 class UserTicketsView(views.APIView):
@@ -64,4 +63,16 @@ class UserTicketsView(views.APIView):
         tickets = get_tickets_for_user(user)  # Call helper function
         return Response({"tickets": tickets})
 
+
+class AllOfficersView(views.APIView):
+    """
+    API endpoint to get all officers currently registered.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        officers = get_officers_same_department(user)
+        serializer = OfficerSerializer(officers, many=True)
+        return Response(serializer.data)
 

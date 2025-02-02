@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import api from "../api";
 import { ACCESS_TOKEN } from "../constants";
+import OfficersDropdown from "../components/OfficersDropdown";
 
-const TicketsCard = ({ user }) => {
+const TicketsCard = ({ user, officers }) => {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -51,6 +52,11 @@ const TicketsCard = ({ user }) => {
                   <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase">
                     Actions
                   </th>
+                  {user.is_staff && (
+                    <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase">
+                      Redirect
+                    </th>
+                  )}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -81,6 +87,11 @@ const TicketsCard = ({ user }) => {
                           Chat
                         </button>
                       </td>
+                      {user.is_staff && (
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                          <OfficersDropdown officers={officers} />
+                        </td>
+                      )}
                     </tr>
                   ))
                 )}

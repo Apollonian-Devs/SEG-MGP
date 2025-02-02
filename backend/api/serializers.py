@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Ticket
+from .models import Ticket, Department, Officer
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -27,6 +27,18 @@ class UserSerializer(serializers.ModelSerializer):
             user = None
         return user
 
+class DepartmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        fields = ["id", "name"]
+
+class OfficerSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    department = DepartmentSerializer()
+
+    class Meta:
+        model = Officer
+        fields = ["id", "user", "department"]
 
 class TicketSerializer(serializers.ModelSerializer):
     class Meta:

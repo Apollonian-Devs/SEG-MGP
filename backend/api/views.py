@@ -5,10 +5,13 @@ from rest_framework.response import Response
 from .serializers import UserSerializer, TicketSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Ticket
+from django.core.exceptions import ObjectDoesNotExist
 
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from .helpers import *
+
+from django.shortcuts import get_object_or_404
 
 
 class TicketListCreate(generics.ListCreateAPIView):
@@ -24,7 +27,6 @@ class TicketListCreate(generics.ListCreateAPIView):
             serializer.save(created_by=self.request.user)
         else:
             print(serializer.errors)
-
 
 class TicketDelete(generics.DestroyAPIView):
     serializer_class = TicketSerializer
@@ -65,3 +67,23 @@ class UserTicketsView(views.APIView):
         return Response({"tickets": tickets})
 
 
+
+
+
+class TicketMessageHistory(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, ticket_id):
+        try:
+            # Fetch the ticket by ID
+            ticket = Ticket.objects.get(id=ticket_id)
+            
+            # Get the message history for the ticket
+            messages = get_message_history(ticket)
+            
+            # Return the messages as a response
+            return Response({"messages": messages}, status=200)
+        except ObjectDoesNotExist:
+            return Response({"error": "Ticket not found"}, status=404)
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)

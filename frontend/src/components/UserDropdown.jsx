@@ -51,6 +51,7 @@ const UserDropdown = ({ user }) => {
           className='absolute top-10 right-50 z-10 mt-2 w-56 origin-top-right rounded-md bg-white ring-1 shadow-lg ring-black/5'
           role='menu'
         >
+          
           <div className='py-1'>
             <a href='#' className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'>
               Settings

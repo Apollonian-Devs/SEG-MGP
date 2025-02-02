@@ -38,6 +38,7 @@ const Dashboard = () => {
       {/* Pass current_user as a prop to TicketsCard */}
       <TicketsCard user={current_user} />
       {!current_user.is_staff && <AddTicketPopup />}
+      
     </div>
   );
 };

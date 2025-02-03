@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import api from "../api";
 import { ACCESS_TOKEN } from "../constants";
 import OfficersDropdown from "../components/OfficersDropdown";
+import RedirectButton from "./RedirectButton";
 
 const TicketsCard = ({ user, officers }) => {
   const [tickets, setTickets] = useState([]);
@@ -90,6 +91,7 @@ const TicketsCard = ({ user, officers }) => {
                       {user.is_staff && (
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
                           <OfficersDropdown officers={officers} />
+                          <RedirectButton></RedirectButton>
                         </td>
                       )}
                     </tr>

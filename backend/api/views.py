@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework import generics, views
 from rest_framework.response import Response
-from .serializers import UserSerializer, TicketSerializer
+from .serializers import UserSerializer, TicketSerializer, TicketMessageSerialiser
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Ticket
 from django.core.exceptions import ObjectDoesNotExist
@@ -12,6 +12,7 @@ from django.contrib.auth.decorators import login_required
 from .helpers import *
 
 from django.shortcuts import get_object_or_404
+
 
 
 class TicketListCreate(generics.ListCreateAPIView):
@@ -28,6 +29,8 @@ class TicketListCreate(generics.ListCreateAPIView):
         else:
             print(serializer.errors)
 
+
+
 class TicketDelete(generics.DestroyAPIView):
     serializer_class = TicketSerializer
     permission_classes = [IsAuthenticated]
@@ -41,6 +44,7 @@ class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
+
 
 class CurrentUserView(views.APIView):
     """
@@ -69,21 +73,47 @@ class UserTicketsView(views.APIView):
 
 
 
+#sender_user, ticket, message_body, is_internal=False
+class TicketSendResponseView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, ticket_id):
+        try:
+
+            ticket = Ticket.objects.get(id=ticket_id)
+
+            comment = send_response(
+                sender_user=request.user,
+                ticket=ticket,
+                message_body=request.data.get("message_body")
+            )
+            
+           
+            serializer = TicketMessageSerialiser(comment)
+            return Response(serializer.data, status=201)
+
+        except Ticket.DoesNotExist:
+            return Response({"error": "Ticket not found"}, status=404)
+        except ValueError as e:
+            return Response({"error": str(e)}, status=400)
+
 
 class TicketMessageHistory(views.APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, ticket_id):
         try:
-            # Fetch the ticket by ID
+         
             ticket = Ticket.objects.get(id=ticket_id)
             
-            # Get the message history for the ticket
+   
             messages = get_message_history(ticket)
             
-            # Return the messages as a response
+
             return Response({"messages": messages}, status=200)
         except ObjectDoesNotExist:
             return Response({"error": "Ticket not found"}, status=404)
         except Exception as e:
             return Response({"error": str(e)}, status=500)
+        
+

@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Ticket
+from .models import Ticket, TicketMessage
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -33,3 +33,18 @@ class TicketSerializer(serializers.ModelSerializer):
         model = Ticket
         fields = ["id", "title", "description", "created_at", "student"]
         extra_kwargs = {"student": {"read_only": True}}
+
+
+
+class TicketMessageSerialiser(serializers.ModelSerializer):
+    class Meta:
+        model = TicketMessage
+        '''
+        ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
+        sender_profile = models.ForeignKey(User, on_delete=models.CASCADE)
+        message_body = models.TextField()
+        created_at = models.DateTimeField(auto_now_add=True)
+        is_internal = models.BooleanField(default=False)
+        '''
+        fields = ["ticket", "sender_profile","message_body","created_at"]
+        

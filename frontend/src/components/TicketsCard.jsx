@@ -100,7 +100,7 @@ const TicketsCard = ({ user }) => {
                           Chat
                         </button>
 
-                        
+              
                       </td>
                     </tr>
                   ))

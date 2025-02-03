@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 # from random import randint, random, choice, sample
 from django.contrib.auth.models import User
-from api.models import Department, Officer, Ticket, TicketMessage
+from api.models import Department, Officer, Ticket, TicketMessage, Notification
 
 student_fixtures = [
     {'username': '@johndoe', 'email': 'john.doe@example.org', 'first_name': 'John', 'last_name': 'Doe', 'is_staff': False, 'is_superuser': False},
@@ -89,6 +89,33 @@ ticket_message_fixtures = [
 
 
 
+notification_fixtures = [
+    {
+        'user_profile': '@johndoe',
+        'ticket_subject': 'Lost Student ID',
+        'message': 'Your ticket regarding your lost ID has been updated.',
+    },
+    {
+        'user_profile': '@janedoe',
+        'ticket_subject': 'Check My Fees',
+        'message': 'An officer has responded to your ticket about fees.',
+    },
+    {
+        'user_profile': '@charlie',
+        'ticket_subject': 'Dorm Maintenance Issue',
+        'message': 'Maintenance is addressing the leak in your dorm.',
+    },
+    {
+        'user_profile': '@officer1',
+        'ticket_subject': 'Lost Student ID',
+        'message': 'The student has responded to the lost ID ticket.',
+    },
+    {
+        'user_profile': '@officer2',
+        'ticket_subject': 'Dorm Maintenance Issue',
+        'message': 'Urgent plumbing services may be required for the dorm issue.',
+    },
+]
 
 
 
@@ -210,3 +237,26 @@ class Command(BaseCommand):
                 )
                 self.stdout.write(f"Message for ticket '{ticket.subject}' added.")
         self.stdout.write("Ticket messages seeded.")
+
+    
+
+    def seed_notifications(self, ticket_map):
+        """
+        Seed notifications for users based on notification_fixtures data.
+        """
+        for notification_data in notification_fixtures:
+            user = User.objects.get(username=notification_data['user_profile'])
+            ticket = ticket_map.get(notification_data['ticket_subject'])
+
+            if not ticket:
+                self.stdout.write(self.style.ERROR(f"Ticket with subject '{notification_data['ticket_subject']}' not found. Skipping notification."))
+                continue
+
+            Notification.objects.create(
+                user_profile=user,
+                ticket=ticket,
+                message=notification_data['message'],
+            )
+
+            self.stdout.write(f"Notification for user '{user.username}' on ticket '{ticket.subject}' added.")
+        self.stdout.write("Notifications seeded.")

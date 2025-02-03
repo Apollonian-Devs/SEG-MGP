@@ -38,7 +38,7 @@ class OfficerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Officer
-        fields = ["id", "user", "department"]
+        fields = ["id", "user", "department", "username"]
 
 class TicketSerializer(serializers.ModelSerializer):
     class Meta:

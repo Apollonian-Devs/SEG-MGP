@@ -54,12 +54,8 @@ const OfficersDropdown = ({ officers }) => {
         >
           <div className='py-1'>
               {officers.map(officer => 
-              <a 
-                href='#'
-                className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
-              >
-                {officer.user.first_name}
-              
+              <a href='#' className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'>
+                {officer.user.username}
               </a>
               )}
           </div>

@@ -22,13 +22,9 @@ const RedirectButton = ({ ticketid, selectedOfficer }) => {
             );
         
             alert(`Ticket successfully redirected to ${selectedOfficer.user.username}`);
-            console.log(`updated ticket: ${ticketid}`);
-            console.log(`updated ticket: ${selectedOfficer.user.id}`);
-            console.log(`updated ticket: ${response.data.ticket}`);
             
         
         } catch (error) {
-            console.error("Error redirecting ticket:", error);
             alert('Failed to redirect ticket. Please try again.');
         } 
     };

@@ -76,3 +76,29 @@ class AllOfficersView(views.APIView):
         serializer = OfficerSerializer(officers, many=True)
         return Response(serializer.data)
 
+
+class TicketRedirectView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+
+            ticket_id = request.data.get('ticket_id')
+            to_user_id = request.data.get('to_user')
+            new_status = request.data.get('new_status', 'Pending') 
+            new_priority = request.data.get('new_priority', 'High')
+            reason = request.data.get('reason', 'No reason provided')
+
+            ticket = Ticket.objects.get(id=ticket_id)
+            to_user = User.objects.get(id=to_user_id)
+            from_user = request.user
+
+            updated_ticket = redirect_query(ticket, from_user, to_user, new_status, new_priority, reason)
+            serializer = TicketSerializer(updated_ticket)
+
+            return Response(
+                {"ticket": serializer.data},
+                status=201
+            )
+        except:
+            return Response({"error": "an error has occured"})

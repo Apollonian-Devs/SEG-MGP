@@ -7,6 +7,7 @@ import RedirectButton from "./RedirectButton";
 const TicketsCard = ({ user, officers }) => {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedOfficer, setSelectedOfficer] = useState(null);
 
   useEffect(() => {
     const fetchTickets = async () => {
@@ -90,8 +91,8 @@ const TicketsCard = ({ user, officers }) => {
                       </td>
                       {user.is_staff && (
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                          <OfficersDropdown officers={officers} />
-                          <RedirectButton></RedirectButton>
+                          <OfficersDropdown officers={officers} setSelectedOfficer={setSelectedOfficer} />
+                          <RedirectButton ticketid={ticket.id} selectedOfficer={selectedOfficer} />
                         </td>
                       )}
                     </tr>

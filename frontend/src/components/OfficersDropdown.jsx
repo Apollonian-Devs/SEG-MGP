@@ -1,17 +1,19 @@
 import React, { useState, useEffect, useRef } from "react";
-import api from "../api";
 
-const OfficersDropdown = ({ officers }) => {
+
+const OfficersDropdown = ({ officers, setSelectedOfficer }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const [selectedOfficer, setSelectedOfficerState] = useState(null)
     const dropdownRef = useRef(null);
-    const [selectedOfficer, setSelectedOfficer] = useState("Select an officer")
+    
   
     const toggleDropdown = () => {
       setIsOpen((prev) => !prev);
     };
 
     const handleSelect = (officer) => {
-      setSelectedOfficer(officer.user.username);
+      setSelectedOfficer(officer)
+      setSelectedOfficerState(officer)
       setIsOpen(false);
     };
   
@@ -37,7 +39,7 @@ const OfficersDropdown = ({ officers }) => {
           className='flex justify-center items-center gap-x-1.5 rounded-md bg-white px-1 py-1 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50'
           onClick={toggleDropdown}
         >
-          <h5>{selectedOfficer}</h5>
+          <h5>{selectedOfficer ? selectedOfficer.user.username : "Select an officer"}</h5>
           <svg
             className={`size-4 text-gray-400 transition-transform ${
               isOpen ? "rotate-180" : "rotate-0"
@@ -60,9 +62,9 @@ const OfficersDropdown = ({ officers }) => {
             role='menu'
           >
             <div className='py-1'>
-              {officers.map((officer, index) => (
+              {officers.map((officer) => (
                 <button
-                  key={index}
+                  key={officer.user.id}
                   onClick={() => handleSelect(officer)}
                   className='block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100'
                 >

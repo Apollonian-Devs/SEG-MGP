@@ -33,7 +33,7 @@ const OfficersDropdown = ({ officers, setSelectedOfficer }) => {
 
       return (
     <div className='flex items-center gap-2'> 
-      <div className='relative flex justify-center' ref={dropdownRef}>
+      <div className='relative flex justify-center overflow-visible' ref={dropdownRef}>
         <button
           type='button'
           className='flex justify-center items-center gap-x-1.5 rounded-md bg-white px-1 py-1 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50'
@@ -58,7 +58,7 @@ const OfficersDropdown = ({ officers, setSelectedOfficer }) => {
 
         {isOpen && (
           <div
-            className='absolute top-7 z-10 w-auto origin-top-right rounded-md bg-white ring-1 shadow-lg ring-black/5'
+            className='absolute top-7 right-0 z-50 w-auto origin-top-right rounded-md bg-white ring-1 shadow-lg ring-black/5'
             role='menu'
           >
             <div className='py-1'>

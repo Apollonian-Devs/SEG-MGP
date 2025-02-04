@@ -38,7 +38,7 @@ const TicketsCard = ({ user, officers }) => {
       <div className="-m-1.5 overflow-x-auto">
         <div className="p-10 min-w-full inline-block align-middle">
           <h1 className="felx w-full text-center mb-5">Tickets</h1>
-          <div className="overflow-hidden">
+          <div className="overflow-visible">
             <table className="min-w-full divide-y divide-gray-200">
               <thead>
                 <tr>

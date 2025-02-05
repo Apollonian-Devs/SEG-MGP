@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Ticket, TicketMessage
+from .models import Ticket, Department, Officer, TicketMessage
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -27,6 +27,18 @@ class UserSerializer(serializers.ModelSerializer):
             user = None
         return user
 
+class DepartmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        fields = ["id", "name"]
+
+class OfficerSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    department = DepartmentSerializer()
+
+    class Meta:
+        model = Officer
+        fields = ["id", "user", "department"]
 
 class TicketSerializer(serializers.ModelSerializer):
     class Meta:
@@ -47,4 +59,4 @@ class TicketMessageSerialiser(serializers.ModelSerializer):
         is_internal = models.BooleanField(default=False)
         '''
         fields = ["ticket", "sender_profile","message_body","created_at"]
-        
+

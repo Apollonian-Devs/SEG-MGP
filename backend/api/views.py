@@ -1,17 +1,13 @@
-from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework import generics, views
 from rest_framework.response import Response
-from .serializers import UserSerializer, TicketSerializer, TicketMessageSerialiser
+from .serializers import UserSerializer, TicketSerializer, TicketMessageSerialiser, OfficerSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Ticket
 from django.core.exceptions import ObjectDoesNotExist
 
-from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
 from .helpers import *
 
-from django.shortcuts import get_object_or_404
 
 
 
@@ -56,7 +52,6 @@ class CurrentUserView(views.APIView):
         user = request.user
         serializer = UserSerializer(user)  # Use your UserSerializer to serialize the user data
         return Response(serializer.data)
-    
 
     
 class UserTicketsView(views.APIView):
@@ -69,8 +64,6 @@ class UserTicketsView(views.APIView):
         user = request.user
         tickets = get_tickets_for_user(user)  # Call helper function
         return Response({"tickets": tickets})
-
-
 
 
 #sender_user, ticket, message_body, is_internal=False
@@ -117,3 +110,41 @@ class TicketMessageHistory(views.APIView):
             return Response({"error": str(e)}, status=500)
         
 
+class AllOfficersView(views.APIView):
+    """
+    API endpoint to get all officers currently registered.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        officers = get_officers_same_department(user)
+        serializer = OfficerSerializer(officers, many=True)
+        return Response(serializer.data)
+    
+
+class TicketRedirectView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+
+            ticket_id = request.data.get('ticket_id')
+            to_user_id = request.data.get('to_user')
+            new_status = request.data.get('new_status', 'Pending') 
+            new_priority = request.data.get('new_priority', 'High')
+            reason = request.data.get('reason', 'No reason provided')
+
+            ticket = Ticket.objects.get(id=ticket_id)
+            to_user = User.objects.get(id=to_user_id)
+            from_user = request.user
+
+            updated_ticket = redirect_query(ticket, from_user, to_user, new_status, new_priority, reason)
+            serializer = TicketSerializer(updated_ticket)
+
+            return Response(
+                {"ticket": serializer.data},
+                status=201
+            )
+        except:
+            return Response({"error": "an error has occured"})

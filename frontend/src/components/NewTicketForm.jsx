@@ -8,6 +8,7 @@ const NewTicketForm = () => {
 
     const[subject, setSubject] = useState("");
     const[description, setDescription] = useState("");
+    const[message, setMessage] = useState("");
     const[attachments, setAttachments] = useState(null);
     const[loading, setLoading] = useState(false);
     const navigate = useNavigate();
@@ -20,6 +21,7 @@ const NewTicketForm = () => {
             const response = await api.post("api/tickets/", {
                 subject,
                 description,
+                message,
                 attachments
             })
 
@@ -63,6 +65,18 @@ const NewTicketForm = () => {
                     required
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Enter the details of your query"
+                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-black outline outline-1 -outline-offset-1 outline-customGray-light placeholder:text-customGray-light focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-customOrange-dark sm:text-sm"
+                ></input>
+            </div>
+            <label className='flex text-sm text-left font-medium text-black'>
+                Message
+            </label>
+            <div className="mt-2">
+                <input 
+                    type="text"
+                    required
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="Enter your message to the team"
                     className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-black outline outline-1 -outline-offset-1 outline-customGray-light placeholder:text-customGray-light focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-customOrange-dark sm:text-sm"
                 ></input>
             </div>

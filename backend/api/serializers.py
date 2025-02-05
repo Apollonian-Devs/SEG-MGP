@@ -29,12 +29,14 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class TicketSerializer(serializers.ModelSerializer):
+    message = serializers.CharField(required=True)
+    
     class Meta:
         model = Ticket
         fields = ["id", "subject", "description", "created_by", "assigned_to", "status", 
-                "priority", "created_at", "updated_at", "closed_at", "due_date", "is_overdue"]
+                "priority", "created_at", "updated_at", "closed_at", "due_date", "is_overdue", "message"]
         extra_kwargs = {
             "created_by": {"read_only": True},
             "subject": {"required": True},
-            "description": {"required": True}
+            "description": {"required": True},
         }

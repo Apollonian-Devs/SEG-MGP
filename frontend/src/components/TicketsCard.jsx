@@ -4,7 +4,7 @@ import { ACCESS_TOKEN } from "../constants";
 import Chat from "./Chat";
 import OfficersDropdown from "../components/OfficersDropdown";
 import RedirectButton from "./RedirectButton";
-
+import GenericButton from "./GenericButton";
 
 const TicketsCard = ({ user, officers }) => {
   const [tickets, setTickets] = useState([]);
@@ -98,17 +98,15 @@ const TicketsCard = ({ user, officers }) => {
                         {ticket.priority || "Not Set"}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
-                        <button
-                          type="button"
-                          className="text-blue-600 hover:text-blue-800"
-                          onClick={() => 
-                            {
-                            console.log(`Chat for ticket ${ticket.id}`)
-                            setSelectedTicket(ticket)
-                          }}
-                        >
-                          Chat
-                        </button>
+                      <GenericButton
+                        text="Chat"
+                        className="text-blue-600 hover:text-blue-800"
+                        onClick={() => {
+                          console.log(`Chat for ticket ${ticket.id}`);
+                          setSelectedTicket(ticket);
+                        }}
+                      />
+
 
               
                       </td>
@@ -120,7 +118,6 @@ const TicketsCard = ({ user, officers }) => {
                           <RedirectButton ticketid={ticket.id} selectedOfficer={selectedOfficer} />
                         </td>
                       )}
-                      
                     </tr>
                   ))
                 )}

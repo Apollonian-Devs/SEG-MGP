@@ -1,6 +1,7 @@
 import React from "react";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
 import api from "../api";
+import GenericButton from "./GenericButton";
 
 const RedirectButton = ({ ticketid, selectedOfficer }) => {
     const handleRedirect = async () => {
@@ -22,21 +23,25 @@ const RedirectButton = ({ ticketid, selectedOfficer }) => {
             );
         
             alert(`Ticket successfully redirected to ${selectedOfficer.user.username}`);
+            console.log(`updated ticket: ${ticketid}`);
+            console.log(`updated ticket: ${selectedOfficer.user.id}`);
+            console.log(`updated ticket: ${response.data.ticket}`);
             
         
         } catch (error) {
+            console.error("Error redirecting ticket:", error);
             alert('Failed to redirect ticket. Please try again.');
         } 
     };
 
+    //px-3 py-1 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700
     return (
-        <button
-            type="button"
+        <GenericButton
+            text="Redirect"
             className="px-3 py-1 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700"
             onClick={handleRedirect}
-        >
-            Redirect
-        </button>
+        />
+
   
     );
 };

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "../api";
 import { ACCESS_TOKEN } from "../constants";
+import GenericButton from "./GenericButton";
 
 const Chat = ({ ticket, onClose, user }) => {
   const [messages, setMessages] = useState([]);
@@ -61,9 +62,13 @@ const Chat = ({ ticket, onClose, user }) => {
         <div style={styles.chat}>
           <div style={styles.chatHeader}>
             <h2 style={styles.chatTitle}>Chat for Ticket: {ticket.subject}</h2>
-            <button onClick={onClose} style={styles.closeButton}>
+            <GenericButton 
+              onClick={onClose} 
+              style={styles.closeButton} // Pass inline styles here
+            >
               ✖
-            </button>
+            </GenericButton>
+
           </div>
 
           {loading ? (
@@ -114,9 +119,13 @@ const Chat = ({ ticket, onClose, user }) => {
             placeholder="Enter your message"
             style={styles.chatInput}
             />
-            <button type="submit" style={styles.sendButton}>
+            <GenericButton 
+              type="submit" 
+              style={styles.sendButton} // Pass inline styles here
+            >
             Send
-            </button>
+          </GenericButton>
+
         </form>
 
         </div>
@@ -131,8 +140,11 @@ const styles = {
     padding: "20px",
     display: "flex",
     justifyContent: "center",
-    height: "100vh",
+    alignItems: "center",
+    height: "100vh", 
+    overflow: "hidden", 
   },
+  
   chatApp: {
     display: "flex",
     width: "90%",
@@ -141,30 +153,46 @@ const styles = {
     borderRadius: "10px",
     boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.1)",
     flexDirection: "column",
+    overflow: "hidden", 
+    maxHeight: "80vh", 
   },
+  
   chatHeader: {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
     padding: "15px",
     borderBottom: "2px solid #f4f7f6",
+    backgroundColor: "#f4f4f4", 
+    zIndex: 1, 
+    position: "sticky", 
+    top: 0, 
   },
+  
+  
   chatTitle: {
     margin: "0",
     fontSize: "18px",
+    color: "#333", 
+    fontWeight: "bold", 
   },
+  
   closeButton: {
     border: "none",
     background: "transparent",
     fontSize: "20px",
     cursor: "pointer",
   },
+  
+  
   chatHistory: {
     flex: 1,
     padding: "20px",
-    overflowY: "auto",
+    overflowY: "auto", 
+    maxHeight: "calc(80vh - 100px)", 
     borderBottom: "2px solid #fff",
   },
+  
   messageTime: {
     fontSize: "12px",
     color: "#666",

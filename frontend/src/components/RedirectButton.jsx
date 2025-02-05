@@ -37,10 +37,12 @@ const RedirectButton = ({ ticketid, selectedOfficer }) => {
     //px-3 py-1 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700
     return (
         <GenericButton
-            text="Redirect"
-            className="px-3 py-1 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700"
-            onClick={handleRedirect}
-        />
+        className="px-3 py-1 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700"
+        onClick={handleRedirect}
+        >
+        Redirect
+        </GenericButton>
+
 
   
     );

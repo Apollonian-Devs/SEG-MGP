@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import GenericButton from "./GenericButton";
 
 const UserDropdown = ({ user }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,12 +25,13 @@ const UserDropdown = ({ user }) => {
 
   return (
     <div className='relative flex justify-center' ref={dropdownRef}>
-      <button
-        type='button'
-        className='flex justify-center  items-center gap-x-1.5 mb-5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50'
-        onClick={toggleDropdown}
+
+
+      <GenericButton
+      className='flex justify-center  items-center gap-x-1.5 mb-5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50'
+      onClick={toggleDropdown}
       >
-        <h3>{user.username}</h3>
+      <h3>{user.username}</h3>
         <svg
           className={`size-5 text-gray-400 transition-transform ${
             isOpen ? "rotate-180" : "rotate-0"
@@ -44,7 +46,9 @@ const UserDropdown = ({ user }) => {
             clipRule='evenodd'
           />
         </svg>
-      </button>
+      </GenericButton>
+
+
 
       {isOpen && (
         <div

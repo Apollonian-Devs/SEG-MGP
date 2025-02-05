@@ -1,16 +1,16 @@
 import React from "react";
 
-const GenericButton = ({text, onClick, className}) => {
-    return (
+const GenericButton = ({ children, onClick, className, type = "button", style }) => {
+  return (
     <button 
-        type = "button"
-        className = {className}
-        onClick= {onClick}
+      type={type}
+      className={className}
+      style={style} 
+      onClick={onClick}
     >
-       {text}     
+      {children}
     </button>
-    );
-}
+  );
+};
 
 export default GenericButton;
-

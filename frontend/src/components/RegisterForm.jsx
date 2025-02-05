@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
 import api from "../api";
+import GenericButton from "./GenericButton";
 
 const RegisterForm = () => {
   const [username, setUsername] = useState("");
@@ -134,12 +135,14 @@ const RegisterForm = () => {
         </div>
         {loading && <h1>Loading...</h1>}
         <div>
-          <button
-            type='submit'
-            className='flex w-full justify-center rounded-md bg-customOrange-dark mt-5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-customOrange-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-customOrange-dark'
-          >
-            Register
-          </button>
+        <GenericButton
+          type="submit"
+          className="flex w-full justify-center rounded-md bg-customOrange-dark mt-5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-customOrange-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-customOrange-dark"
+        >
+          Register
+        </GenericButton>
+
+
         </div>
       </form>
     </>

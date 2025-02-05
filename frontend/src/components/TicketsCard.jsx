@@ -98,14 +98,18 @@ const TicketsCard = ({ user, officers }) => {
                         {ticket.priority || "Not Set"}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
+                      
+                      
                       <GenericButton
-                        text="Chat"
-                        className="text-blue-600 hover:text-blue-800"
-                        onClick={() => {
-                          console.log(`Chat for ticket ${ticket.id}`);
-                          setSelectedTicket(ticket);
-                        }}
-                      />
+                      className="text-blue-600 hover:text-blue-800"
+                      onClick={() => {
+                        console.log(`Chat for ticket ${ticket.id}`);
+                        setSelectedTicket(ticket);
+                      }}
+                    >
+                      Chat
+                    </GenericButton>
+
 
 
               

@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError, PermissionDenied
 from django.db.models import Count
 from api.models import (
     Ticket, TicketMessage, TicketStatusHistory, TicketRedirect, 
-    TicketAttachment, Notification, Department, Officer
+    TicketAttachment, Notification, Officer
 )
 
 def send_query(student_user, subject, description, message_body, attachments=None):
@@ -321,6 +321,7 @@ def get_tickets_for_user(user):
         }
         for ticket in tickets
     ]
+
 
 def get_officers_same_department(user):
     officer = Officer.objects.get(user=user)

@@ -60,9 +60,8 @@ const Dashboard = () => {
     <div>
       <UserDropdown user={current_user} />
       {/* Pass current_user as a prop to TicketsCard */}
-      <TicketsCard user={current_user} officers={current_user.is_staff ? officers : undefined} />
+      <TicketsCard user={current_user} officers={current_user.is_staff && !current_user.is_superuser ? officers : undefined} />
       {!current_user.is_staff && <AddTicketPopup />}
-      
     </div>
   );
 };

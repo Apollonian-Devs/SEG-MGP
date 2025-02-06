@@ -38,5 +38,5 @@ class NotificationSerializer(serializers.ModelSerializer):
     ticket_subject = serializers.CharField(source="ticket.subject",read_only=True)
     class Meta:
         model = Notification
-        fields = ["ticket_subject","message", "created_at", "read_status"]
+        fields = ["id","ticket_subject","message", "created_at", "read_status"]
         extra_kwargs = {"student": {"read_only": True}}

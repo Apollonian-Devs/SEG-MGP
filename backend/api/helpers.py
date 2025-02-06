@@ -225,7 +225,15 @@ def mark_notification_as_read(notification):
     """
     notification.read_status = True
     notification.save()
-
+def mark_id_as_read(target):
+    """
+    Mark notification of id as read.
+    """
+    result = Notification.objects.filter(
+        id=target,
+    ).first()
+    result.read_status = True
+    result.save()
 
 def mark_all_notifications_as_read(user):
     """

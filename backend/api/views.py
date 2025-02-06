@@ -76,3 +76,7 @@ class UserNotificationsView(views.APIView):
         notifications = get_notifications(user)  # Call helper function
         serializer = NotificationSerializer(notifications, many=True)
         return Response({"notifications": serializer.data})
+    
+    def post(self,request):
+        mark_id_as_read(request.data.get("id"))
+        return Response({"message": "mark success"})

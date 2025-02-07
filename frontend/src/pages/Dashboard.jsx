@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import { ACCESS_TOKEN } from "../constants";
 import api from "../api";
 import TicketsCard from "../components/TicketsCard";
-import UserDropdown from "../components/UserDropdown";
 import AddTicketPopup from "../components/AddTicketPopup";
 import OfficersDropdown from "../components/OfficersDropdown";
+import GenericDropdown from "../components/GenericDropdown";
+import GenericButton from "../components/GenericButton";
 
 const Dashboard = () => {
   const [current_user, setCurrent_user] = useState(null);
@@ -58,11 +59,27 @@ const Dashboard = () => {
 
   return (
     <div>
-      <UserDropdown user={current_user} />
-      {/* Pass current_user as a prop to TicketsCard */}
+      {/* <UserDropdown user={current_user} /> */}
+      <GenericDropdown
+        buttonName={current_user.username}
+        className="flex justify-center items-center gap-x-1.5 mb-5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50"
+      >
+        <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+        <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Support</a>
+        <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+        <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Support</a>
+        <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+        <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Support</a>
+        <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+        <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Support</a>
+        <a href="/logout" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</a> 
+      </GenericDropdown>
       <TicketsCard user={current_user} officers={current_user.is_staff && !current_user.is_superuser ? officers : undefined} />
       {!current_user.is_staff && <AddTicketPopup />}
     </div>
+
+
+
   );
 };
 

@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Ticket
+from .models import Ticket, Department, Officer, TicketMessage
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -27,12 +27,26 @@ class UserSerializer(serializers.ModelSerializer):
             user = None
         return user
 
+class DepartmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        fields = ["id", "name"]
+
+class OfficerSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    department = DepartmentSerializer()
+
+    class Meta:
+        model = Officer
+        fields = ["id", "user", "department"]
+
 
 class TicketSerializer(serializers.ModelSerializer):
     message = serializers.CharField(required=True)
     
     class Meta:
         model = Ticket
+
         fields = ["id", "subject", "description", "created_by", "assigned_to", "status", 
                 "priority", "created_at", "updated_at", "closed_at", "due_date", "is_overdue", "message"]
         extra_kwargs = {
@@ -40,3 +54,17 @@ class TicketSerializer(serializers.ModelSerializer):
             "subject": {"required": True},
             "description": {"required": True},
         }
+
+
+class TicketMessageSerialiser(serializers.ModelSerializer):
+    class Meta:
+        model = TicketMessage
+        '''
+        ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
+        sender_profile = models.ForeignKey(User, on_delete=models.CASCADE)
+        message_body = models.TextField()
+        created_at = models.DateTimeField(auto_now_add=True)
+        is_internal = models.BooleanField(default=False)
+        '''
+        fields = ["ticket", "sender_profile","message_body","created_at"]
+

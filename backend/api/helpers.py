@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError, PermissionDenied
 from django.db.models import Count
 from api.models import (
     Ticket, TicketMessage, TicketStatusHistory, TicketRedirect, 
-    TicketAttachment, Notification
+    TicketAttachment, Notification, Officer
 )
 
 def send_query(student_user, subject, description, message_body, attachments=None):
@@ -66,6 +66,66 @@ def send_query(student_user, subject, description, message_body, attachments=Non
     return ticket
 
 
+def send_response(sender_user, ticket, message_body, is_internal=False):
+    """
+    Allows a user (student or staff) to add a new message to an existing ticket.
+    Optionally mark it as an internal note (is_internal=True).
+    Also triggers a notification for the 'other side'.
+
+    :param sender_user: The User object sending the message
+    :param ticket: The existing Ticket object to which we're responding
+    :param message_body: The text content of the new message
+    :param is_internal: Whether this message is internal (visible only to staff)
+    :raises PermissionDenied: if the user is None or the ticket is closed
+    :return: The newly created TicketMessage object
+    """
+
+    
+
+    # 1) Validate user & ticket
+    if sender_user is None:
+        raise PermissionDenied("No authenticated user to send a response.")
+    if ticket is None:
+        raise ValidationError("Invalid ticket provided.")
+
+    # 2) Disallow responding on closed tickets, if desired
+    if ticket.status == "Closed":
+        raise ValidationError("Cannot respond to a closed ticket.")
+
+    # 3) Create the new TicketMessage
+    new_msg = TicketMessage.objects.create(
+        ticket=ticket,
+        sender_profile=sender_user,
+        message_body=message_body,
+        is_internal=is_internal
+    )
+
+    # 4) Possibly update the ticket’s updated_at to reflect new activity
+    ticket.updated_at = timezone.now()
+    ticket.save()
+
+    # 5) Create a Notification for the "other party"
+    #    - If staff/officer sends a message, notify the student
+    #    - If student sends a message, notify the assigned officer (if any)
+    if sender_user.is_staff:
+        # Notifying the student who created the ticket
+        Notification.objects.create(
+            user_profile=ticket.created_by,
+            ticket=ticket,
+            message=f"Staff responded to Ticket #{ticket.id}"
+        )
+    else:
+        # Student side: if there's an assigned officer, notify them
+        if ticket.assigned_to is not None:
+            Notification.objects.create(
+                user_profile=ticket.assigned_to,
+                ticket=ticket,
+                message=f"Student replied on Ticket #{ticket.id}"
+            )
+
+    return new_msg
+
+
 def validate_redirection(from_user, to_user):
     if not from_user.is_staff:
         raise PermissionDenied("Only officers or admins can redirect tickets.")
@@ -123,6 +183,8 @@ def redirect_query(ticket, from_user, to_user, new_status=None, new_priority=Non
     return ticket
 
 
+
+
 #---------------------------------------------------------
 #written by gpt
 def view_ticket_details(ticket):
@@ -146,12 +208,13 @@ def view_ticket_details(ticket):
     return details
 #---------------------------------------------------------
 
+
 def get_message_history(ticket):
     """
-    Return a list of all messages for a given ticket sorted by creation date ascending
-    and it distinguishes between Student, Officer, and Admin roles.
+    Return a list of all messages for a given ticket sorted by creation date ascending.
+    Only include messages where is_internal is False.
     """
-    messages = TicketMessage.objects.filter(ticket=ticket).order_by("created_at")
+    messages = TicketMessage.objects.filter(ticket=ticket, is_internal=False).order_by("created_at")
 
     msg_list = []
     for m in messages:
@@ -169,7 +232,6 @@ def get_message_history(ticket):
             "sender_role": sender_role,
             "body": m.message_body,
             "created_at": m.created_at,
-            "is_internal": m.is_internal,
         })
     return msg_list
 
@@ -255,6 +317,12 @@ def get_tickets_for_user(user):
         }
         for ticket in tickets
     ]
+
+
+def get_officers_same_department(user):
+    officer = Officer.objects.get(user=user)
+    return Officer.objects.filter(department=officer.department).exclude(user=user)
+
 
 
 

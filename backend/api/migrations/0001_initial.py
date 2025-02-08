@@ -31,6 +31,7 @@ class Migration(migrations.Migration):
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
+
         migrations.CreateModel(
             name='Ticket',
             fields=[
@@ -48,6 +49,7 @@ class Migration(migrations.Migration):
                 ('created_by', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='tickets_created', to=settings.AUTH_USER_MODEL)),
             ],
         ),
+        
         migrations.CreateModel(
             name='Notification',
             fields=[

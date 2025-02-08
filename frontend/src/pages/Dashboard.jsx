@@ -60,16 +60,23 @@ const Dashboard = () => {
   return (
     <div>
       {/* <UserDropdown user={current_user} /> */}
-      <GenericDropdown
-        buttonName={current_user.username}
-        className="flex justify-center items-center gap-x-1.5 mb-5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50"
-      >
-        <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
-        <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Support</a>
-        <a href="/logout" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</a> 
-      </GenericDropdown>
+      <div className="flex justify-space-around items-center gap-x-5">
+        <div className="inline-block flex justify-center items-center">
+          {!current_user.is_staff && <NewTicketButton />}
+        </div>
+        <div className="inline-block flex justify-center items-center">
+          <GenericDropdown
+            buttonName={current_user.username}
+            className="flex justify-center items-center gap-x-1.5 mb-5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50"
+          >
+            <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+            <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Support</a>
+            <a href="/logout" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</a> 
+          </GenericDropdown>
+        </div>
+      </div>
       <TicketsCard user={current_user} officers={current_user.is_staff && !current_user.is_superuser ? officers : undefined} />
-      {!current_user.is_staff && <NewTicketButton />}
+      
     </div>
 
 

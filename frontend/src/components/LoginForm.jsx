@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
 import api from "../api";
 import GenericButton from "./GenericButton";
+import GenericForm from "./GenericForm";
 
 const LoginForm = () => {
   const [username, setUsername] = useState("");
@@ -33,7 +34,7 @@ const LoginForm = () => {
   return (
     <>
       <h1 className='text-left mb-10'>Sign in</h1>
-      <form className='space-y-3' onSubmit={handleSubmit}>
+      <GenericForm className='space-y-3' onSubmit={handleSubmit}>
         <div>
           <label htmlFor='username' className='flex text-sm text-left font-medium text-black'>
             Username
@@ -84,7 +85,7 @@ const LoginForm = () => {
         </GenericButton>
 
         </div>
-      </form>
+      </GenericForm>
     </>
   );
 };

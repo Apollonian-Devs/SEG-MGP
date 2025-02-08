@@ -3,6 +3,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api"
 import { Navigate } from "react-router-dom";
+import GenericForm from "./GenericForm";
+import GenericButton from "./GenericButton";
 
 const NewTicketForm = () => {
 
@@ -43,7 +45,7 @@ const NewTicketForm = () => {
     return (
         <>
         <h1 className='text-left font-poppins mb-10'> Send Query </h1>
-        <form className='space-y-3' onSubmit={handleSubmit}>
+        <GenericForm className='space-y-3' onSubmit={handleSubmit}>
             <label className='flex text-sm text-left font-medium text-black'>
                 Subject 
             </label>
@@ -90,11 +92,13 @@ const NewTicketForm = () => {
                     onChange={(e) => setAttachments(e.target.files)}
                 ></input>
             </div>
-            <button
+            <GenericButton
                 type="submit"
                 className='flex w-full justify-center rounded-md bg-customOrange-dark mt-5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-customOrange-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-customOrange-dark'
-            >Send Ticket</button>
-        </form>
+            >
+                Send Ticket
+            </GenericButton>
+        </GenericForm>
         
         </>
     )

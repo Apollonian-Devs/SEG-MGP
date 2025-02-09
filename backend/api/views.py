@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import generics, views
 from rest_framework.response import Response
-from .serializers import UserSerializer, TicketSerializer, TicketMessageSerialiser, OfficerSerializer
+from .serializers import UserSerializer, TicketSerializer, TicketMessageSerialiser, OfficerSerializer, NotificationSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Ticket
 from django.core.exceptions import ObjectDoesNotExist
@@ -30,7 +30,6 @@ class TicketListCreate(generics.ListCreateAPIView):
         )
 
         return new_ticket
-
 
 
 class TicketDelete(generics.DestroyAPIView):
@@ -70,6 +69,7 @@ class UserTicketsView(views.APIView):
         user = request.user
         tickets = get_tickets_for_user(user)  # Call helper function
         return Response({"tickets": tickets})
+
 
 
 #sender_user, ticket, message_body, is_internal=False
@@ -127,7 +127,25 @@ class AllOfficersView(views.APIView):
         officers = get_officers_same_department(user)
         serializer = OfficerSerializer(officers, many=True)
         return Response(serializer.data)
+
+class UserNotificationsView(views.APIView):
+    """
+    API endpoint to get all notifications associated with the logged-in user.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        notifications = get_notifications(user)  # Call helper function
+        serializer = NotificationSerializer(notifications, many=True)
+        return Response({"notifications": serializer.data})
     
+    def post(self,request):
+        mark_id_as_read(request.data.get("id"))
+        return Response({"message": "mark success"})
+    
+
+
 
 class TicketRedirectView(views.APIView):
     permission_classes = [IsAuthenticated]
@@ -154,3 +172,4 @@ class TicketRedirectView(views.APIView):
             )
         except:
             return Response({"error": "an error has occured"})
+

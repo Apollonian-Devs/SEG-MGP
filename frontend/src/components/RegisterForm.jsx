@@ -46,22 +46,7 @@ const RegisterForm = () => {
       <h1 className='text-left mb-10'>Register</h1>
       <GenericForm className='space-y-3' onSubmit={handleSubmit} buttonLabel="Register">
         
-          {/* <label htmlFor='username' className='flex text-sm text-left font-medium text-black'>
-            Username
-          </label>
-          <div className='mt-2'>
-            <input
-              type='username'
-              name='username'
-              id='username'
-              autoComplete='username'
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              placeholder='Enter your username'
-              className='block w-full rounded-md bg-white px-3 py-1.5 text-base text-black outline outline-1 -outline-offset-1 outline-customGray-light placeholder:text-customGray-light focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-customOrange-dark sm:text-sm'
-            />
-          </div> */}
+         
 
           <GenericInput
             label="Username"
@@ -71,22 +56,7 @@ const RegisterForm = () => {
             placeholder="Enter your username"
           ></GenericInput>
         
-          {/* <label htmlFor='first_name' className='flex text-sm text-left font-medium text-black'>
-            First Name
-          </label>
-          <div className='mt-2'>
-            <input
-              type='first_name'
-              name='first_name'
-              id='first_name'
-              autoComplete='first_name'
-              value={first_name}
-              onChange={(e) => setFirst_name(e.target.value)}
-              required
-              placeholder='Enter your first name'
-              className='block w-full rounded-md bg-white px-3 py-1.5 text-base text-black outline outline-1 -outline-offset-1 outline-customGray-light placeholder:text-customGray-light focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-customOrange-dark sm:text-sm'
-            />
-          </div> */}
+         
         
         <GenericInput
           label="First Name"
@@ -96,22 +66,7 @@ const RegisterForm = () => {
           placeholder="Enter your first name"
         ></GenericInput>
 
-          {/* <label htmlFor='last_name' className='flex text-sm text-left font-medium text-black'>
-            Last Name
-          </label>
-          <div className='mt-2'>
-            <input
-              type='last_name'
-              name='last_name'
-              id='last_name'
-              autoComplete='last_name'
-              value={last_name}
-              onChange={(e) => setLast_name(e.target.value)}
-              required
-              placeholder='Enter your last name'
-              className='block w-full rounded-md bg-white px-3 py-1.5 text-base text-black outline outline-1 -outline-offset-1 outline-customGray-light placeholder:text-customGray-light focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-customOrange-dark sm:text-sm'
-            />
-          </div> */}
+         
         
         <GenericInput
           label="Last Name"
@@ -122,22 +77,7 @@ const RegisterForm = () => {
         ></GenericInput>
       
         
-          {/* <label htmlFor='email' className='flex text-sm text-left font-medium text-black'>
-            Email
-          </label>
-          <div className='mt-2'>
-            <input
-              type='email'
-              name='email'
-              id='email'
-              autoComplete='email'
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              placeholder='Enter your email'
-              className='block w-full rounded-md bg-white px-3 py-1.5 text-base text-black outline outline-1 -outline-offset-1 outline-customGray-light placeholder:text-customGray-light focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-customOrange-dark sm:text-sm'
-            />
-          </div> */}
+        
         
         <GenericInput
           label="Email"
@@ -146,24 +86,6 @@ const RegisterForm = () => {
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Enter your email"
         ></GenericInput>
-
-        
-          {/* <label htmlFor='password' className='block text-sm font-medium text-black'>
-            Password
-          </label>
-          <div className='mt-2'>
-            <input
-              type='password'
-              name='password'
-              id='password'
-              autoComplete='current-password'
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder='Enter your password'
-              className='block w-full rounded-md bg-white px-3 py-1.5 text-base text-black outline outline-1 -outline-offset-1 outline-customGray-light placeholder:text-customGray-light focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-customOrange-dark sm:text-sm'
-            />
-          </div> */}
         
         <GenericInput
           label="Password"

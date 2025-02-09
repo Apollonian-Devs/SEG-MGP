@@ -65,18 +65,7 @@ const NewTicketForm = () => {
         <>
         <h1 className='text-left font-poppins mb-10'> Send Query </h1>
         <GenericForm className='space-y-3' onSubmit={handleSubmit} buttonLabel="Send Ticket">
-            {/* <label className='flex text-sm text-left font-medium text-black'>
-                Subject 
-            </label>
-            <div className="mt-2">
-                <input
-                    type="text"
-                    required
-                    onChange={(e) => setSubject(e.target.value)}
-                    placeholder="Enter the subject of your query"
-                    className='block w-full rounded-md bg-white px-3 py-1.5 text-base text-black outline outline-1 -outline-offset-1 outline-customGray-light placeholder:text-customGray-light focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-customOrange-dark sm:text-sm'
-                ></input>
-            </div> */}
+            
 
             <GenericInput 
                 label="Subject" 
@@ -86,18 +75,7 @@ const NewTicketForm = () => {
                 placeholder="Enter the subject of your query"
             ></GenericInput>
 
-            {/* <label className='flex text-sm text-left font-medium text-black'>
-                Description
-            </label>
-            <div className="mt-2">
-                <input 
-                    type="text"
-                    required
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Enter the details of your query"
-                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-black outline outline-1 -outline-offset-1 outline-customGray-light placeholder:text-customGray-light focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-customOrange-dark sm:text-sm"
-                ></input>
-            </div> */}
+           
 
             <GenericInput 
                 label="Description" 
@@ -107,18 +85,7 @@ const NewTicketForm = () => {
                 placeholder="Enter the description of your query"
             ></GenericInput>
 
-            {/* <label className='flex text-sm text-left font-medium text-black'>
-                Message
-            </label>
-            <div className="mt-2">
-                <input 
-                    type="text"
-                    required
-                    onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Enter your message to the team"
-                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-black outline outline-1 -outline-offset-1 outline-customGray-light placeholder:text-customGray-light focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-customOrange-dark sm:text-sm"
-                ></input>
-            </div> */}
+            
 
             <GenericInput 
                 label="Message" 
@@ -128,16 +95,7 @@ const NewTicketForm = () => {
                 placeholder="Enter your message to the team"
             ></GenericInput>
 
-            {/* <label className='flex text-sm text-left font-medium text-black'>
-                Attachments
-            </label>
-            <div className="mt-2">
-                <input 
-                    type="file"
-                    multiple
-                    onChange={(e) => setAttachments(e.target.files)}
-                ></input>
-            </div> */}
+            
 
             <GenericInput
                 label="Attachments"

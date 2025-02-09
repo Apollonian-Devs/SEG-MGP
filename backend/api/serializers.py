@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Ticket, Department, Officer, TicketMessage
+
+from .models import Ticket, Department, Officer, TicketMessage, Notification
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -67,3 +68,10 @@ class TicketMessageSerialiser(serializers.ModelSerializer):
         '''
         fields = ["ticket", "sender_profile","message_body","created_at"]
 
+
+class NotificationSerializer(serializers.ModelSerializer):
+    ticket_subject = serializers.CharField(source="ticket.subject",read_only=True)
+    class Meta:
+        model = Notification
+        fields = ["id","ticket_subject","message", "created_at", "read_status"]
+        extra_kwargs = {"student": {"read_only": True}}

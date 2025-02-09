@@ -3,13 +3,14 @@ import { ACCESS_TOKEN } from "../constants";
 import api from "../api";
 import TicketsCard from "../components/TicketsCard";
 import NewTicketButton from "../components/NewTicketButton";
-import OfficersDropdown from "../components/OfficersDropdown";
 import GenericDropdown from "../components/GenericDropdown";
-import GenericButton from "../components/GenericButton";
+import NotificationsTab from "../components/Notification";
 
 const Dashboard = () => {
   const [current_user, setCurrent_user] = useState(null);
   const [officers, setOfficers] = useState([]);
+
+
 
   const fetchCurrentUser = async () => {
     try {
@@ -59,12 +60,11 @@ const Dashboard = () => {
 
   return (
     <div>
-      {/* <UserDropdown user={current_user} /> */}
       <div className="flex justify-space-around items-center gap-x-5">
         <div className="inline-block flex justify-center items-center">
           {!current_user.is_staff && <NewTicketButton />}
         </div>
-        <div className="inline-block flex justify-center items-center">
+        <div className="flex items-stretch justify-between w-full mb-5">
           <GenericDropdown
             buttonName={current_user.username}
             className="flex justify-center items-center gap-x-1.5 mb-5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50"
@@ -73,14 +73,14 @@ const Dashboard = () => {
             <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Support</a>
             <a href="/logout" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</a> 
           </GenericDropdown>
+
+          <NotificationsTab user={current_user}/>
+
         </div>
       </div>
       <TicketsCard user={current_user} officers={current_user.is_staff && !current_user.is_superuser ? officers : undefined} />
-      
+
     </div>
-
-
-
   );
 };
 

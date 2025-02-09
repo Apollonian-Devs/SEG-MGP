@@ -162,4 +162,4 @@ class Notification(models.Model):
      read_status = models.BooleanField(default=False)
 
      def __str__(self):
-        return f"Notification #{self.id} for {self.user_profile.user.username}"
+        return f"Notification #{self.id} for {self.user_profile.username}"

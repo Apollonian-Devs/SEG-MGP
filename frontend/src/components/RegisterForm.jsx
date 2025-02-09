@@ -44,7 +44,7 @@ const RegisterForm = () => {
   return (
     <>
       <h1 className='text-left mb-10'>Register</h1>
-      <GenericForm className='space-y-3' onSubmit={handleSubmit}>
+      <GenericForm className='space-y-3' onSubmit={handleSubmit} buttonLabel="Register">
         
           {/* <label htmlFor='username' className='flex text-sm text-left font-medium text-black'>
             Username
@@ -62,7 +62,7 @@ const RegisterForm = () => {
               className='block w-full rounded-md bg-white px-3 py-1.5 text-base text-black outline outline-1 -outline-offset-1 outline-customGray-light placeholder:text-customGray-light focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-customOrange-dark sm:text-sm'
             />
           </div> */}
-        
+
           <GenericInput
             label="Username"
             type="text"
@@ -174,14 +174,15 @@ const RegisterForm = () => {
         ></GenericInput>
 
         {loading && <h1>Loading...</h1>}
-        <div>
+        
+        {/* <div>
         <GenericButton
           type="submit"
           className="flex w-full justify-center rounded-md bg-customOrange-dark mt-5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-customOrange-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-customOrange-dark"
         >
           Register
         </GenericButton>
-        </div>
+        </div> */}
       </GenericForm>
     </>
   );

@@ -1,12 +1,19 @@
 import React from "react";
+import GenericButton from "./GenericButton";
 
-const GenericForm = ({ onSubmit, className, method="post", children, ...props }) => {
+const GenericForm = ({ onSubmit, buttonLabel="Submit", className, method="post", children, buttonClass="flex w-full justify-center rounded-md bg-customOrange-dark mt-5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-customOrange-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-customOrange-dark", ...props }) => {
 
     return (
         <form className={className} onSubmit={onSubmit} method={method} {...props}>
             <div>
                 {children}
             </div>
+            <GenericButton
+                type="submit"
+                className={buttonClass}
+            >
+                {buttonLabel}
+            </GenericButton>
         </form>
     );
 }

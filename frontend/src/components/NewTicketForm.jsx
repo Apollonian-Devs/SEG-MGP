@@ -16,32 +16,50 @@ const NewTicketForm = () => {
     const[loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
-        setLoading(true);
-        e.preventDefault();
 
+    const handleFileChange = (e) => {
+        const files = e.target.files;
+    
+        // Generate metadata for the selected files
+        const fileMetadata = Array.from(files).map((file) => ({
+            file_name: file.name,
+            file_path: `https://your-storage-service.com/uploads/${file.name}`, // Assuming a pre-uploaded location
+            mime_type: file.type,
+        }));
+    
+        setAttachments(fileMetadata);
+    };
+
+    
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+    
         try {
-            const response = await api.post("api/tickets/", {
+            // Prepare the payload, including the file metadata
+            const payload = {
                 subject,
                 description,
                 message,
-                attachments
-            })
-
+                attachments, // Metadata generated in handleFileChange
+            };
+    
+            // Send the ticket data to the backend
+            const response = await api.post("api/tickets/", payload);
+    
             if (response.status === 201) {
-                alert("Your ticket has been sent and will be reviewed as soon as possible.")
-                navigate("/dashboard")
+                alert("Your ticket has been sent and will be reviewed as soon as possible.");
+                navigate("/dashboard");
             }
+        } catch (error) {
+            console.error("Error submitting ticket:", error);
+            alert("Sorry, there was an error trying to send this ticket.");
+        } finally {
+            setLoading(false);
         }
-        catch (error) {
-            alert("Sorry, there was an error trying to send this ticket.")
-            console.log(error)
-        }
-        finally {
-            setLoading(false)
-        }
-    }
-
+    };
+    
 
     return (
         <>
@@ -121,12 +139,13 @@ const NewTicketForm = () => {
                 ></input>
             </div> */}
 
-            <GenericInput 
-                label="Attachments" 
-                type="file" 
-                multiple={true} 
-                onChange={(e) => setAttachments(e.target.files)}
-            ></GenericInput>
+            <GenericInput
+                label="Attachments"
+                type="file"
+                multiple={true}
+                onChange={handleFileChange}
+            />
+
 
             <GenericButton
                 type="submit"

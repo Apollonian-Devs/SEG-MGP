@@ -4,6 +4,7 @@ import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
 import api from "../api";
 import GenericButton from "./GenericButton";
 import GenericForm from "./GenericForm";
+import GenericInput from "./GenericInput";
 
 const RegisterForm = () => {
   const [username, setUsername] = useState("");
@@ -44,8 +45,8 @@ const RegisterForm = () => {
     <>
       <h1 className='text-left mb-10'>Register</h1>
       <GenericForm className='space-y-3' onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor='username' className='flex text-sm text-left font-medium text-black'>
+        
+          {/* <label htmlFor='username' className='flex text-sm text-left font-medium text-black'>
             Username
           </label>
           <div className='mt-2'>
@@ -60,10 +61,17 @@ const RegisterForm = () => {
               placeholder='Enter your username'
               className='block w-full rounded-md bg-white px-3 py-1.5 text-base text-black outline outline-1 -outline-offset-1 outline-customGray-light placeholder:text-customGray-light focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-customOrange-dark sm:text-sm'
             />
-          </div>
-        </div>
-        <div>
-          <label htmlFor='first_name' className='flex text-sm text-left font-medium text-black'>
+          </div> */}
+        
+          <GenericInput
+            label="Username"
+            type="text"
+            required={true}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Enter your username"
+          ></GenericInput>
+        
+          {/* <label htmlFor='first_name' className='flex text-sm text-left font-medium text-black'>
             First Name
           </label>
           <div className='mt-2'>
@@ -78,10 +86,17 @@ const RegisterForm = () => {
               placeholder='Enter your first name'
               className='block w-full rounded-md bg-white px-3 py-1.5 text-base text-black outline outline-1 -outline-offset-1 outline-customGray-light placeholder:text-customGray-light focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-customOrange-dark sm:text-sm'
             />
-          </div>
-        </div>
-        <div>
-          <label htmlFor='last_name' className='flex text-sm text-left font-medium text-black'>
+          </div> */}
+        
+        <GenericInput
+          label="First Name"
+          type="text"
+          required={true}
+          onChange={(e) => setFirst_name(e.target.value)}
+          placeholder="Enter your first name"
+        ></GenericInput>
+
+          {/* <label htmlFor='last_name' className='flex text-sm text-left font-medium text-black'>
             Last Name
           </label>
           <div className='mt-2'>
@@ -96,10 +111,18 @@ const RegisterForm = () => {
               placeholder='Enter your last name'
               className='block w-full rounded-md bg-white px-3 py-1.5 text-base text-black outline outline-1 -outline-offset-1 outline-customGray-light placeholder:text-customGray-light focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-customOrange-dark sm:text-sm'
             />
-          </div>
-        </div>
-        <div>
-          <label htmlFor='email' className='flex text-sm text-left font-medium text-black'>
+          </div> */}
+        
+        <GenericInput
+          label="Last Name"
+          type="text"
+          required={true}
+          onChange={(e) => setLast_name(e.target.value)}
+          placeholder="Enter your last name"
+        ></GenericInput>
+      
+        
+          {/* <label htmlFor='email' className='flex text-sm text-left font-medium text-black'>
             Email
           </label>
           <div className='mt-2'>
@@ -114,10 +137,18 @@ const RegisterForm = () => {
               placeholder='Enter your email'
               className='block w-full rounded-md bg-white px-3 py-1.5 text-base text-black outline outline-1 -outline-offset-1 outline-customGray-light placeholder:text-customGray-light focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-customOrange-dark sm:text-sm'
             />
-          </div>
-        </div>
-        <div>
-          <label htmlFor='password' className='block text-sm font-medium text-black'>
+          </div> */}
+        
+        <GenericInput
+          label="Email"
+          type="text"
+          required={true}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Enter your email"
+        ></GenericInput>
+
+        
+          {/* <label htmlFor='password' className='block text-sm font-medium text-black'>
             Password
           </label>
           <div className='mt-2'>
@@ -132,8 +163,16 @@ const RegisterForm = () => {
               placeholder='Enter your password'
               className='block w-full rounded-md bg-white px-3 py-1.5 text-base text-black outline outline-1 -outline-offset-1 outline-customGray-light placeholder:text-customGray-light focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-customOrange-dark sm:text-sm'
             />
-          </div>
-        </div>
+          </div> */}
+        
+        <GenericInput
+          label="Password"
+          type="text"
+          required={true}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Enter your password"
+        ></GenericInput>
+
         {loading && <h1>Loading...</h1>}
         <div>
         <GenericButton

@@ -40,7 +40,6 @@ class OfficerSerializer(serializers.ModelSerializer):
         model = Officer
         fields = ["id", "user", "department"]
 
-
 class TicketSerializer(serializers.ModelSerializer):
     message = serializers.CharField(required=True)
     

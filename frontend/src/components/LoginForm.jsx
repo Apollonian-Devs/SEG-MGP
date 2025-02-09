@@ -35,7 +35,7 @@ const LoginForm = () => {
     <>
       <h1 className='text-left mb-10'>Sign in</h1>
       <GenericForm className='space-y-3' onSubmit={handleSubmit}>
-        <div>
+        
           <label htmlFor='username' className='flex text-sm text-left font-medium text-black'>
             Username
           </label>
@@ -51,8 +51,8 @@ const LoginForm = () => {
               className='block w-full rounded-md bg-white px-3 py-1.5 text-base text-black outline outline-1 -outline-offset-1 outline-customGray-light placeholder:text-customGray-light focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-customOrange-dark sm:text-sm'
             />
           </div>
-        </div>
-        <div>
+        
+        
           <div className='flex items-center justify-between'>
             <label htmlFor='password' className='block text-sm font-medium text-black'>
               Password
@@ -74,7 +74,7 @@ const LoginForm = () => {
               className='block w-full rounded-md bg-white px-3 py-1.5 text-base text-black outline outline-1 -outline-offset-1 outline-customGray-light placeholder:text-customGray-light focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-customOrange-dark sm:text-sm'
             />
           </div>
-        </div>
+        
         {error && <p className='text-red-500'>{error}</p>}
         <div>
         <GenericButton

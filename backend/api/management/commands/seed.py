@@ -22,14 +22,27 @@ admin_fixtures = [
 ]
 
 department_fixtures = [
-    {'name': 'IT', 'description': 'Information Technology'},
-    {'name': 'HR', 'description': 'Human Resources'},
-    {'name': 'Finance', 'description': 'Finance Department'},
-    {'name': 'Wellbeing', 'description': 'Wellbeing Department'},
-    {'name': 'Informatics', 'description': 'Informatics Department'},
-    {'name': 'Classics', 'description': 'Department of Classics'},
-    {'name': 'KBS', 'description': "King's Business School"},
-    {'name': 'Maintenance', 'description': "Buildings maintenance department"},
+    # King's College London Faculties
+    {'name': 'Faculty of Arts & Humanities', 'description': 'Covers literature, history, philosophy, and creative industries.'},
+    {'name': 'Faculty of Social Science & Public Policy', 'description': 'Focuses on global affairs, politics, and public policy.'},
+    {'name': 'Faculty of Natural, Mathematical & Engineering Sciences', 'description': 'Includes mathematics, physics, informatics, and engineering.'},
+    {'name': 'Faculty of Life Sciences & Medicine', 'description': 'Covers medical biosciences, cardiovascular studies, and pharmaceutical sciences.'},
+    {'name': "King's Business School", 'description': 'Focuses on accounting, finance, marketing, and business strategy.'},
+    {'name': 'The Dickson Poon School of Law', 'description': 'Specializes in legal studies and research.'},
+    {'name': 'Faculty of Dentistry, Oral & Craniofacial Sciences', 'description': 'Covers dental sciences and oral healthcare.'},
+    {'name': 'Florence Nightingale Faculty of Nursing, Midwifery & Palliative Care', 'description': 'Focuses on nursing, midwifery, and palliative care.'},
+    {'name': 'Institute of Psychiatry, Psychology & Neuroscience', 'description': 'Researches mental health, neuroscience, and addiction studies.'},
+
+    # Administrative & Service Departments
+    {'name': 'IT', 'description': 'Handles technical support, student portals, and system security.'},
+    {'name': 'HR', 'description': 'Manages staff recruitment, payroll, and work policies.'},
+    {'name': 'Finance', 'description': 'Handles tuition fees, scholarships, and financial aid.'},
+    {'name': 'Wellbeing', 'description': 'Provides student counseling and wellbeing services.'},
+    {'name': 'Maintenance', 'description': 'Manages building maintenance, plumbing, and electrical repairs.'},
+    {'name': 'Housing', 'description': 'Oversees student accommodations, dorm assignments, and rent payments.'},
+    {'name': 'Admissions', 'description': 'Manages student applications, enrollment, and transfers.'},
+    {'name': 'Library Services', 'description': 'Oversees book loans, research databases, and study spaces.'},
+    {'name': 'Student Affairs', 'description': 'Handles extracurricular activities, student unions, and student complaints.'},
 ]
 
 

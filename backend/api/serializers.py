@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Ticket, Department, Officer, TicketMessage, Notification, TicketRedirect
+from .models import Ticket, Department, Officer, TicketMessage, Notification, TicketRedirect, TicketStatusHistory, AIResponse
 
 
 
@@ -55,6 +55,8 @@ class TicketSerializer(serializers.ModelSerializer):
             "description": {"required": True},
         }
 
+
+        
 class TicketRedirectSerializer(serializers.ModelSerializer):
     ticket = serializers.PrimaryKeyRelatedField(queryset=Ticket.objects.all())
     from_profile = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
@@ -86,3 +88,20 @@ class NotificationSerializer(serializers.ModelSerializer):
         model = Notification
         fields = ["id","ticket_subject","message", "created_at", "read_status"]
         extra_kwargs = {"student": {"read_only": True}}
+
+
+class TicketStatusHistorySerializer(serializers.ModelSerializer):
+    ticket = TicketSerializer()
+    changed_by_profile = UserSerializer()
+
+    class Meta:
+        model = TicketStatusHistory
+        fields = ["old_status", "new_status", "changed_by_profile", "changed_at", "notes"]
+
+class AIResponseSerializer(serializers.ModelSerializer):
+    ticket = TicketSerializer()
+    verified_by_profile = UserSerializer()
+    
+    class Meta:
+        model = AIResponse
+        fields = ['ticket', 'prompt_text', 'response_text', 'confidence', 'created_at', 'verified_by_profile', 'verification_status']

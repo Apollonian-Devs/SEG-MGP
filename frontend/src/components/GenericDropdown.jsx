@@ -25,7 +25,9 @@ const GenericDropdown = ({ buttonName, className, children }) => {
     };
   }, []);
 
+
   return (
+    
     <div className="relative flex justify-center" ref={dropdownRef}>
       {/* Button with click handler */}
       <GenericButton
@@ -41,6 +43,7 @@ const GenericDropdown = ({ buttonName, className, children }) => {
             className={`transition-transform ${isOpen ? "rotate-180" : "rotate-0"}`}
           />
         </GenericButton>
+
 
       {/* Dropdown Menu */}
       {isOpen && (

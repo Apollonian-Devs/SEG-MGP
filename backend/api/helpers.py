@@ -122,13 +122,16 @@ def validate_redirection(from_user, to_user):
         raise ValidationError("Redirection failed: Cannot redirect the ticket to the same user.")
 
 
-def redirect_query(ticket, from_user, to_user, new_status=None, new_priority=None, reason=None):
+
+
+
+
+def redirect_query(ticket, from_user, to_user, reason=None, new_status=None, new_priority=None):
     """
     Redirect ticket' from one user to another.
     Officers can redirect within the same department
     admins can redirect across departments.
     """
-
 
     if ticket.status == "Closed":
         raise ValidationError("Redirection failed: Closed tickets cannot be redirected.")
@@ -156,8 +159,6 @@ def redirect_query(ticket, from_user, to_user, new_status=None, new_priority=Non
         ticket=ticket,
         from_profile=from_user,
         to_profile=to_user,
-        reason=reason,
-        redirected_at=timezone.now(),
     )
 
     Notification.objects.create(

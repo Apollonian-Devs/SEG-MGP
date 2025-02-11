@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Ticket, Department, Officer, TicketMessage, Notification
+from .models import Ticket, Department, Officer, TicketMessage, Notification, TicketRedirect
 
 
 
@@ -55,8 +55,19 @@ class TicketSerializer(serializers.ModelSerializer):
             "description": {"required": True},
         }
 
+class TicketRedirectSerializer(serializers.ModelSerializer):
+    ticket = serializers.PrimaryKeyRelatedField(queryset=Ticket.objects.all())
+    from_profile = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    to_profile = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 
-class TicketMessageSerialiser(serializers.ModelSerializer):
+
+    class Meta:
+        model = TicketRedirect
+        fields = ["ticket", "from_profile", "to_profile"]
+
+
+
+class TicketMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = TicketMessage
         '''
@@ -66,7 +77,7 @@ class TicketMessageSerialiser(serializers.ModelSerializer):
         created_at = models.DateTimeField(auto_now_add=True)
         is_internal = models.BooleanField(default=False)
         '''
-        fields = ["ticket", "sender_profile","message_body","created_at"]
+        fields = ["message_body"]
 
 
 class NotificationSerializer(serializers.ModelSerializer):

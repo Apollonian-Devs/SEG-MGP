@@ -10,10 +10,8 @@ const RedirectButton = ({ ticketid, selectedOfficer }) => {
             const response = await api.post(
             "/api/redirect-ticket/", 
             {
-                ticket_id: ticketid, 
-                to_user: selectedOfficer.user.id, 
-                new_status: 'Pending', 
-                reason: 'Redirected for further inspection', 
+                ticket: ticketid, 
+                to_profile: selectedOfficer.user.id, 
             },
             {
                 headers: {

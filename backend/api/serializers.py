@@ -4,6 +4,7 @@ from rest_framework import serializers
 from .models import Ticket, Department, Officer, TicketMessage, Notification
 
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -43,12 +44,11 @@ class OfficerSerializer(serializers.ModelSerializer):
 
 class TicketSerializer(serializers.ModelSerializer):
     message = serializers.CharField(required=True)
-    
+    attachments = serializers.ListField(child=serializers.DictField(), required=False)
     class Meta:
         model = Ticket
-
         fields = ["id", "subject", "description", "created_by", "assigned_to", "status", 
-                "priority", "created_at", "updated_at", "closed_at", "due_date", "is_overdue", "message"]
+                "priority", "created_at", "updated_at", "closed_at", "due_date", "is_overdue", "message", "attachments"]
         extra_kwargs = {
             "created_by": {"read_only": True},
             "subject": {"required": True},

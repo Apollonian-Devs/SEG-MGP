@@ -5,10 +5,15 @@ import TicketsCard from "../components/TicketsCard";
 import NewTicketButton from "../components/NewTicketButton";
 import GenericDropdown from "../components/GenericDropdown";
 import NotificationsTab from "../components/Notification";
+import TicketDetails from "../components/TicketDetails";
+import Popup from "../components/Popup";
 
 const Dashboard = () => {
   const [current_user, setCurrent_user] = useState(null);
   const [officers, setOfficers] = useState([]);
+  const [popupType, setPopupType] = useState(null);
+  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [isPopupOpen, setPopupOpen] = useState(false);
 
 
 
@@ -40,6 +45,18 @@ const Dashboard = () => {
     } catch (error) {
       console.error("Error fetching officers", error.response?.data || error.message);
     }
+  };
+
+  const openPopup = (type, ticket=null) => {
+    setPopupType(type);
+    setSelectedTicket(ticket);
+    setPopupOpen(true);
+  };
+
+  const closePopup = () => {
+    setPopupOpen(false);
+    setPopupType(null);
+    setSelectedTicket(null);
   };
 
   useEffect(() => {
@@ -78,7 +95,15 @@ const Dashboard = () => {
 
         </div>
       </div>
-      <TicketsCard user={current_user} officers={current_user.is_staff && !current_user.is_superuser ? officers : undefined} />
+      <TicketsCard user={current_user} officers={current_user.is_staff && !current_user.is_superuser ? officers : undefined} openPopup={openPopup}/>
+
+
+      <Popup isOpen={isPopupOpen} onClose={closePopup}>
+        {popupType === "addTicket" && <AddTicketPopup />}
+        {popupType === "viewTicket" && selectedTicket && (
+          <TicketDetails ticket={selectedTicket} />
+        )}
+      </Popup>
 
     </div>
   );

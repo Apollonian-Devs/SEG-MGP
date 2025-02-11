@@ -130,6 +130,7 @@ class TicketAttachment(models.Model):
         return f"Attachment #{self.id} on Msg {self.message_id}"
     
 
+
 class AIResponse(models.Model):
      ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
      prompt_text = models.TextField(null=True, blank=True)

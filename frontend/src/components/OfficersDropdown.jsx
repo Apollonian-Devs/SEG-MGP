@@ -38,7 +38,10 @@ const OfficersDropdown = ({ officers, setSelectedOfficer }) => {
       
       <GenericButton
         className="flex justify-center items-center gap-x-1.5 rounded-md bg-white px-1 py-1 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50"
-        onClick={toggleDropdown}
+        onClick={(e) => {
+          e.stopPropagation();
+          toggleDropdown();
+        }}
       >
         <h5>
           {selectedOfficer ? selectedOfficer.user.username : "Select an officer"}
@@ -70,7 +73,10 @@ const OfficersDropdown = ({ officers, setSelectedOfficer }) => {
               {officers.map((officer) => (
                 <GenericButton
                 key={officer.user.id}
-                onClick={() => handleSelect(officer)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleSelect(officer);
+                }}
                 className="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100"
               >
                 {officer.user.username}

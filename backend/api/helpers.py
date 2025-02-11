@@ -9,8 +9,7 @@ from api.models import (
 def send_query(student_user, subject, description, message_body, attachments=None):
     """
     Creates a new ticket for 'student' user.
-    creates an initial TicketMessage with the student's message.
-    Optionally attaches files if is provided.
+    Also creates an initial TicketMessage and handles file attachments.
     """
 
     if student_user is None or student_user.is_staff or student_user.is_superuser:
@@ -24,9 +23,7 @@ def send_query(student_user, subject, description, message_body, attachments=Non
         priority=None,  
         due_date=None,   
     )
-   
     ticket.save()
-
 
     msg = TicketMessage.objects.create(
         ticket=ticket,
@@ -35,25 +32,15 @@ def send_query(student_user, subject, description, message_body, attachments=Non
         is_internal=False
     )
 
-
-    
-    #---------------------------------------------------------
-    #written by gpt
-    # 'att' should be a dictionary with file_name, file_path, and mime_type
     if attachments:
         for att in attachments:
-            if not att.get("file_name") or not att.get("file_path"):
-                raise ValidationError("Attachment must have a valid file_name and file_path.")
-            TicketAttachment.objects.create(
-                message=msg,
-                file_name=att["file_name"],
-                file_path=att["file_path"],
-                mime_type=att.get("mime_type", "application/octet-stream"),
-            )
-    #---------------------------------------------------------
-
-
-
+            if "file_name" in att and "file_path" in att:
+                TicketAttachment.objects.create(
+                    message=msg,
+                    file_name=att["file_name"],
+                    file_path=att["file_path"],
+                    mime_type=att.get("mime_type", "application/octet-stream"),
+                )
 
     TicketStatusHistory.objects.create(
         ticket=ticket,

@@ -3,6 +3,7 @@ import api from "../api";
 import { ACCESS_TOKEN } from "../constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell,faTimes } from "@fortawesome/free-solid-svg-icons";
+import Popup from "./Popup";
 
 const NotificationsTab = ({ user }) => {
     const [notifications, setNotifications] = useState([]);
@@ -75,14 +76,12 @@ const NotificationsTab = ({ user }) => {
       <FontAwesomeIcon icon={faBell} />
       </button>
       
-      
-      {isPopupOpen && (
-        <div>
-          <div  className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={toggleNotifications}></div>
-          <div className="bg-white w-[80%] h-[80%] rounded-3xl fixed top-0 left-0 right-0 bottom-0 m-auto z-50 border-4 border-customOrange-dark">
-          <button className="absolute top-4 right-4 w-10 h-10 bg-customGray-dark text-white rounded-full"onClick={toggleNotifications}>
-          <FontAwesomeIcon icon={faTimes} />
-          </button>
+      <Popup
+      isOpen={isPopupOpen}
+      onClose={toggleNotifications}
+      width="w-[80%]"
+      height="h-[80%]"
+      >
           <button className="absolute top-4 left-4 w-20 h-10 bg-customOrange-dark text-white rounded-md"onClick={markAllRead}>
           read all
           </button>
@@ -133,13 +132,12 @@ const NotificationsTab = ({ user }) => {
               </tbody>
             </table>
           </div>
-          </div>
-
-        </div>
-      )}
+          </Popup>
       </>
     );
   };
     
-    export default NotificationsTab;
+
+
+export default NotificationsTab;
     

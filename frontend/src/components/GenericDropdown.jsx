@@ -28,13 +28,19 @@ const GenericDropdown = ({ buttonName, className, children }) => {
   return (
     <div className="relative flex justify-center" ref={dropdownRef}>
       {/* Button with click handler */}
-      <GenericButton onClick={toggleDropdown} className={className}>
-        <h3>{buttonName}</h3>
-        <LucideChevronDown size={16} className={`transition-transform ${
-            isOpen ? "rotate-180" : "rotate-0"
-          }`}/>
-      </GenericButton>
-      
+      <GenericButton
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent event bubbling if nested inside a clickable parent
+            toggleDropdown();
+          }}
+          className={className}
+        >
+          <h3>{buttonName}</h3>
+          <LucideChevronDown
+            size={16}
+            className={`transition-transform ${isOpen ? "rotate-180" : "rotate-0"}`}
+          />
+        </GenericButton>
 
       {/* Dropdown Menu */}
       {isOpen && (

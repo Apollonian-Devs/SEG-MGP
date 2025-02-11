@@ -2,9 +2,7 @@ import { AppleIcon } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api"
-import { Navigate } from "react-router-dom";
 import GenericForm from "./GenericForm";
-import GenericButton from "./GenericButton";
 import GenericInput from "./GenericInput";
 
 const NewTicketForm = () => {

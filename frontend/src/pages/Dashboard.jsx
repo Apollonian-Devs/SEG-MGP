@@ -15,8 +15,6 @@ const Dashboard = () => {
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [isPopupOpen, setPopupOpen] = useState(false);
 
-
-
   const fetchCurrentUser = async () => {
     try {
       const access = localStorage.getItem(ACCESS_TOKEN);
@@ -47,7 +45,7 @@ const Dashboard = () => {
     }
   };
 
-  const openPopup = (type, ticket=null) => {
+  const openPopup = (type, ticket = null) => {
     setPopupType(type);
     setSelectedTicket(ticket);
     setPopupOpen(true);
@@ -64,11 +62,10 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    if (current_user && current_user.is_staff){
+    if (current_user && current_user.is_staff) {
       fetchOfficers();
     }
   }, [current_user]);
-
 
   // Ensure current_user is available before rendering
   if (!current_user) {
@@ -77,34 +74,39 @@ const Dashboard = () => {
 
   return (
     <div>
-      <div className="flex justify-space-around items-center gap-x-5">
-        <div className="inline-block flex justify-center items-center">
+      <div className='flex justify-space-around items-center gap-x-5'>
+        <div className='flex justify-center items-center'>
           {!current_user.is_staff && <NewTicketButton />}
         </div>
-        <div className="flex items-stretch justify-between w-full mb-5">
+        <div className='flex items-stretch justify-between w-full mb-5'>
           <GenericDropdown
             buttonName={current_user.username}
-            className="flex justify-center items-center gap-x-1.5 mb-5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50"
+            className='flex justify-center items-center gap-x-1.5 mb-5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50'
           >
-            <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
-            <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Support</a>
-            <a href="/logout" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</a> 
+            <a href='#' className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'>
+              Settings
+            </a>
+            <a href='#' className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'>
+              Support
+            </a>
+            <a href='/logout' className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'>
+              Logout
+            </a>
           </GenericDropdown>
 
-          <NotificationsTab user={current_user}/>
-
+          <NotificationsTab user={current_user} />
         </div>
       </div>
-      <TicketsCard user={current_user} officers={current_user.is_staff && !current_user.is_superuser ? officers : undefined} openPopup={openPopup}/>
-
+      <TicketsCard
+        user={current_user}
+        officers={current_user.is_staff && !current_user.is_superuser ? officers : undefined}
+        openPopup={openPopup}
+      />
 
       <Popup isOpen={isPopupOpen} onClose={closePopup}>
         {popupType === "addTicket" && <AddTicketPopup />}
-        {popupType === "viewTicket" && selectedTicket && (
-          <TicketDetails ticket={selectedTicket} />
-        )}
+        {popupType === "viewTicket" && selectedTicket && <TicketDetails ticket={selectedTicket} />}
       </Popup>
-
     </div>
   );
 };

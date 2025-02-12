@@ -9,8 +9,7 @@ from api.models import (
 def send_query(student_user, subject, description, message_body, attachments=None):
     """
     Creates a new ticket for 'student' user.
-    creates an initial TicketMessage with the student's message.
-    Optionally attaches files if is provided.
+    Also creates an initial TicketMessage and handles file attachments.
     """
 
     if student_user is None or student_user.is_staff or student_user.is_superuser:
@@ -24,9 +23,7 @@ def send_query(student_user, subject, description, message_body, attachments=Non
         priority=None,  
         due_date=None,   
     )
-   
     ticket.save()
-
 
     msg = TicketMessage.objects.create(
         ticket=ticket,
@@ -35,25 +32,15 @@ def send_query(student_user, subject, description, message_body, attachments=Non
         is_internal=False
     )
 
-
-    
-    #---------------------------------------------------------
-    #written by gpt
-    # 'att' should be a dictionary with file_name, file_path, and mime_type
     if attachments:
         for att in attachments:
-            if not att.get("file_name") or not att.get("file_path"):
-                raise ValidationError("Attachment must have a valid file_name and file_path.")
-            TicketAttachment.objects.create(
-                message=msg,
-                file_name=att["file_name"],
-                file_path=att["file_path"],
-                mime_type=att.get("mime_type", "application/octet-stream"),
-            )
-    #---------------------------------------------------------
-
-
-
+            if "file_name" in att and "file_path" in att:
+                TicketAttachment.objects.create(
+                    message=msg,
+                    file_name=att["file_name"],
+                    file_path=att["file_path"],
+                    mime_type=att.get("mime_type", "application/octet-stream"),
+                )
 
     TicketStatusHistory.objects.create(
         ticket=ticket,
@@ -136,13 +123,15 @@ def validate_redirection(from_user, to_user):
 
 
 
-def redirect_query(ticket, from_user, to_user, new_status=None, new_priority=None, reason=None):
+
+
+
+def redirect_query(ticket, from_user, to_user, reason=None, new_status=None, new_priority=None):
     """
     Redirect ticket' from one user to another.
     Officers can redirect within the same department
     admins can redirect across departments.
     """
-
 
     if ticket.status == "Closed":
         raise ValidationError("Redirection failed: Closed tickets cannot be redirected.")
@@ -170,8 +159,6 @@ def redirect_query(ticket, from_user, to_user, new_status=None, new_priority=Non
         ticket=ticket,
         from_profile=from_user,
         to_profile=to_user,
-        reason=reason,
-        redirected_at=timezone.now(),
     )
 
     Notification.objects.create(
@@ -238,7 +225,6 @@ def get_message_history(ticket):
 
 
 
-
 def get_ticket_history(admin_user, ticket):
     """
     Return list of all status changes for a given ticket sorted by change date descending.
@@ -263,7 +249,6 @@ def get_ticket_history(admin_user, ticket):
     #---------------------------------------------------------
     
 
-
 def get_notifications(user, limit=10):
     """
     Retrieve 'limit' number of unread latest notifications for the user.
@@ -274,14 +259,15 @@ def get_notifications(user, limit=10):
     ).order_by("-created_at")[:limit]
 
 
-
-def mark_notification_as_read(notification):
+def mark_id_as_read(target):
     """
-    Mark single notification as read.
+    Mark notification of id as read.
     """
-    notification.read_status = True
-    notification.save()
-
+    result = Notification.objects.filter(
+        id=target,
+    ).first()
+    result.read_status = True
+    result.save()
 
 def mark_all_notifications_as_read(user):
     """

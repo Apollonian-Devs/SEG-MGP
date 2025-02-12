@@ -41,6 +41,7 @@ class Category(models.Model):
     def __str__(self):
         return self.category_name
 """
+
 class Ticket(models.Model):
     STATUS_CHOICES = [
         ("Open", "Open"),
@@ -114,8 +115,6 @@ class TicketRedirect(models.Model):
      ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
      from_profile = models.ForeignKey(User, on_delete=models.CASCADE, related_name='redirect_from')
      to_profile = models.ForeignKey(User, on_delete=models.CASCADE, related_name='redirect_to')
-     reason = models.CharField(max_length=255, null=True, blank=True)
-     redirected_at = models.DateTimeField(auto_now_add=True)
 
      def __str__(self):
         return f"Redirect #{self.id} for Ticket #{self.ticket.ticket_id}"
@@ -130,6 +129,7 @@ class TicketAttachment(models.Model):
     def __str__(self):
         return f"Attachment #{self.id} on Msg {self.message_id}"
     
+
 
 class AIResponse(models.Model):
      ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
@@ -163,4 +163,4 @@ class Notification(models.Model):
      read_status = models.BooleanField(default=False)
 
      def __str__(self):
-        return f"Notification #{self.id} for {self.user_profile.user.username}"
+        return f"Notification #{self.id} for {self.user_profile.username}"

@@ -5,13 +5,16 @@ import Chat from "./Chat";
 import OfficersDropdown from "../components/OfficersDropdown";
 import RedirectButton from "./RedirectButton";
 import GenericButton from "./GenericButton";
+import PopUp from "./Popup";
 
-const TicketsCard = ({ user, officers }) => {
+const TicketsCard = ({ user, officers, openPopup }) => {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTicket, setSelectedTicket] = useState(null);
-
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  
   const [selectedOfficer, setSelectedOfficer] = useState(null);
+
 
   useEffect(() => {
     const fetchTickets = async () => {
@@ -44,12 +47,12 @@ const TicketsCard = ({ user, officers }) => {
     {/* Chat Component: Only Show When A Ticket is Selected */}
     {selectedTicket && (
   <div>
-    <Chat ticket={selectedTicket} onClose={() => setSelectedTicket(null)} user={user} />
+    <PopUp isOpen={isChatOpen} onClose={() => setSelectedTicket(null)} width="w-[100%]" height="h-[100%]"  >
+      <Chat ticket={selectedTicket} onClose={() => setIsChatOpen(false)} user={user} />
+    </PopUp>
+
   </div>
 )}
-
-
-
 
     <div className="flex flex-col bg-white rounded-3xl drop-shadow-[0_20px_50px_rgba(0,0,0,0.1)]">
       <div className="-m-1.5 overflow-x-auto">
@@ -87,7 +90,10 @@ const TicketsCard = ({ user, officers }) => {
                   </tr>
                 ) : (
                   tickets.map((ticket) => (
-                    <tr key={ticket.id} className="hover:bg-gray-100">
+                    <tr key={ticket.id} 
+                    className="hover:bg-gray-100 cursor-pointer" 
+                    onClick={() => openPopup("viewTicket", ticket)}>
+                      
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">
                         {ticket.subject}
                       </td>
@@ -102,9 +108,11 @@ const TicketsCard = ({ user, officers }) => {
                       
                       <GenericButton
                       className="text-blue-600 hover:text-blue-800"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         console.log(`Chat for ticket ${ticket.id}`);
                         setSelectedTicket(ticket);
+                        setIsChatOpen(true);
                       }}
                     >
                       Chat
@@ -116,7 +124,7 @@ const TicketsCard = ({ user, officers }) => {
                       </td>
 
 
-                      {user.is_staff && (
+                      {user.is_staff && !user.is_superuser && (
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
                           <OfficersDropdown officers={officers} setSelectedOfficer={setSelectedOfficer} />
                           <RedirectButton ticketid={ticket.id} selectedOfficer={selectedOfficer} />

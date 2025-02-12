@@ -10,10 +10,8 @@ const RedirectButton = ({ ticketid, selectedOfficer }) => {
             const response = await api.post(
             "/api/redirect-ticket/", 
             {
-                ticket_id: ticketid, 
-                to_user: selectedOfficer.user.id, 
-                new_status: 'Pending', 
-                reason: 'Redirected for further inspection', 
+                ticket: ticketid, 
+                to_profile: selectedOfficer.user.id, 
             },
             {
                 headers: {
@@ -38,13 +36,13 @@ const RedirectButton = ({ ticketid, selectedOfficer }) => {
     return (
         <GenericButton
         className="px-3 py-1 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700"
-        onClick={handleRedirect}
+        onClick={(e) => { 
+            e.stopPropagation();
+            handleRedirect();
+        }}
         >
         Redirect
         </GenericButton>
-
-
-  
     );
 };
 

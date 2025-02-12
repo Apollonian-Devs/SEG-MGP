@@ -2,6 +2,9 @@ from django.core.management.base import BaseCommand, CommandError
 # from random import randint, random, choice, sample
 from django.contrib.auth.models import User
 from api.models import Department, Officer, Ticket, TicketMessage, Notification
+import random
+from faker import Faker
+from random import randint
 
 student_fixtures = [
     {'username': '@johndoe', 'email': 'john.doe@example.org', 'first_name': 'John', 'last_name': 'Doe', 'is_staff': False, 'is_superuser': False},
@@ -139,6 +142,9 @@ class Command(BaseCommand):
 
     DEFAULT_PASSWORD = '1234'
 
+    def __init__(self):
+        self.faker = Faker('en_GB')
+
     def handle(self, *args, **options):
         self.stdout.write("Seeding the database...")
 
@@ -156,9 +162,45 @@ class Command(BaseCommand):
             Department.objects.get_or_create(name=department_data['name'], defaults={'description': department_data['description']})
             print("Department "+ department_data['name'] + " created")
         self.stdout.write("Departments seeded.")
+    
+    def seed_department_heads(self):
+        """
+        Generate a department head for each deparment
+        """
+        self.stdout.write("Seeding department head officers...")
+        for department in Department.objects.all():
+            self.seed_random_user(
+                is_staff=True,
+                is_superuser=False,
+                is_department_head=True,
+                department=department
+            )
+        self.stdout.write("Department head officers seeded.")
 
+    def seed_officers(self):
+        """Determine the number of officers per department and call generate_officers."""
+        self.stdout.write("Seeding regular officers...")
+        for department in Department.objects.all():
+            # Determine number of officers 
+            num_officers = random.choices(range(1, 11), weights=[40, 40, 20], k=1)[0]
+            # Generate the officers
+            self.generate_officers(department, num_officers)
+        self.stdout.write("Regular officers seeded.")
+
+    def generate_officers(self, department, num_officers):
+        """Generate a given number of officers for a specific department."""
+        for _ in range(num_officers):
+            self.seed_random_user(
+                is_staff=True,
+                is_superuser=False,
+                is_department_head=False,
+                department=department
+            )
+
+    
     def seed_users(self):
         self.generate_user_fixtures()
+        self.seed_department_heads()
         # self.generate_random_users()
 
 
@@ -171,10 +213,6 @@ class Command(BaseCommand):
 
         for admin in admin_fixtures:
             self.create_user(admin)
-
-
-    def generate_random_users(self):
-        print("User seeding complete.")
 
     def create_user(self, data):
         user = User.objects.create_user(
@@ -195,11 +233,42 @@ class Command(BaseCommand):
                     officer, created = Officer.objects.get_or_create(user=user, defaults={'department': department_object})
                     self.stdout.write(f"Officer '{user.username}' assigned to department: {department_object.name}.")
                 else:
-                    self.stdout.write(self.style.ERROR(f"Department '{data['department']}' not found for officer '{user.username}'."))    
+                    self.stdout.write(self.style.ERROR(f"Department '{data['department']}' not found for officer '{user.username}'."))   
 
+    def seed_random_user(self, is_staff=False, is_superuser=False, is_department_head=False, department=None):
+        """
+        Creates a User with the specified role and, if applicable, an Officer linked to a department.
+        """
+        first_name = self.faker.first_name()
+        last_name = self.faker.last_name()
+        username = self.create_username(first_name, last_name)
+        email = self.create_email(first_name, last_name)
 
+        # Create User
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=self.DEFAULT_PASSWORD,
+            first_name=first_name,
+            last_name=last_name,
+            is_staff=is_staff,
+            is_superuser=is_superuser
+        )
 
-    
+        # If the user is staff, create an Officer entry
+        if is_staff and department:
+            Officer.objects.create(
+                user=user,
+                department=department,
+                is_department_head=is_department_head
+            )
+            role = "Department Head" if is_department_head else "Officer"
+            self.stdout.write(f"Created {role} for '{department.name}': {user.username}")
+        else:
+            self.stdout.write(f"Created Student: {user.username}")
+
+        return user  # Return the created user object for further use if needed
+ 
 
     def seed_tickets(self):
         """
@@ -274,3 +343,12 @@ class Command(BaseCommand):
 
             self.stdout.write(f"Notification for user '{user.username}' on ticket '{ticket.subject}' added.")
         self.stdout.write("Notifications seeded.")
+
+    def create_username(first_name, last_name):
+        """Generate usernames for users."""
+        return '@' + first_name.lower() + last_name.lower()
+
+
+    def create_email(first_name, last_name):
+        """Generate emails for users."""
+        return first_name + '.' + last_name + '@example.org'

@@ -2,13 +2,20 @@ import React, { useState, useEffect } from "react";
 import { ACCESS_TOKEN } from "../constants";
 import api from "../api";
 import TicketsCard from "../components/TicketsCard";
-import UserDropdown from "../components/UserDropdown";
-import AddTicketPopup from "../components/AddTicketPopup";
-import OfficersDropdown from "../components/OfficersDropdown";
+import NewTicketButton from "../components/NewTicketButton";
+import GenericDropdown from "../components/GenericDropdown";
+import NotificationsTab from "../components/Notification";
+import TicketDetails from "../components/TicketDetails";
+import Popup from "../components/Popup";
 
 const Dashboard = () => {
   const [current_user, setCurrent_user] = useState(null);
   const [officers, setOfficers] = useState([]);
+  const [popupType, setPopupType] = useState(null);
+  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [isPopupOpen, setPopupOpen] = useState(false);
+
+
 
   const fetchCurrentUser = async () => {
     try {
@@ -40,6 +47,18 @@ const Dashboard = () => {
     }
   };
 
+  const openPopup = (type, ticket=null) => {
+    setPopupType(type);
+    setSelectedTicket(ticket);
+    setPopupOpen(true);
+  };
+
+  const closePopup = () => {
+    setPopupOpen(false);
+    setPopupType(null);
+    setSelectedTicket(null);
+  };
+
   useEffect(() => {
     fetchCurrentUser();
   }, []);
@@ -58,10 +77,34 @@ const Dashboard = () => {
 
   return (
     <div>
-      <UserDropdown user={current_user} />
-      {/* Pass current_user as a prop to TicketsCard */}
-      <TicketsCard user={current_user} officers={current_user.is_staff && !current_user.is_superuser ? officers : undefined} />
-      {!current_user.is_staff && <AddTicketPopup />}
+      <div className="flex justify-space-around items-center gap-x-5">
+        <div className="inline-block flex justify-center items-center">
+          {!current_user.is_staff && <NewTicketButton />}
+        </div>
+        <div className="flex items-stretch justify-between w-full mb-5">
+          <GenericDropdown
+            buttonName={current_user.username}
+            className="flex justify-center items-center gap-x-1.5 mb-5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50"
+          >
+            <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+            <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Support</a>
+            <a href="/logout" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</a> 
+          </GenericDropdown>
+
+          <NotificationsTab user={current_user}/>
+
+        </div>
+      </div>
+      <TicketsCard user={current_user} officers={current_user.is_staff && !current_user.is_superuser ? officers : undefined} openPopup={openPopup}/>
+
+
+      <Popup isOpen={isPopupOpen} onClose={closePopup}>
+        {popupType === "addTicket" && <AddTicketPopup />}
+        {popupType === "viewTicket" && selectedTicket && (
+          <TicketDetails ticket={selectedTicket} />
+        )}
+      </Popup>
+
     </div>
   );
 };

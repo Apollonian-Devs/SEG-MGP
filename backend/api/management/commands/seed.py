@@ -338,9 +338,13 @@ class Command(BaseCommand):
 
     def seed_users(self):
 
+        self.stdout.write("Seeding users...")
+
         self.generate_user_fixtures()
 
         # self.generate_random_users()
+
+        self.stdout.write("Users seeded.")
 
 
 

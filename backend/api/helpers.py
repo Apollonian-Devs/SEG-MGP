@@ -314,6 +314,15 @@ def get_officers_same_department(user):
     return Officer.objects.filter(department=officer.department).exclude(user=user)
 
 
+def changeTicketPriority(ticket, user):
+    pass
+
+
+def changeTicketStatus(ticket,user):
+    pass 
+
+
+
 
 
 

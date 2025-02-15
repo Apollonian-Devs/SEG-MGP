@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import api from "../api";
 import { ACCESS_TOKEN } from "../constants";
 import Chat from "./Chat";
-import OfficersDropdown from "../components/OfficersDropdown";
-import RedirectButton from "./RedirectButton";
 import GenericButton from "./GenericButton";
 import PopUp from "./Popup";
 
@@ -12,7 +10,6 @@ const TicketsCard = ({ user, officers, openPopup }) => {
   const [loading, setLoading] = useState(true);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const [selectedOfficer, setSelectedOfficer] = useState(null);
 
   // Sorting State
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
@@ -83,43 +80,46 @@ const TicketsCard = ({ user, officers, openPopup }) => {
                 <thead>
                   <tr>
                     <th className='px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase cursor-pointer'>
-                      <button
-                        className='flex items-center w-full gap-x-1'
-                        onClick={() => sortTickets("subject")}
-                      >
-                        <p>Subject</p>
-                        {sortConfig.key === "subject"
-                          ? sortConfig.direction === "asc"
-                            ? "▲"
-                            : "▼"
-                          : ""}
-                      </button>
+                    <GenericButton
+                      className="flex items-center w-full gap-x-1"
+                      onClick={() => sortTickets("subject")}
+                    >
+                      <p>Subject</p>
+                      {sortConfig.key === "subject"
+                        ? sortConfig.direction === "asc"
+                          ? "▲"
+                          : "▼"
+                        : ""}
+                    </GenericButton>
+
                     </th>
                     <th className='px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase cursor-pointer'>
-                      <button
-                        className='flex items-center w-full gap-x-1'
-                        onClick={() => sortTickets("status")}
-                      >
-                        <p>Status</p>
-                        {sortConfig.key === "status"
-                          ? sortConfig.direction === "asc"
-                            ? "▲"
-                            : "▼"
-                          : ""}
-                      </button>
+                    <GenericButton
+                      className="flex items-center w-full gap-x-1"
+                      onClick={() => sortTickets("status")}
+                    >
+                      <p>Status</p>
+                      {sortConfig.key === "status"
+                        ? sortConfig.direction === "asc"
+                          ? "▲"
+                          : "▼"
+                        : ""}
+                    </GenericButton>
+
                     </th>
                     <th className='px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase cursor-pointer'>
-                      <button
-                        className='flex items-center w-full gap-x-1'
-                        onClick={() => sortTickets("priority")}
-                      >
-                        <p>Priority</p>
-                        {sortConfig.key === "priority"
-                          ? sortConfig.direction === "asc"
-                            ? "▲"
-                            : "▼"
-                          : ""}
-                      </button>
+                    <GenericButton
+                      className="flex items-center w-full gap-x-1"
+                      onClick={() => sortTickets("priority")}
+                    >
+                      <p>Priority</p>
+                      {sortConfig.key === "priority"
+                        ? sortConfig.direction === "asc"
+                          ? "▲"
+                          : "▼"
+                        : ""}
+                    </GenericButton>
+
                     </th>
 
                     <th className='px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase'>

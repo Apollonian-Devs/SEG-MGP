@@ -9,21 +9,22 @@ const Chat = ({ ticket, onClose, user }) => {
   const [error, setError] = useState(null);
 
   // Fetch messages for the given ticket
-  useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        const access = localStorage.getItem(ACCESS_TOKEN);
-        const response = await api.get(`/api/tickets/${ticket.id}/messages/`, {
-          headers: { Authorization: `Bearer ${access}` },
-        });
-        setMessages(response.data.messages);
-      } catch (error) {
-        setError(error.response?.data || "Failed to fetch messages");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchMessages = async () => {
+    try {
+      const access = localStorage.getItem(ACCESS_TOKEN);
+      const response = await api.get(`/api/tickets/${ticket.id}/messages/`, {
+        headers: { Authorization: `Bearer ${access}` },
+      });
+      setMessages(response.data.messages);
+    } catch (error) {
+      setError(error.response?.data || "Failed to fetch messages");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  // ✅ Call fetchMessages in useEffect when the component loads
+  useEffect(() => {
     fetchMessages();
   }, [ticket.id]);
 
@@ -46,8 +47,11 @@ const Chat = ({ ticket, onClose, user }) => {
       // Clear the input field
       //setMessage_body("");
       //setError(null);
+      fetchMessages();
       setMessage_body("");
-      alert("Your message has been sent. Please reload the page")
+      
+
+      alert("Your message has been sent. Please reload the page to check any new messages.");
     } catch (err) {
       setError(err.response?.data || "Failed to send text");
     }
@@ -122,6 +126,7 @@ const Chat = ({ ticket, onClose, user }) => {
             <GenericButton 
               type="submit" 
               style={styles.sendButton} // Pass inline styles here
+
             >
             Send
           </GenericButton>

@@ -10,7 +10,7 @@ const NewTicketForm = () => {
     const[subject, setSubject] = useState("");
     const[description, setDescription] = useState("");
     const[message, setMessage] = useState("");
-    const[attachments, setAttachments] = useState(null);
+    const[attachments, setAttachments] = useState([]);
     const[loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
@@ -100,6 +100,7 @@ const NewTicketForm = () => {
                 type="file"
                 multiple={true}
                 onChange={handleFileChange}
+                placeholder="Optionally attach relevant files"
             />
 
 

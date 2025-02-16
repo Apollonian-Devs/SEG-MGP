@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import api from "../api";
 import { ACCESS_TOKEN } from "../constants";
 import Chat from "./Chat";
-import OfficersDropdown from "../components/OfficersDropdown";
-import RedirectButton from "./RedirectButton";
 import GenericButton from "./GenericButton";
 import PopUp from "./Popup";
 import GenericTable from "./GenericTable";
@@ -12,7 +10,6 @@ const TicketsCard = ({ user, officers, openPopup }) => {
   const [loading, setLoading] = useState(true);
   const [selectedTicket, setSelectedTicket] = useState(null); 
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const [selectedOfficer, setSelectedOfficer] = useState(null);
 
   // Sorting State
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });

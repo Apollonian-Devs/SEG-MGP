@@ -4,7 +4,12 @@ import { ACCESS_TOKEN } from "../constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell,faTimes } from "@fortawesome/free-solid-svg-icons";
 import Popup from "./Popup";
+<<<<<<< HEAD
 import GenericTable from "./GenericTable";
+=======
+import GenericButton from "./GenericButton";
+
+>>>>>>> origin/main
 const NotificationsTab = ({ user }) => {
     const [notifications, setNotifications] = useState([]);
     const [isPopupOpen, setShowNotifications] = useState(false);
@@ -71,10 +76,12 @@ const NotificationsTab = ({ user }) => {
     return (
       <>
       
-      <button className="w-20 rounded-l-full rounded-r-full text-white items-center justify-center bg-customOrange-dark hover:bg-customOrange-light" onClick={toggleNotifications}>
-        
-      <FontAwesomeIcon icon={faBell} />
-      </button>
+      <GenericButton 
+        className="w-20 rounded-l-full rounded-r-full text-white items-center justify-center bg-customOrange-dark hover:bg-customOrange-light"
+        onClick={toggleNotifications}
+      >
+        <FontAwesomeIcon icon={faBell} />
+      </GenericButton>
       
       <Popup
       isOpen={isPopupOpen}
@@ -82,9 +89,12 @@ const NotificationsTab = ({ user }) => {
       width="w-[80%]"
       height="h-[80%]"
       >
-          <button className="absolute top-4 left-4 w-20 h-10 bg-customOrange-dark text-white rounded-md"onClick={markAllRead}>
-          read all
-          </button>
+          <GenericButton 
+            className="absolute top-4 left-4 w-20 h-10 bg-customOrange-dark text-white rounded-md"
+            onClick={markAllRead}
+          >
+            Read All
+          </GenericButton>
           <div className="px-10 py-16 overflow-hidden">
           
           <GenericTable

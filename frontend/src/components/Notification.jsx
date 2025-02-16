@@ -4,12 +4,9 @@ import { ACCESS_TOKEN } from "../constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell,faTimes } from "@fortawesome/free-solid-svg-icons";
 import Popup from "./Popup";
-<<<<<<< HEAD
 import GenericTable from "./GenericTable";
-=======
 import GenericButton from "./GenericButton";
 
->>>>>>> origin/main
 const NotificationsTab = ({ user }) => {
     const [notifications, setNotifications] = useState([]);
     const [isPopupOpen, setShowNotifications] = useState(false);

@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import GenericTable from './GenericTable';
+import GenericTable from '../components/GenericTable';
 
 describe('GenericTable', () => {
   const columnDefinition = [

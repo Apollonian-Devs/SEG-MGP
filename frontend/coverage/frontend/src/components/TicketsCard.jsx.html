@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/155</span>
+                <span class='fraction'>0/146</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/155</span>
+                <span class='fraction'>0/146</span>
             </div>
         
             
@@ -236,26 +236,12 @@
 <a name='L171'></a><a href='#L171'>171</a>
 <a name='L172'></a><a href='#L172'>172</a>
 <a name='L173'></a><a href='#L173'>173</a>
-<a name='L174'></a><a href='#L174'>174</a>
-<a name='L175'></a><a href='#L175'>175</a>
-<a name='L176'></a><a href='#L176'>176</a>
-<a name='L177'></a><a href='#L177'>177</a>
-<a name='L178'></a><a href='#L178'>178</a>
-<a name='L179'></a><a href='#L179'>179</a>
-<a name='L180'></a><a href='#L180'>180</a>
-<a name='L181'></a><a href='#L181'>181</a>
-<a name='L182'></a><a href='#L182'>182</a>
-<a name='L183'></a><a href='#L183'>183</a>
-<a name='L184'></a><a href='#L184'>184</a>
-<a name='L185'></a><a href='#L185'>185</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L174'></a><a href='#L174'>174</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -334,7 +320,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -379,17 +364,11 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -418,10 +397,9 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -435,17 +413,14 @@
 <span class="cstat-no" title="statement not covered" >import api from "../api";</span>
 <span class="cstat-no" title="statement not covered" >import { ACCESS_TOKEN } from "../constants";</span>
 <span class="cstat-no" title="statement not covered" >import Chat from "./Chat";</span>
-<span class="cstat-no" title="statement not covered" >import OfficersDropdown from "../components/OfficersDropdown";</span>
-<span class="cstat-no" title="statement not covered" >import RedirectButton from "./RedirectButton";</span>
 <span class="cstat-no" title="statement not covered" >import GenericButton from "./GenericButton";</span>
 <span class="cstat-no" title="statement not covered" >import PopUp from "./Popup";</span>
-&nbsp;
+<span class="cstat-no" title="statement not covered" >import GenericTable from "./GenericTable";</span>
 <span class="cstat-no" title="statement not covered" >const TicketsCard = ({ user, officers, openPopup }) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  const [tickets, setTickets] = useState([]);</span>
 <span class="cstat-no" title="statement not covered" >  const [loading, setLoading] = useState(true);</span>
-<span class="cstat-no" title="statement not covered" >  const [selectedTicket, setSelectedTicket] = useState(null);</span>
+<span class="cstat-no" title="statement not covered" >  const [selectedTicket, setSelectedTicket] = useState(null); </span>
 <span class="cstat-no" title="statement not covered" >  const [isChatOpen, setIsChatOpen] = useState(false);</span>
-<span class="cstat-no" title="statement not covered" >  const [selectedOfficer, setSelectedOfficer] = useState(null);</span>
 &nbsp;
   // Sorting State
 <span class="cstat-no" title="statement not covered" >  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });</span>
@@ -512,10 +487,9 @@
 <span class="cstat-no" title="statement not covered" >          &lt;div className='p-10 min-w-full inline-block align-middle'&gt;</span>
 <span class="cstat-no" title="statement not covered" >            &lt;h1 className='flex w-full text-center mb-5'&gt;Tickets&lt;/h1&gt;</span>
 <span class="cstat-no" title="statement not covered" >            &lt;div className=''&gt;</span>
-<span class="cstat-no" title="statement not covered" >              &lt;table className='min-w-full divide-y divide-gray-200'&gt;</span>
-<span class="cstat-no" title="statement not covered" >                &lt;thead&gt;</span>
-<span class="cstat-no" title="statement not covered" >                  &lt;tr&gt;</span>
-<span class="cstat-no" title="statement not covered" >                    &lt;th className='px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase cursor-pointer'&gt;</span>
+<span class="cstat-no" title="statement not covered" >              &lt;GenericTable</span>
+<span class="cstat-no" title="statement not covered" >                columnDefinition={[</span>
+<span class="cstat-no" title="statement not covered" >                  &lt;th className='px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase cursor-pointer'&gt;</span>
 <span class="cstat-no" title="statement not covered" >                      &lt;button</span>
 <span class="cstat-no" title="statement not covered" >                        className='flex items-center w-full gap-x-1'</span>
 <span class="cstat-no" title="statement not covered" >                        onClick={() =&gt; sortTickets("subject")}</span>
@@ -527,7 +501,7 @@
 <span class="cstat-no" title="statement not covered" >                            : "▼"</span>
 <span class="cstat-no" title="statement not covered" >                          : ""}</span>
 <span class="cstat-no" title="statement not covered" >                      &lt;/button&gt;</span>
-<span class="cstat-no" title="statement not covered" >                    &lt;/th&gt;</span>
+<span class="cstat-no" title="statement not covered" >                    &lt;/th&gt;,</span>
 <span class="cstat-no" title="statement not covered" >                    &lt;th className='px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase cursor-pointer'&gt;</span>
 <span class="cstat-no" title="statement not covered" >                      &lt;button</span>
 <span class="cstat-no" title="statement not covered" >                        className='flex items-center w-full gap-x-1'</span>
@@ -540,7 +514,7 @@
 <span class="cstat-no" title="statement not covered" >                            : "▼"</span>
 <span class="cstat-no" title="statement not covered" >                          : ""}</span>
 <span class="cstat-no" title="statement not covered" >                      &lt;/button&gt;</span>
-<span class="cstat-no" title="statement not covered" >                    &lt;/th&gt;</span>
+<span class="cstat-no" title="statement not covered" >                    &lt;/th&gt;,</span>
 <span class="cstat-no" title="statement not covered" >                    &lt;th className='px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase cursor-pointer'&gt;</span>
 <span class="cstat-no" title="statement not covered" >                      &lt;button</span>
 <span class="cstat-no" title="statement not covered" >                        className='flex items-center w-full gap-x-1'</span>
@@ -553,59 +527,52 @@
 <span class="cstat-no" title="statement not covered" >                            : "▼"</span>
 <span class="cstat-no" title="statement not covered" >                          : ""}</span>
 <span class="cstat-no" title="statement not covered" >                      &lt;/button&gt;</span>
-<span class="cstat-no" title="statement not covered" >                    &lt;/th&gt;</span>
+<span class="cstat-no" title="statement not covered" >                    &lt;/th&gt;,</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >                    &lt;th className='px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase'&gt;</span>
 <span class="cstat-no" title="statement not covered" >                      &lt;p&gt;Actions&lt;/p&gt;</span>
-<span class="cstat-no" title="statement not covered" >                    &lt;/th&gt;</span>
+<span class="cstat-no" title="statement not covered" >                    &lt;/th&gt;,</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >                    {user.is_staff &amp;&amp; (</span>
+<span class="cstat-no" title="statement not covered" >                    user.is_staff? (</span>
 <span class="cstat-no" title="statement not covered" >                      &lt;th className='px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase'&gt;</span>
                         Redirect
 <span class="cstat-no" title="statement not covered" >                      &lt;/th&gt;</span>
-                    )}
+<span class="cstat-no" title="statement not covered" >                    ): (null)</span>
+<span class="cstat-no" title="statement not covered" >                ].filter(Boolean)}</span>
+               
+<span class="cstat-no" title="statement not covered" >                data={tickets}</span>
+<span class="cstat-no" title="statement not covered" >                dataName = 'tickets'</span>
+<span class="cstat-no" title="statement not covered" >                rowDefinition={(ticket) =&gt; (</span>
+<span class="cstat-no" title="statement not covered" >                  &lt;tr</span>
+<span class="cstat-no" title="statement not covered" >                    key={ticket.id}</span>
+<span class="cstat-no" title="statement not covered" >                    className='hover:bg-gray-100 cursor-pointer'</span>
+<span class="cstat-no" title="statement not covered" >                    onClick={() =&gt; openPopup("viewTicket", ticket)}</span>
+                  &gt;
+<span class="cstat-no" title="statement not covered" >                    &lt;td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800'&gt;</span>
+<span class="cstat-no" title="statement not covered" >                      {ticket.subject}</span>
+<span class="cstat-no" title="statement not covered" >                    &lt;/td&gt;</span>
+<span class="cstat-no" title="statement not covered" >                    &lt;td className='px-6 py-4 whitespace-nowrap text-sm text-gray-800'&gt;</span>
+<span class="cstat-no" title="statement not covered" >                      {ticket.status}</span>
+<span class="cstat-no" title="statement not covered" >                    &lt;/td&gt;</span>
+<span class="cstat-no" title="statement not covered" >                    &lt;td className='px-6 py-4 whitespace-nowrap text-sm text-gray-800'&gt;</span>
+<span class="cstat-no" title="statement not covered" >                      {ticket.priority || "Not Set"}</span>
+<span class="cstat-no" title="statement not covered" >                    &lt;/td&gt;</span>
+<span class="cstat-no" title="statement not covered" >                    &lt;td className='px-6 py-4 whitespace-nowrap text-end text-sm font-medium'&gt;</span>
+<span class="cstat-no" title="statement not covered" >                      &lt;GenericButton</span>
+<span class="cstat-no" title="statement not covered" >                        className='text-blue-600 hover:text-blue-800'</span>
+<span class="cstat-no" title="statement not covered" >                        onClick={(e) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >                          e.stopPropagation();</span>
+<span class="cstat-no" title="statement not covered" >                          setSelectedTicket(ticket);</span>
+<span class="cstat-no" title="statement not covered" >                          setIsChatOpen(true);</span>
+<span class="cstat-no" title="statement not covered" >                        }}</span>
+<span class="cstat-no" title="statement not covered" >                      &gt;</span>
+                        Chat
+<span class="cstat-no" title="statement not covered" >                      &lt;/GenericButton&gt;</span>
+<span class="cstat-no" title="statement not covered" >                    &lt;/td&gt;</span>
 <span class="cstat-no" title="statement not covered" >                  &lt;/tr&gt;</span>
-<span class="cstat-no" title="statement not covered" >                &lt;/thead&gt;</span>
-<span class="cstat-no" title="statement not covered" >                &lt;tbody className='divide-y divide-gray-200'&gt;</span>
-<span class="cstat-no" title="statement not covered" >                  {tickets.length === 0 ? (</span>
-<span class="cstat-no" title="statement not covered" >                    &lt;tr&gt;</span>
-<span class="cstat-no" title="statement not covered" >                      &lt;td colSpan='5' className='px-6 py-4 text-center text-gray-500'&gt;</span>
-                        No tickets found.
-<span class="cstat-no" title="statement not covered" >                      &lt;/td&gt;</span>
-<span class="cstat-no" title="statement not covered" >                    &lt;/tr&gt;</span>
-                  ) : (
-<span class="cstat-no" title="statement not covered" >                    tickets.map((ticket) =&gt; (</span>
-<span class="cstat-no" title="statement not covered" >                      &lt;tr</span>
-<span class="cstat-no" title="statement not covered" >                        key={ticket.id}</span>
-<span class="cstat-no" title="statement not covered" >                        className='hover:bg-gray-100 cursor-pointer'</span>
-<span class="cstat-no" title="statement not covered" >                        onClick={() =&gt; openPopup("viewTicket", ticket)}</span>
-                      &gt;
-<span class="cstat-no" title="statement not covered" >                        &lt;td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800'&gt;</span>
-<span class="cstat-no" title="statement not covered" >                          {ticket.subject}</span>
-<span class="cstat-no" title="statement not covered" >                        &lt;/td&gt;</span>
-<span class="cstat-no" title="statement not covered" >                        &lt;td className='px-6 py-4 whitespace-nowrap text-sm text-gray-800'&gt;</span>
-<span class="cstat-no" title="statement not covered" >                          {ticket.status}</span>
-<span class="cstat-no" title="statement not covered" >                        &lt;/td&gt;</span>
-<span class="cstat-no" title="statement not covered" >                        &lt;td className='px-6 py-4 whitespace-nowrap text-sm text-gray-800'&gt;</span>
-<span class="cstat-no" title="statement not covered" >                          {ticket.priority || "Not Set"}</span>
-<span class="cstat-no" title="statement not covered" >                        &lt;/td&gt;</span>
-<span class="cstat-no" title="statement not covered" >                        &lt;td className='px-6 py-4 whitespace-nowrap text-end text-sm font-medium'&gt;</span>
-<span class="cstat-no" title="statement not covered" >                          &lt;GenericButton</span>
-<span class="cstat-no" title="statement not covered" >                            className='text-blue-600 hover:text-blue-800'</span>
-<span class="cstat-no" title="statement not covered" >                            onClick={(e) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >                              e.stopPropagation();</span>
-<span class="cstat-no" title="statement not covered" >                              setSelectedTicket(ticket);</span>
-<span class="cstat-no" title="statement not covered" >                              setIsChatOpen(true);</span>
-<span class="cstat-no" title="statement not covered" >                            }}</span>
-<span class="cstat-no" title="statement not covered" >                          &gt;</span>
-                            Chat
-<span class="cstat-no" title="statement not covered" >                          &lt;/GenericButton&gt;</span>
-<span class="cstat-no" title="statement not covered" >                        &lt;/td&gt;</span>
-<span class="cstat-no" title="statement not covered" >                      &lt;/tr&gt;</span>
-<span class="cstat-no" title="statement not covered" >                    ))</span>
-                  )}
-<span class="cstat-no" title="statement not covered" >                &lt;/tbody&gt;</span>
-<span class="cstat-no" title="statement not covered" >              &lt;/table&gt;</span>
+                )} 
+<span class="cstat-no" title="statement not covered" >              /&gt;</span>
+              
 <span class="cstat-no" title="statement not covered" >            &lt;/div&gt;</span>
 <span class="cstat-no" title="statement not covered" >          &lt;/div&gt;</span>
 <span class="cstat-no" title="statement not covered" >        &lt;/div&gt;</span>
@@ -622,7 +589,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-02-14T13:18:52.298Z
+                at 2025-02-16T19:55:51.534Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

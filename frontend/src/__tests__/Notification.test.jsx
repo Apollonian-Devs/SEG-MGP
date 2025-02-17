@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, beforeEach } from 'vitest';
 import NotificationsTab from '../components/Notification';
 import api from "../api";
-import { ACCESS_TOKEN } from "../constants";
+
 
 vi.mock("../api");
 

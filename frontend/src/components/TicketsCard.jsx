@@ -45,7 +45,7 @@ const TicketsCard = ({ user, officers, openPopup }) => {
       const valueA = a[key] ?? ""; // Treat null/undefined as an empty string
       const valueB = b[key] ?? "";
 
-      if (valueA < valueB) return direction === "asc" ? -1 : 1;
+      if (valueA < valueB) return -1;
       if (valueA > valueB) return direction === "asc" ? 1 : -1;
       return 0;
     });

@@ -27,10 +27,10 @@ describe('GenericTable', () => {
       rowDefinition = {rowDefinition}
       />
     )
-    expect(screen.getByText('row 1 column 1')).toBeTruthy();
-    expect(screen.getByText('row 1 column 2')).toBeTruthy();
-    expect(screen.getByText('row 2 column 1')).toBeTruthy();
-    expect(screen.getByText('row 2 column 2')).toBeTruthy();
+    expect(screen.getByText('row 1 column 1')).toBeInTheDocument();
+    expect(screen.getByText('row 1 column 2')).toBeInTheDocument();
+    expect(screen.getByText('row 2 column 1')).toBeInTheDocument();
+    expect(screen.getByText('row 2 column 2')).toBeInTheDocument();
   }
 
   );
@@ -44,7 +44,7 @@ describe('GenericTable', () => {
       rowDefinition = {rowDefinition}
       />
     )
-    expect(screen.getByText('No test data found.')).toBeTruthy();
+    expect(screen.getByText('No test data found.')).toBeInTheDocument();
   }
 
   )

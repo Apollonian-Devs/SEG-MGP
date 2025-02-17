@@ -30,7 +30,7 @@ const NotificationsTab = ({ user }) => {
       if (clickedNotifications.size>0){
         try {
           const access = localStorage.getItem(ACCESS_TOKEN);
-          clickedNotifications.forEach(async (entry) => {
+          for (let entry of clickedNotifications) {
             await api.post(`/api/user-notifications/`,
               { id: entry },
                {
@@ -38,7 +38,7 @@ const NotificationsTab = ({ user }) => {
                 Authorization: `Bearer ${access}`,
               },
             })  
-          });
+          };
           
         } catch (error) {
           console.error("Error marking notifications as read:", error.response?.data || error.message);

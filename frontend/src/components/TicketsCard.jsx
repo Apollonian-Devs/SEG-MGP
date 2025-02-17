@@ -79,7 +79,7 @@ const TicketsCard = ({ user, officers, openPopup }) => {
               <GenericTable
                 columnDefinition={[
                   <th className='px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase cursor-pointer'>
-                      <button
+                      <GenericButton
                         className='flex items-center w-full gap-x-1'
                         onClick={() => sortTickets("subject")}
                       >
@@ -89,10 +89,10 @@ const TicketsCard = ({ user, officers, openPopup }) => {
                             ? "▲"
                             : "▼"
                           : ""}
-                      </button>
+                      </GenericButton>
                     </th>,
                     <th className='px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase cursor-pointer'>
-                      <button
+                      <GenericButton
                         className='flex items-center w-full gap-x-1'
                         onClick={() => sortTickets("status")}
                       >
@@ -102,10 +102,10 @@ const TicketsCard = ({ user, officers, openPopup }) => {
                             ? "▲"
                             : "▼"
                           : ""}
-                      </button>
+                      </GenericButton>
                     </th>,
                     <th className='px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase cursor-pointer'>
-                      <button
+                      <GenericButton
                         className='flex items-center w-full gap-x-1'
                         onClick={() => sortTickets("priority")}
                       >
@@ -115,7 +115,7 @@ const TicketsCard = ({ user, officers, openPopup }) => {
                             ? "▲"
                             : "▼"
                           : ""}
-                      </button>
+                      </GenericButton>
                     </th>,
 
                     <th className='px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase'>

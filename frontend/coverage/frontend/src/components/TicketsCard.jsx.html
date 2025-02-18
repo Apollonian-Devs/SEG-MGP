@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/155</span>
+                <span class='fraction'>0/152</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/155</span>
+                <span class='fraction'>0/152</span>
             </div>
         
             
@@ -253,10 +253,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -343,6 +340,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -356,6 +354,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -369,6 +368,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -435,8 +435,6 @@
 <span class="cstat-no" title="statement not covered" >import api from "../api";</span>
 <span class="cstat-no" title="statement not covered" >import { ACCESS_TOKEN } from "../constants";</span>
 <span class="cstat-no" title="statement not covered" >import Chat from "./Chat";</span>
-<span class="cstat-no" title="statement not covered" >import OfficersDropdown from "../components/OfficersDropdown";</span>
-<span class="cstat-no" title="statement not covered" >import RedirectButton from "./RedirectButton";</span>
 <span class="cstat-no" title="statement not covered" >import GenericButton from "./GenericButton";</span>
 <span class="cstat-no" title="statement not covered" >import PopUp from "./Popup";</span>
 &nbsp;
@@ -445,7 +443,6 @@
 <span class="cstat-no" title="statement not covered" >  const [loading, setLoading] = useState(true);</span>
 <span class="cstat-no" title="statement not covered" >  const [selectedTicket, setSelectedTicket] = useState(null);</span>
 <span class="cstat-no" title="statement not covered" >  const [isChatOpen, setIsChatOpen] = useState(false);</span>
-<span class="cstat-no" title="statement not covered" >  const [selectedOfficer, setSelectedOfficer] = useState(null);</span>
 &nbsp;
   // Sorting State
 <span class="cstat-no" title="statement not covered" >  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });</span>
@@ -516,43 +513,46 @@
 <span class="cstat-no" title="statement not covered" >                &lt;thead&gt;</span>
 <span class="cstat-no" title="statement not covered" >                  &lt;tr&gt;</span>
 <span class="cstat-no" title="statement not covered" >                    &lt;th className='px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase cursor-pointer'&gt;</span>
-<span class="cstat-no" title="statement not covered" >                      &lt;button</span>
-<span class="cstat-no" title="statement not covered" >                        className='flex items-center w-full gap-x-1'</span>
-<span class="cstat-no" title="statement not covered" >                        onClick={() =&gt; sortTickets("subject")}</span>
-                      &gt;
-<span class="cstat-no" title="statement not covered" >                        &lt;p&gt;Subject&lt;/p&gt;</span>
-<span class="cstat-no" title="statement not covered" >                        {sortConfig.key === "subject"</span>
-<span class="cstat-no" title="statement not covered" >                          ? sortConfig.direction === "asc"</span>
-<span class="cstat-no" title="statement not covered" >                            ? "▲"</span>
-<span class="cstat-no" title="statement not covered" >                            : "▼"</span>
-<span class="cstat-no" title="statement not covered" >                          : ""}</span>
-<span class="cstat-no" title="statement not covered" >                      &lt;/button&gt;</span>
+<span class="cstat-no" title="statement not covered" >                    &lt;GenericButton</span>
+<span class="cstat-no" title="statement not covered" >                      className="flex items-center w-full gap-x-1"</span>
+<span class="cstat-no" title="statement not covered" >                      onClick={() =&gt; sortTickets("subject")}</span>
+                    &gt;
+<span class="cstat-no" title="statement not covered" >                      &lt;p&gt;Subject&lt;/p&gt;</span>
+<span class="cstat-no" title="statement not covered" >                      {sortConfig.key === "subject"</span>
+<span class="cstat-no" title="statement not covered" >                        ? sortConfig.direction === "asc"</span>
+<span class="cstat-no" title="statement not covered" >                          ? "▲"</span>
+<span class="cstat-no" title="statement not covered" >                          : "▼"</span>
+<span class="cstat-no" title="statement not covered" >                        : ""}</span>
+<span class="cstat-no" title="statement not covered" >                    &lt;/GenericButton&gt;</span>
+&nbsp;
 <span class="cstat-no" title="statement not covered" >                    &lt;/th&gt;</span>
 <span class="cstat-no" title="statement not covered" >                    &lt;th className='px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase cursor-pointer'&gt;</span>
-<span class="cstat-no" title="statement not covered" >                      &lt;button</span>
-<span class="cstat-no" title="statement not covered" >                        className='flex items-center w-full gap-x-1'</span>
-<span class="cstat-no" title="statement not covered" >                        onClick={() =&gt; sortTickets("status")}</span>
-                      &gt;
-<span class="cstat-no" title="statement not covered" >                        &lt;p&gt;Status&lt;/p&gt;</span>
-<span class="cstat-no" title="statement not covered" >                        {sortConfig.key === "status"</span>
-<span class="cstat-no" title="statement not covered" >                          ? sortConfig.direction === "asc"</span>
-<span class="cstat-no" title="statement not covered" >                            ? "▲"</span>
-<span class="cstat-no" title="statement not covered" >                            : "▼"</span>
-<span class="cstat-no" title="statement not covered" >                          : ""}</span>
-<span class="cstat-no" title="statement not covered" >                      &lt;/button&gt;</span>
+<span class="cstat-no" title="statement not covered" >                    &lt;GenericButton</span>
+<span class="cstat-no" title="statement not covered" >                      className="flex items-center w-full gap-x-1"</span>
+<span class="cstat-no" title="statement not covered" >                      onClick={() =&gt; sortTickets("status")}</span>
+                    &gt;
+<span class="cstat-no" title="statement not covered" >                      &lt;p&gt;Status&lt;/p&gt;</span>
+<span class="cstat-no" title="statement not covered" >                      {sortConfig.key === "status"</span>
+<span class="cstat-no" title="statement not covered" >                        ? sortConfig.direction === "asc"</span>
+<span class="cstat-no" title="statement not covered" >                          ? "▲"</span>
+<span class="cstat-no" title="statement not covered" >                          : "▼"</span>
+<span class="cstat-no" title="statement not covered" >                        : ""}</span>
+<span class="cstat-no" title="statement not covered" >                    &lt;/GenericButton&gt;</span>
+&nbsp;
 <span class="cstat-no" title="statement not covered" >                    &lt;/th&gt;</span>
 <span class="cstat-no" title="statement not covered" >                    &lt;th className='px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase cursor-pointer'&gt;</span>
-<span class="cstat-no" title="statement not covered" >                      &lt;button</span>
-<span class="cstat-no" title="statement not covered" >                        className='flex items-center w-full gap-x-1'</span>
-<span class="cstat-no" title="statement not covered" >                        onClick={() =&gt; sortTickets("priority")}</span>
-                      &gt;
-<span class="cstat-no" title="statement not covered" >                        &lt;p&gt;Priority&lt;/p&gt;</span>
-<span class="cstat-no" title="statement not covered" >                        {sortConfig.key === "priority"</span>
-<span class="cstat-no" title="statement not covered" >                          ? sortConfig.direction === "asc"</span>
-<span class="cstat-no" title="statement not covered" >                            ? "▲"</span>
-<span class="cstat-no" title="statement not covered" >                            : "▼"</span>
-<span class="cstat-no" title="statement not covered" >                          : ""}</span>
-<span class="cstat-no" title="statement not covered" >                      &lt;/button&gt;</span>
+<span class="cstat-no" title="statement not covered" >                    &lt;GenericButton</span>
+<span class="cstat-no" title="statement not covered" >                      className="flex items-center w-full gap-x-1"</span>
+<span class="cstat-no" title="statement not covered" >                      onClick={() =&gt; sortTickets("priority")}</span>
+                    &gt;
+<span class="cstat-no" title="statement not covered" >                      &lt;p&gt;Priority&lt;/p&gt;</span>
+<span class="cstat-no" title="statement not covered" >                      {sortConfig.key === "priority"</span>
+<span class="cstat-no" title="statement not covered" >                        ? sortConfig.direction === "asc"</span>
+<span class="cstat-no" title="statement not covered" >                          ? "▲"</span>
+<span class="cstat-no" title="statement not covered" >                          : "▼"</span>
+<span class="cstat-no" title="statement not covered" >                        : ""}</span>
+<span class="cstat-no" title="statement not covered" >                    &lt;/GenericButton&gt;</span>
+&nbsp;
 <span class="cstat-no" title="statement not covered" >                    &lt;/th&gt;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >                    &lt;th className='px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase'&gt;</span>
@@ -622,7 +622,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-02-14T13:18:52.298Z
+                at 2025-02-18T01:22:15.837Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, getByRole} from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import GenericForm from '../components/GenericForm';
 
 describe('GenericForm Component', () => {
@@ -27,7 +27,7 @@ describe('GenericForm Component', () => {
 
     render (<GenericForm onSubmit={mockOnSubmit}> Test Form </GenericForm>);
 
-    const form = screen.getByText('Test Form');
+    const form = screen.getByTestId('generic-form');
 
     fireEvent.submit(form);
 

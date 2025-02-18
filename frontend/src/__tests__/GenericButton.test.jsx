@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import GenericButton from '../components/GenericButton';
 
 describe('GenericButton Component', () => {
@@ -6,4 +6,39 @@ describe('GenericButton Component', () => {
     render(<GenericButton>Click Me</GenericButton>);
     expect(screen.getByText('Click Me')).toBeInTheDocument();
   });
+
+  it('uses default props when none are provided', () => {
+    render(<GenericButton>Click Me</GenericButton>);
+    expect(screen.getByText('Click Me')).toHaveAttribute('type', 'button'); // Default type check
+  });
+
+  it('renders with correct class', () => {
+    render(<GenericButton className="btn">Click Me</GenericButton>);
+    expect(screen.getByText('Click Me')).toHaveClass('btn');
+  });
+
+  it('renders with correct type', () => {
+    render(<GenericButton type="submit">Click Me</GenericButton>);
+    expect(screen.getByText('Click Me')).toHaveAttribute('type', 'submit');
+  });
+
+  it('renders with correct style', () => {
+    render(<GenericButton style={{ color: 'red' }}>Click Me</GenericButton>);
+    expect(screen.getByText('Click Me')).toHaveStyle({ color: 'rgb(255, 0, 0)' });
+  });  
+  
+
+  it('calls onClick when clicked', () => {
+    const onClick = vi.fn();
+    render(<GenericButton onClick={onClick}>Click Me</GenericButton>);
+    fireEvent.click(screen.getByText('Click Me'));
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it('renders multiple children correctly', () => {
+    render(<GenericButton><span>Click</span> <strong>Me</strong></GenericButton>);
+    expect(screen.getByText('Click')).toBeInTheDocument();
+    expect(screen.getByText('Me')).toBeInTheDocument();
+  });
+
 });

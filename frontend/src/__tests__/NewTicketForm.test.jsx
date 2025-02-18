@@ -23,7 +23,7 @@ describe(NewTicketForm, () => {
     
     it("New ticket form should be correctly rendered", () => {
         render(<MemoryRouter><NewTicketForm /></MemoryRouter>);
-        const form = screen.getByText("Send Query");
+        const form = screen.getByText(/send query/i);
         expect(form).toBeInTheDocument();
     });
 
@@ -53,7 +53,6 @@ describe(NewTicketForm, () => {
         await user.upload(attachments, file);
 
         await user.click(screen.getByRole('button', {name: /send ticket/i}));
-        //
 
         // Testing submission of form
         expect(api.post).toHaveBeenCalledTimes(1);
@@ -102,7 +101,6 @@ describe(NewTicketForm, () => {
         await user.upload(attachments, file);
 
         await user.click(screen.getByRole('button', {name: /send ticket/i}));
-        // 
 
         expect(consoleError).toHaveBeenCalledWith("Error submitting ticket:", expect.any(Error));
         

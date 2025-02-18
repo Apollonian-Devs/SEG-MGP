@@ -35,9 +35,7 @@ const LoginForm = () => {
   return (
     <>
       <h1 className='text-left mb-10'>Sign in</h1>
-      <GenericForm className='space-y-3' onSubmit={handleSubmit} buttonLabel="Sign in">
-        
-          
+      <GenericForm className='space-y-3' onSubmit={handleSubmit} buttonLabel="Sign in" data-testid="login-form">
 
           <GenericInput
             label="Username"
@@ -46,9 +44,7 @@ const LoginForm = () => {
             onChange={(e) => setUsername(e.target.value)}
             placeholder="Enter your username"
           ></GenericInput>
-        
-            
-          
+
           <GenericInput
             label="Password"
             labelClass="block text-sm font-medium text-black"
@@ -58,7 +54,6 @@ const LoginForm = () => {
             placeholder="Enter your username"
           ></GenericInput>
           
-          
           <a href='#' className='text-xs text-customOrange-dark hover:text-customOrange-light'>
               Forgot password?
           </a>
@@ -66,15 +61,6 @@ const LoginForm = () => {
         
         {error && <p className='text-red-500'>{error}</p>}
         
-        {/* <div>
-        <GenericButton
-          type="submit"
-          className="flex w-full justify-center rounded-md bg-customOrange-dark mt-5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-customOrange-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-customOrange-dark"
-        >
-          Sign in
-        </GenericButton>
-
-        </div> */}
       </GenericForm>
     </>
   );

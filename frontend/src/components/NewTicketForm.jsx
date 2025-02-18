@@ -64,7 +64,6 @@ const NewTicketForm = () => {
         <h1 className='text-left font-poppins mb-10'> Send Query </h1>
         <GenericForm className='space-y-3' onSubmit={handleSubmit} buttonLabel="Send Ticket">
             
-
             <GenericInput 
                 label="Subject" 
                 type="text" 
@@ -72,8 +71,6 @@ const NewTicketForm = () => {
                 onChange={(e) => setSubject(e.target.value)}
                 placeholder="Enter the subject of your query"
             ></GenericInput>
-
-           
 
             <GenericInput 
                 label="Description" 
@@ -83,8 +80,6 @@ const NewTicketForm = () => {
                 placeholder="Enter the description of your query"
             ></GenericInput>
 
-            
-
             <GenericInput 
                 label="Message" 
                 type="text" 
@@ -93,8 +88,6 @@ const NewTicketForm = () => {
                 placeholder="Enter your message to the team"
             ></GenericInput>
 
-            
-
             <GenericInput
                 label="Attachments"
                 type="file"
@@ -102,16 +95,7 @@ const NewTicketForm = () => {
                 onChange={handleFileChange}
                 placeholder="Optionally attach relevant files"
             />
-
-
-            {/* <GenericButton
-                type="submit"
-                className='flex w-full justify-center rounded-md bg-customOrange-dark mt-5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-customOrange-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-customOrange-dark'
-            >
-                Send Ticket
-            </GenericButton> */}
         </GenericForm>
-        
         </>
     )
 }

@@ -45,9 +45,11 @@ const TicketsCard = ({ user, officers, openPopup }) => {
       const valueA = a[key] ?? ""; // Treat null/undefined as an empty string
       const valueB = b[key] ?? "";
 
-      if (valueA < valueB) return -1;
-      if (valueA > valueB) return direction === "asc" ? 1 : -1;
-      return 0;
+      // if (valueA < valueB) return -1;
+      // if (valueA > valueB) return direction === "asc" ? 1 : -1;
+      // return 0;
+      return (valueA < valueB ? -1 : valueA > valueB ? 1 : 0) * (direction === "asc" ? 1 : -1);
+  
     });
 
     setTickets(sortedTickets);

@@ -1,8 +1,9 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
-import { MemoryRouter, Navigate } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "../components/ProtectedRoute";
 import Dashboard from "../pages/Dashboard";
+import Home from "../pages/Home";
 import App from "../App";
 
 
@@ -108,21 +109,27 @@ describe("ProtectedRoute", () => {
 
     it("redirects to home if user is unauthorized", async () => {
         localStorage.clear();
-
+    
         render(
             <MemoryRouter initialEntries={["/dashboard"]}>
-                <ProtectedRoute>
-                    <Dashboard />
-                </ProtectedRoute>
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route
+                        path="/dashboard"
+                        element={
+                            <ProtectedRoute>
+                                <Dashboard />
+                            </ProtectedRoute>
+                        }
+                    />
+                </Routes>
             </MemoryRouter>
         );
-        
-        // NOT WORKING
-        // supposed to render Home page
-        // but instead gets:
-        //  <body>
-        //  <div />
-        //  </body>
-        //await waitFor(() => expect(screen.getByText(/Welcome to Name/i)).toBeInTheDocument());
+    
+        await waitFor(() => {
+            expect(screen.queryByText(/Welcome to Name/i)).toBeInTheDocument();
+        });
+    
+        expect(window.location.pathname).toBe("/");
     });
 });

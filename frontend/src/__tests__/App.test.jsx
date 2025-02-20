@@ -70,17 +70,17 @@ describe('Logout', () => {
 });
 
 describe('RegisterAndLogout', () => {
-    it('clears localStorage and renders the Register component when visiting /logout', () => {
+    it('navigating to /register clears localStorage and renders Register page', () => {
         vi.spyOn(Storage.prototype, 'clear');
       
         render(
-          <MemoryRouter initialEntries={["/logout"]}>
+          <MemoryRouter initialEntries={["/register"]}>
             <App />
           </MemoryRouter>
         );
       
         expect(localStorage.clear).toHaveBeenCalled();
-        expect(screen.getByText(/Register/i)).toBeInTheDocument();
+        expect(screen.getByTestId("register-component")).toBeInTheDocument();
     });
 });
 

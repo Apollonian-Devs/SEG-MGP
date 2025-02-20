@@ -69,6 +69,10 @@ coverage.xml
 .pytest_cache/
 cover/
 
+# Ignore coverage reports
+frontend/coverage/
+
+
 # Translations
 *.mo
 

@@ -10,7 +10,7 @@ const NewTicketForm = () => {
     const[subject, setSubject] = useState("");
     const[description, setDescription] = useState("");
     const[message, setMessage] = useState("");
-    const[attachments, setAttachments] = useState(null);
+    const[attachments, setAttachments] = useState([]);
     const[loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
@@ -64,8 +64,8 @@ const NewTicketForm = () => {
         <h1 className='text-left font-poppins mb-10'> Send Query </h1>
         <GenericForm className='space-y-3' onSubmit={handleSubmit} buttonLabel="Send Ticket">
             
-
             <GenericInput 
+                id="subject"
                 label="Subject" 
                 type="text" 
                 required={true} 
@@ -73,9 +73,8 @@ const NewTicketForm = () => {
                 placeholder="Enter the subject of your query"
             ></GenericInput>
 
-           
-
             <GenericInput 
+                id="description"
                 label="Description" 
                 type="text" 
                 required={true} 
@@ -83,9 +82,8 @@ const NewTicketForm = () => {
                 placeholder="Enter the description of your query"
             ></GenericInput>
 
-            
-
             <GenericInput 
+                id="message"
                 label="Message" 
                 type="text" 
                 required={true} 
@@ -93,24 +91,15 @@ const NewTicketForm = () => {
                 placeholder="Enter your message to the team"
             ></GenericInput>
 
-            
-
             <GenericInput
+                id="attachments"
                 label="Attachments"
                 type="file"
                 multiple={true}
                 onChange={handleFileChange}
+                placeholder="Optionally attach relevant files"
             />
-
-
-            {/* <GenericButton
-                type="submit"
-                className='flex w-full justify-center rounded-md bg-customOrange-dark mt-5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-customOrange-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-customOrange-dark'
-            >
-                Send Ticket
-            </GenericButton> */}
         </GenericForm>
-        
         </>
     )
 }

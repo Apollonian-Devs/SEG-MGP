@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from api.models import Ticket, AIResponse
 
 
+
 class AIResponseTestCase(TestCase):
     def setUp(self):
         """Set up test users and ticket"""

@@ -238,7 +238,7 @@ Temporary Items
 # Installer logs
 
 # Unit test / coverage reports
-
+frontend/coverage/
 # Translations
 
 # Django stuff:

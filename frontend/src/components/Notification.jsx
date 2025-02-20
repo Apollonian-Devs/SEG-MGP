@@ -4,6 +4,7 @@ import { ACCESS_TOKEN } from "../constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell,faTimes } from "@fortawesome/free-solid-svg-icons";
 import Popup from "./Popup";
+import GenericTable from "./GenericTable";
 import GenericButton from "./GenericButton";
 
 const NotificationsTab = ({ user }) => {
@@ -29,7 +30,7 @@ const NotificationsTab = ({ user }) => {
       if (clickedNotifications.size>0){
         try {
           const access = localStorage.getItem(ACCESS_TOKEN);
-          clickedNotifications.forEach(async (entry) => {
+          for (let entry of clickedNotifications) {
             await api.post(`/api/user-notifications/`,
               { id: entry },
                {
@@ -37,7 +38,7 @@ const NotificationsTab = ({ user }) => {
                 Authorization: `Bearer ${access}`,
               },
             })  
-          });
+          };
           
         } catch (error) {
           console.error("Error marking notifications as read:", error.response?.data || error.message);
@@ -92,51 +93,43 @@ const NotificationsTab = ({ user }) => {
             Read All
           </GenericButton>
           <div className="px-10 py-16 overflow-hidden">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead>
-                <tr>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">
-                    Subject
-                  </th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">
-                    Message
-                  </th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">
-                    Created at
-                  </th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">
-                    Read status
-                  </th>
+          
+          <GenericTable
+              columnDefinition={[
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">
+                  Subject
+                </th>,
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">
+                  Message
+                </th>,
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">
+                  Created at
+                </th>,
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">
+                  Read status
+                </th>
+              ]}
+              data={notifications}
+              dataName = 'notifications'
+              rowDefinition={(notification) => (
+                <tr key={notification.id} className={`${clickedNotifications.has(notification.id) ? "bg-green-200" : "bg-red-200"}  cursor-pointer`}
+                onClick={() => handleNotificationClick(notification.id)}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">
+                    {notification.ticket_subject}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                    {notification.message}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                    {notification.created_at || "Not Set"}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                    {notification.read_Status || "Not Set"}
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {notifications.length === 0 ? (
-                  <tr>
-                    <td colSpan="4" className="px-6 py-4 text-center text-gray-500">
-                      No notifications found.
-                    </td>
-                  </tr>
-                ) : (
-                  notifications.map((notification) => (
-                    <tr key={notification.id} className={`${clickedNotifications.has(notification.id) ? "bg-green-200" : "bg-red-200"}  cursor-pointer`}
-                    onClick={() => handleNotificationClick(notification.id)}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">
-                        {notification.ticket_subject}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                        {notification.message}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                        {notification.created_at || "Not Set"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                        {notification.read_Status || "Not Set"}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+              )} 
+            />
+            
           </div>
           </Popup>
       </>

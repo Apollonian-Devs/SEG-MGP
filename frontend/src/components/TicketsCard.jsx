@@ -4,11 +4,11 @@ import { ACCESS_TOKEN } from "../constants";
 import Chat from "./Chat";
 import GenericButton from "./GenericButton";
 import PopUp from "./Popup";
-
+import GenericTable from "./GenericTable";
 const TicketsCard = ({ user, officers, openPopup }) => {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [selectedTicket, setSelectedTicket] = useState(null); 
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   // Sorting State
@@ -45,9 +45,8 @@ const TicketsCard = ({ user, officers, openPopup }) => {
       const valueA = a[key] ?? ""; // Treat null/undefined as an empty string
       const valueB = b[key] ?? "";
 
-      if (valueA < valueB) return direction === "asc" ? -1 : 1;
-      if (valueA > valueB) return direction === "asc" ? 1 : -1;
-      return 0;
+      return (valueA < valueB ? -1 : valueA > valueB ? 1 : 0) * (direction === "asc" ? 1 : -1);
+  
     });
 
     setTickets(sortedTickets);
@@ -76,103 +75,92 @@ const TicketsCard = ({ user, officers, openPopup }) => {
           <div className='p-10 min-w-full inline-block align-middle'>
             <h1 className='flex w-full text-center mb-5'>Tickets</h1>
             <div className=''>
-              <table className='min-w-full divide-y divide-gray-200'>
-                <thead>
-                  <tr>
+              <GenericTable
+                columnDefinition={[
+                  <th className='px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase cursor-pointer'>
+                      <GenericButton
+                        className='flex items-center w-full gap-x-1'
+                        onClick={() => sortTickets("subject")}
+                      >
+                        <p>Subject</p>
+                        {sortConfig.key === "subject"
+                          ? sortConfig.direction === "asc"
+                            ? "▲"
+                            : "▼"
+                          : ""}
+                      </GenericButton>
+                    </th>,
                     <th className='px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase cursor-pointer'>
-                    <GenericButton
-                      className="flex items-center w-full gap-x-1"
-                      onClick={() => sortTickets("subject")}
-                    >
-                      <p>Subject</p>
-                      {sortConfig.key === "subject"
-                        ? sortConfig.direction === "asc"
-                          ? "▲"
-                          : "▼"
-                        : ""}
-                    </GenericButton>
-
-                    </th>
+                      <GenericButton
+                        className='flex items-center w-full gap-x-1'
+                        onClick={() => sortTickets("status")}
+                      >
+                        <p>Status</p>
+                        {sortConfig.key === "status"
+                          ? sortConfig.direction === "asc"
+                            ? "▲"
+                            : "▼"
+                          : ""}
+                      </GenericButton>
+                    </th>,
                     <th className='px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase cursor-pointer'>
-                    <GenericButton
-                      className="flex items-center w-full gap-x-1"
-                      onClick={() => sortTickets("status")}
-                    >
-                      <p>Status</p>
-                      {sortConfig.key === "status"
-                        ? sortConfig.direction === "asc"
-                          ? "▲"
-                          : "▼"
-                        : ""}
-                    </GenericButton>
-
-                    </th>
-                    <th className='px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase cursor-pointer'>
-                    <GenericButton
-                      className="flex items-center w-full gap-x-1"
-                      onClick={() => sortTickets("priority")}
-                    >
-                      <p>Priority</p>
-                      {sortConfig.key === "priority"
-                        ? sortConfig.direction === "asc"
-                          ? "▲"
-                          : "▼"
-                        : ""}
-                    </GenericButton>
-
-                    </th>
+                      <GenericButton
+                        className='flex items-center w-full gap-x-1'
+                        onClick={() => sortTickets("priority")}
+                      >
+                        <p>Priority</p>
+                        {sortConfig.key === "priority"
+                          ? sortConfig.direction === "asc"
+                            ? "▲"
+                            : "▼"
+                          : ""}
+                      </GenericButton>
+                    </th>,
 
                     <th className='px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase'>
                       <p>Actions</p>
-                    </th>
+                    </th>,
 
-                    {user.is_staff && (
+                    user.is_staff? (
                       <th className='px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase'>
                         Redirect
                       </th>
-                    )}
-                  </tr>
-                </thead>
-                <tbody className='divide-y divide-gray-200'>
-                  {tickets.length === 0 ? (
-                    <tr>
-                      <td colSpan='5' className='px-6 py-4 text-center text-gray-500'>
-                        No tickets found.
-                      </td>
-                    </tr>
-                  ) : (
-                    tickets.map((ticket) => (
-                      <tr
-                        key={ticket.id}
-                        className='hover:bg-gray-100 cursor-pointer'
-                        onClick={() => openPopup("viewTicket", ticket)}
+                    ): (null)
+                ].filter(Boolean)}
+               
+                data={tickets}
+                dataName = 'tickets'
+                rowDefinition={(ticket) => (
+                  <tr
+                    key={ticket.id}
+                    className='hover:bg-gray-100 cursor-pointer'
+                    onClick={() => openPopup("viewTicket", ticket)}
+                  >
+                    <td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800'>
+                      {ticket.subject}
+                    </td>
+                    <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-800'>
+                      {ticket.status}
+                    </td>
+                    <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-800'>
+                      {ticket.priority || "Not Set"}
+                    </td>
+                    <td className='px-6 py-4 whitespace-nowrap text-end text-sm font-medium'>
+                      <GenericButton
+                        className='text-blue-600 hover:text-blue-800'
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedTicket(ticket);
+                          setIsChatOpen(true);
+                        }}
                       >
-                        <td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800'>
-                          {ticket.subject}
-                        </td>
-                        <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-800'>
-                          {ticket.status}
-                        </td>
-                        <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-800'>
-                          {ticket.priority || "Not Set"}
-                        </td>
-                        <td className='px-6 py-4 whitespace-nowrap text-end text-sm font-medium'>
-                          <GenericButton
-                            className='text-blue-600 hover:text-blue-800'
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedTicket(ticket);
-                              setIsChatOpen(true);
-                            }}
-                          >
-                            Chat
-                          </GenericButton>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                        Chat
+                      </GenericButton>
+                    </td>
+                  </tr>
+                )} 
+              />
+              
             </div>
           </div>
         </div>

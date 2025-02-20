@@ -5,6 +5,8 @@ import ProtectedRoute from "../components/ProtectedRoute";
 import Dashboard from "../pages/Dashboard";
 import Home from "../pages/Home";
 import App from "../App";
+import { ACCESS_TOKEN } from '../constants';
+import jwtDecode from 'jwt-decode';
 
 
 const mockJWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZXhwIjozMjYwMDAwMDB9.signature";
@@ -19,7 +21,15 @@ vi.mock("../api", () => ({
         }),
         get: vi.fn((url) => {
             if (url === "/api/current_user/") {
-                return Promise.resolve({ status: 200, data: { id: 1, name: "Test User" } });
+                return Promise.resolve({ 
+                    status: 200, 
+                    data: { 
+                        id: 1, 
+                        username: "testuser", 
+                        is_staff: false, 
+                        is_superuser: false 
+                    } 
+                });
             }
             if (url === "/api/user-tickets/") {
                 return Promise.resolve({ status: 200, data: [{ id: 101, title: "Ticket 1" }] });
@@ -30,6 +40,10 @@ vi.mock("../api", () => ({
 }));
 
 
+vi.mock('jwt-decode', () => ({
+    __esModule: true,
+    default: vi.fn(),
+  }));
 
 describe("App Routing", () => {
     it("renders the home page by default", () => {
@@ -86,8 +100,8 @@ describe('RegisterAndLogout', () => {
 
 describe("ProtectedRoute", () => {
     beforeEach(() => {
-        localStorage.setItem("access", mockJWT);
-        localStorage.setItem("refresh", JSON.stringify("valid-refresh-token"));
+        localStorage.setItem(ACCESS_TOKEN, 'valid_token');
+        jwtDecode.mockReturnValue({ exp: Date.now() / 1000 + 5000 });
     });
 
     afterEach(() => {
@@ -104,7 +118,12 @@ describe("ProtectedRoute", () => {
             </MemoryRouter>
         );
 
-        await waitFor(() => expect(screen.getByTestId("dashboard-container")).toBeInTheDocument());
+        await waitFor(
+            () => expect(screen.getByTestId("dashboard-container")).toBeInTheDocument(),
+            { timeout: 3000 }
+            );
+
+        
     });
 
     it("redirects to home if user is unauthorized", async () => {

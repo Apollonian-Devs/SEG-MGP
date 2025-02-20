@@ -36,7 +36,7 @@ class TicketTests(TestCase):
                 created_by=staff_user
             )
 
-    #def test_ticket_list_view(self):
-    #    """Test that the ticket list API returns a 200 response"""
-    #    response = self.client.get("/api/tickets/")
-    #    self.assertEqual(response.status_code, 200)
+    def test_ticket_list_view(self):
+        """Test that the ticket list API returns a 200 response"""
+        response = self.client.get("/api/tickets/")
+        self.assertEqual(response.status_code, 200)

@@ -42,8 +42,24 @@ class OfficerSerializer(serializers.ModelSerializer):
         model = Officer
         fields = ["id", "user", "department"]
 
+class TicketMessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TicketMessage
+        '''
+        ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
+        sender_profile = models.ForeignKey(User, on_delete=models.CASCADE)
+        message_body = models.TextField()
+        created_at = models.DateTimeField(auto_now_add=True)
+        is_internal = models.BooleanField(default=False)
+        '''
+        fields = ["message_body"]
+
+
 class TicketSerializer(serializers.ModelSerializer):
-    message = serializers.CharField(required=True)
+    #message = serializers.CharField(required=True)
+
+    message = TicketMessageSerializer(write_only=True)
+
     attachments = serializers.ListField(child=serializers.DictField(), required=False)
     class Meta:
         model = Ticket
@@ -67,19 +83,6 @@ class TicketRedirectSerializer(serializers.ModelSerializer):
         model = TicketRedirect
         fields = ["ticket", "from_profile", "to_profile"]
 
-
-
-class TicketMessageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TicketMessage
-        '''
-        ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
-        sender_profile = models.ForeignKey(User, on_delete=models.CASCADE)
-        message_body = models.TextField()
-        created_at = models.DateTimeField(auto_now_add=True)
-        is_internal = models.BooleanField(default=False)
-        '''
-        fields = ["message_body"]
 
 
 class NotificationSerializer(serializers.ModelSerializer):

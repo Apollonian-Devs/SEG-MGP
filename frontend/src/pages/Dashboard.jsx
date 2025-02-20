@@ -73,7 +73,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div>
+    <div data-testid="dashboard-container">
       <div className='flex justify-space-around items-center gap-x-5'>
         <div className='flex justify-center items-center'>
           {!current_user.is_staff && <NewTicketButton />}

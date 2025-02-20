@@ -4,6 +4,12 @@ import { render, fireEvent, screen } from "@testing-library/react";
 
 describe(NewTicketButton, () => {
     
+    it("New ticket button should be correctly rendered", () => {
+        render(<NewTicketButton />);
+        const newButton = screen.getByRole("button", {name: /new/i});
+        expect(newButton).toBeInTheDocument();
+    })
+    
     it("Clicking the new button should open a popup containing the new ticket form", () => {
         render(<MemoryRouter><NewTicketButton /></MemoryRouter>);
         const newButton = screen.getByRole("button", {name: /new/i});

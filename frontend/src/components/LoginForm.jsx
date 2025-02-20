@@ -1,36 +1,37 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
-import api from "../api";
-import GenericButton from "./GenericButton";
-import GenericForm from "./GenericForm";
-import GenericInput from "./GenericInput";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ACCESS_TOKEN, REFRESH_TOKEN } from '../constants';
+import api from '../api';
+import GenericForm from './GenericForm';
+import GenericInput from './GenericInput';
 
 const LoginForm = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+	const [username, setUsername] = useState('');
+	const [password, setPassword] = useState('');
+	const [error, setError] = useState(null);
+	const [loading, setLoading] = useState(false);
+	const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    setLoading(true);
-    e.preventDefault(); // Prevent the default form submission
+	const handleSubmit = async (e) => {
+		setLoading(true);
+		e.preventDefault(); // Prevent the default form submission
 
-    try {
-      const response = await api.post("/api/token/", { username, password });
-      localStorage.setItem(ACCESS_TOKEN, response.data.access);
-      localStorage.setItem(REFRESH_TOKEN, response.data.refresh);
+		try {
+			const response = await api.post('/api/token/', { username, password });
+			localStorage.setItem(ACCESS_TOKEN, response.data.access);
+			localStorage.setItem(REFRESH_TOKEN, response.data.refresh);
 
-      if (response.status === 200) {
-        navigate("/dashboard");
-      }
-    } catch (err) {
-      setError(err.response?.data?.message || "Login failed. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+			if (response.status === 200) {
+				navigate('/dashboard');
+			}
+		} catch (err) {
+			setError(
+				err.response?.data?.message || 'Login failed. Please try again.'
+			);
+		} finally {
+			setLoading(false);
+		}
+	};
 
   return (
     <>

@@ -3,8 +3,12 @@ from django.core.exceptions import ValidationError, PermissionDenied
 from django.db.models import Count
 from api.models import (
     Ticket, TicketMessage, TicketStatusHistory, TicketRedirect, 
-    TicketAttachment, Notification, Officer
+    TicketAttachment, Notification, Officer, STATUS_CHOICES, PRIORITY_CHOICES
 )
+import random
+
+
+
 
 def send_query(student_user, subject, description, message_body, attachments=None):
     """
@@ -53,33 +57,31 @@ def send_query(student_user, subject, description, message_body, attachments=Non
     return ticket
 
 
-def send_response(sender_user, ticket, message_body, is_internal=False):
+def send_response(sender_user, ticket, message_body, is_internal=False, attachments=None):
     """
     Allows a user (student or staff) to add a new message to an existing ticket.
-    Optionally mark it as an internal note (is_internal=True).
-    Also triggers a notification for the 'other side'.
+    Optionally mark it as an internal note (is_internal=True) and attach files.
+    Also triggers a notification for the "other side".
 
-    :param sender_user: The User object sending the message
-    :param ticket: The existing Ticket object to which we're responding
-    :param message_body: The text content of the new message
-    :param is_internal: Whether this message is internal (visible only to staff)
-    :raises PermissionDenied: if the user is None or the ticket is closed
-    :return: The newly created TicketMessage object
+    :param sender_user: The User object sending the message.
+    :param ticket: The existing Ticket object to which we're responding.
+    :param message_body: The text content of the new message.
+    :param is_internal: Whether this message is internal (visible only to staff).
+    :param attachments: A list of dictionaries, each containing:
+         - file_name: Name of the file.
+         - file_path: A placeholder URL (e.g., "https://your-storage-service.com/uploads/<filename>").
+         - mime_type: MIME type of the file (defaults to "application/octet-stream" if not provided).
+    :raises PermissionDenied: if the user is None or the ticket is closed.
+    :return: The newly created TicketMessage object.
     """
-
-    
-
-    # 1) Validate user & ticket
     if sender_user is None:
         raise PermissionDenied("No authenticated user to send a response.")
     if ticket is None:
         raise ValidationError("Invalid ticket provided.")
-
-    # 2) Disallow responding on closed tickets, if desired
     if ticket.status == "Closed":
         raise ValidationError("Cannot respond to a closed ticket.")
 
-    # 3) Create the new TicketMessage
+    # Create the new TicketMessage.
     new_msg = TicketMessage.objects.create(
         ticket=ticket,
         sender_profile=sender_user,
@@ -87,22 +89,29 @@ def send_response(sender_user, ticket, message_body, is_internal=False):
         is_internal=is_internal
     )
 
-    # 4) Possibly update the ticket’s updated_at to reflect new activity
+    # Process attachments if provided.
+    #-----written by chatgpt ------
+    if attachments:
+        for att in attachments:
+            TicketAttachment.objects.create(
+                message=new_msg,
+                file_name=att["file_name"],
+                file_path=att["file_path"],
+                mime_type=att.get("mime_type", "application/octet-stream")
+            )
+
+    # Update the ticket's updated_at timestamp.
     ticket.updated_at = timezone.now()
     ticket.save()
 
-    # 5) Create a Notification for the "other party"
-    #    - If staff/officer sends a message, notify the student
-    #    - If student sends a message, notify the assigned officer (if any)
+    # Create a Notification for the other party.
     if sender_user.is_staff:
-        # Notifying the student who created the ticket
         Notification.objects.create(
             user_profile=ticket.created_by,
             ticket=ticket,
             message=f"Staff responded to Ticket #{ticket.id}"
         )
     else:
-        # Student side: if there's an assigned officer, notify them
         if ticket.assigned_to is not None:
             Notification.objects.create(
                 user_profile=ticket.assigned_to,
@@ -111,6 +120,7 @@ def send_response(sender_user, ticket, message_body, is_internal=False):
             )
 
     return new_msg
+
 
 
 def validate_redirection(from_user, to_user):
@@ -303,6 +313,7 @@ def get_tickets_for_user(user):
             "priority": ticket.priority,
             "created_at": ticket.created_at,
             "updated_at": ticket.updated_at,
+            "is_overdue": ticket.is_overdue,
             "assigned_to": ticket.assigned_to.username if ticket.assigned_to else None
         }
         for ticket in tickets
@@ -314,12 +325,114 @@ def get_officers_same_department(user):
     return Officer.objects.filter(department=officer.department).exclude(user=user)
 
 
+
+
 def changeTicketPriority(ticket, user):
-    pass
+    '''
+    if user is an admin or an officer, then change ticket prirority
+    it gets the current priority of the ticket and changes it to the next priority in the list like a circular queue
+    if user is a student, then raise permission denied
+    '''
+
+    if user.is_staff:
+        if ticket.priority == None:
+            ticket.priority = PRIORITY_CHOICES[0][0]
+        else:
+            for i in range(len(PRIORITY_CHOICES)):
+                if ticket.priority == PRIORITY_CHOICES[i][0]:
+                    ticket.priority = PRIORITY_CHOICES[(i+1)%len(PRIORITY_CHOICES)][0]
+                    break
+        ticket.save()
+    else:
+        raise PermissionDenied("Only officers or admins can change ticket priority.")
+    
+
+def changeTicketStatus(ticket, user):
+    '''
+    if user is an admin or an officer, then change ticket status
+    it gets the current status of the ticket and changes it to the next status in the list like a circular queue
+    if user is a student, then raise permission denied
+    '''
+
+    if user.is_staff:
+        if ticket.status == None:
+            ticket.status = STATUS_CHOICES[0][0]
+        else:
+            for i in range(len(STATUS_CHOICES)):
+                if ticket.status == STATUS_CHOICES[i][0]:
+                    ticket.status = STATUS_CHOICES[(i+1)%len(STATUS_CHOICES)][0]
+                    break
+        ticket.save()
+    else:
+        raise PermissionDenied("Only officers or admins can change ticket status.")
+    
+
+def get_overdue_tickets(user):
+    """
+    Return a list of all overdue tickets visible to the given user:
+      - If the user is superuser (admin), return all overdue tickets.
+      - If the user is staff (officer), return overdue tickets assigned to them.
+      - If the user is a student, return their own overdue tickets.
+    """
+    if user.is_superuser:
+        queryset = Ticket.objects.filter(is_overdue=True)
+    elif user.is_staff:
+        queryset = Ticket.objects.filter(assigned_to=user, is_overdue=True)
+    else:
+        # Student sees only their own tickets
+        queryset = Ticket.objects.filter(created_by=user, is_overdue=True)
+
+    # Return a list/dict format that your frontend can easily consume
+    return [
+        {
+            "id": ticket.id,
+            "subject": ticket.subject,
+            "status": ticket.status,
+            "priority": ticket.priority,
+            "due_date": ticket.due_date,
+            "is_overdue": ticket.is_overdue,
+            "created_by": ticket.created_by.username,
+            "assigned_to": ticket.assigned_to.username if ticket.assigned_to else None,
+        }
+        for ticket in queryset
+    ]
 
 
-def changeTicketStatus(ticket,user):
-    pass 
+
+def changeTicketDueDate(ticket, user, new_due_date):
+    """
+    If user is an admin or an officer, then change ticket due date
+    if user is a student, then raise permission denied
+    Also notify the ticket owner (student) that a new due date is set.
+    """
+    if user.is_staff:
+        ticket.due_date = new_due_date
+        ticket.save()
+
+        # Notify the student who created the ticket
+        Notification.objects.create(
+            user_profile=ticket.created_by,
+            ticket=ticket,
+            message=(
+                f"Due date has been set/updated to {new_due_date.strftime('%Y-%m-%d %H:%M:%S')} "
+                f"by {user.username}."
+            ),
+        )
+    else:
+        raise PermissionDenied("Only officers or admins can change ticket due date.")
+
+
+def get_random_department():
+    """
+    get all the officers with is_department_head as True and their corresponding departments
+    return a random department from that list. you use import random for this
+    """
+    department_heads = Officer.objects.filter(is_department_head=True)
+    department = random.choice(department_heads).department
+    return department
+
+
+
 
 
 

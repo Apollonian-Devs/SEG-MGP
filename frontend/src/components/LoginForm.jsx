@@ -39,6 +39,7 @@ const LoginForm = () => {
       <GenericForm className='space-y-3' onSubmit={handleSubmit} buttonLabel="Sign in" data-testid="login-form">
 
           <GenericInput
+            id="username"
             label="Username"
             type="text"
             required={true}
@@ -47,6 +48,7 @@ const LoginForm = () => {
           ></GenericInput>
 
           <GenericInput
+            id="password"
             label="Password"
             labelClass="block text-sm font-medium text-black"
             type="password"

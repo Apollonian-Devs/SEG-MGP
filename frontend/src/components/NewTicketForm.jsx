@@ -65,6 +65,7 @@ const NewTicketForm = () => {
         <GenericForm className='space-y-3' onSubmit={handleSubmit} buttonLabel="Send Ticket">
             
             <GenericInput 
+                id="subject"
                 label="Subject" 
                 type="text" 
                 required={true} 
@@ -73,6 +74,7 @@ const NewTicketForm = () => {
             ></GenericInput>
 
             <GenericInput 
+                id="description"
                 label="Description" 
                 type="text" 
                 required={true} 
@@ -81,6 +83,7 @@ const NewTicketForm = () => {
             ></GenericInput>
 
             <GenericInput 
+                id="message"
                 label="Message" 
                 type="text" 
                 required={true} 
@@ -89,6 +92,7 @@ const NewTicketForm = () => {
             ></GenericInput>
 
             <GenericInput
+                id="attachments"
                 label="Attachments"
                 type="file"
                 multiple={true}

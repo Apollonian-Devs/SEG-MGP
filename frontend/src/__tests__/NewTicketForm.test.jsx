@@ -21,10 +21,13 @@ describe(NewTicketForm, () => {
         }
       });
     
-    it("New ticket form should be correctly rendered", () => {
+    it("New ticket form should be correctly rendered with correct input fields", () => {
         render(<NewTicketForm />);
-        const form = screen.getByText(/send query/i);
-        expect(form).toBeInTheDocument();
+        expect(screen.getByText(/send query/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/subject/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/description/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/message/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/attachments/i)).toBeInTheDocument();
     });
 
     it("New ticket form should be successfully submitted with all valid input and the user should be navigated to the dashboard", async () => {

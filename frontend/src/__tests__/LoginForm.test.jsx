@@ -72,7 +72,6 @@ describe('LoginForm', () => {
 	});
 
 	it('redirects to dashboard on successful login', async () => {
-		const navigate = vi.fn();
 		const mockResponse = {
 			data: { access: 'access_token', refresh: 'refresh_token' },
 			status: 200,

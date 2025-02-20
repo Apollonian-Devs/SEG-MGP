@@ -5,7 +5,7 @@ import { MemoryRouter } from 'react-router-dom';
 import ProtectedRoute from '../components/ProtectedRoute';
 import api from '../api';
 import { REFRESH_TOKEN, ACCESS_TOKEN } from '../constants';
-import jwtDecode from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 import '@testing-library/jest-dom/vitest';
 
 // Mock the api module
@@ -17,7 +17,7 @@ vi.mock('../api', () => ({
 // Mock the jwt-decode module
 vi.mock('jwt-decode', () => ({
   __esModule: true,
-  default: vi.fn(),
+  jwtDecode: vi.fn(), // Use named export for consistency
 }));
 
 // Mock the Navigate component

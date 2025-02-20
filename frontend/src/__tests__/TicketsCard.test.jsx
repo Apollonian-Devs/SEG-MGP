@@ -81,6 +81,8 @@ describe("TicketsCard", () => {
         expect(within(rowsDesc[2]).getByText("ticket 1")).toBeInTheDocument();
     })
     
+
+
     it("equal key value when sorted",async()=>{
         api.get.mockResolvedValue({
             data: {
@@ -179,18 +181,36 @@ describe("TicketsCard", () => {
     })
 
 
-
-    it("fetches tickets correctly",async()=>{
-        api.get.mockResolvedValue({
-            data: {
+    it("fetches tickets correctly", async () => {
+      api.get.mockResolvedValue({
+          data: {
               tickets: [{ id: 1, subject: "ticket 1", status: "test status" }],
-            },
-        });
-        render(<TicketsCard user={{is_staff: true}} officers={{}} openPopup={()=>{}}/>);
-       
-        await waitFor(() => expect(screen.getByText("Redirect")).toBeInTheDocument());
-        
-    })
+          },
+      });
+  
+      const mockOfficer = {
+          user: {
+              id: 101,
+              username: "@officer1",
+          },
+          department: "IT",
+      };
+  
+      render(
+          <TicketsCard
+              user={{ is_staff: true }}
+              officers={[mockOfficer]} // Passing one officer
+              openPopup={() => {}}
+          />
+      );
+  
+      // Use getByRole to avoid multiple elements error
+      await waitFor(() =>
+          expect(screen.getByRole("button", { name: "Redirect" })).toBeInTheDocument()
+      );
+  });
+  
+  
 
     it("sort ticket with null value",async()=>{
         api.get.mockResolvedValue({

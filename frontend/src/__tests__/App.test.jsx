@@ -6,7 +6,7 @@ import Dashboard from "../pages/Dashboard";
 import Home from "../pages/Home";
 import App from "../App";
 import { ACCESS_TOKEN } from '../constants';
-import jwtDecode from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 
 
 const mockJWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZXhwIjozMjYwMDAwMDB9.signature";
@@ -42,8 +42,9 @@ vi.mock("../api", () => ({
 
 vi.mock('jwt-decode', () => ({
     __esModule: true,
-    default: vi.fn(),
+    jwtDecode: vi.fn(), // Use named export for consistency
   }));
+  
 
 describe("App Routing", () => {
     it("renders the home page by default", () => {

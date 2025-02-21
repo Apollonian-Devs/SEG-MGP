@@ -72,7 +72,6 @@ class UserTicketsView(views.APIView):
         return Response({"tickets": tickets})
 
 
-#TODO: Possibly send ticket with the message rather than as parameter 
 #sender_user, ticket, message_body, is_internal=False
 class TicketSendResponseView(views.APIView):
     permission_classes = [IsAuthenticated]

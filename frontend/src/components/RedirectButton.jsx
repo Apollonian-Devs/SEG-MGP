@@ -5,6 +5,10 @@ import GenericButton from "./GenericButton";
 
 const RedirectButton = ({ ticketid, selectedOfficer }) => {
     const handleRedirect = async () => {
+        if (!selectedOfficer || !selectedOfficer.user || !selectedOfficer.user.id) {
+            alert("No officer selected. Please select an officer to redirect the ticket.");
+            return;  
+        }
         try {
             const access = localStorage.getItem(ACCESS_TOKEN); 
             const response = await api.post(

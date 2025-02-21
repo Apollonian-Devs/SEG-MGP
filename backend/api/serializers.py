@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Ticket, Department, Officer, TicketMessage, Notification, TicketRedirect, TicketStatusHistory, AIResponse
+from .models import Ticket, Department, Officer, TicketMessage, Notification, TicketRedirect
 
 
 
@@ -35,8 +35,8 @@ class DepartmentSerializer(serializers.ModelSerializer):
         fields = ["id", "name"]
 
 class OfficerSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
-    department = DepartmentSerializer()
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())  
+    department = serializers.PrimaryKeyRelatedField(queryset=Department.objects.all())  
 
     class Meta:
         model = Officer
@@ -61,10 +61,12 @@ class TicketSerializer(serializers.ModelSerializer):
     message = TicketMessageSerializer(write_only=True)
 
     attachments = serializers.ListField(child=serializers.DictField(), required=False)
+    created_by = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())  
+    assigned_to = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), required=False, allow_null=True)  
     class Meta:
         model = Ticket
         fields = ["id", "subject", "description", "created_by", "assigned_to", "status", 
-                "priority", "created_at", "updated_at", "closed_at", "due_date", "is_overdue", "message", "attachments"]
+                "priority", "created_at", "updated_at", "closed_at", "due_date", "is_overdue", "attachments"]
         extra_kwargs = {
             "created_by": {"read_only": True},
             "subject": {"required": True},
@@ -85,26 +87,26 @@ class TicketRedirectSerializer(serializers.ModelSerializer):
 
 
 
+class TicketMessageSerializer(serializers.ModelSerializer):
+    sender_profile = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    ticket = serializers.PrimaryKeyRelatedField(queryset=Ticket.objects.all())
+    class Meta:
+        model = TicketMessage
+        '''
+        ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
+        sender_profile = models.ForeignKey(User, on_delete=models.CASCADE)
+        message_body = models.TextField()
+        created_at = models.DateTimeField(auto_now_add=True)
+        is_internal = models.BooleanField(default=False)
+        '''
+        fields = ["sender_profile", "ticket", "message_body"]
+
+
 class NotificationSerializer(serializers.ModelSerializer):
+    user_profile = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     ticket_subject = serializers.CharField(source="ticket.subject",read_only=True)
     class Meta:
         model = Notification
-        fields = ["id","ticket_subject","message", "created_at", "read_status"]
+        fields = ["id","user_profile", "ticket_subject" ,"message", "created_at", "read_status"]
         extra_kwargs = {"student": {"read_only": True}}
 
-
-class TicketStatusHistorySerializer(serializers.ModelSerializer):
-    ticket = TicketSerializer()
-    changed_by_profile = UserSerializer()
-
-    class Meta:
-        model = TicketStatusHistory
-        fields = ["old_status", "new_status", "changed_by_profile", "changed_at", "notes"]
-
-class AIResponseSerializer(serializers.ModelSerializer):
-    ticket = TicketSerializer()
-    verified_by_profile = UserSerializer()
-    
-    class Meta:
-        model = AIResponse
-        fields = ['ticket', 'prompt_text', 'response_text', 'confidence', 'created_at', 'verified_by_profile', 'verification_status']

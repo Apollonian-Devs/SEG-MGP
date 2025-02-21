@@ -171,8 +171,8 @@ const TicketsCard = ({ user, officers, openPopup }) => {
                           </GenericButton>
                         </td>
                         {user.is_staff && (
-                          <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-800'>
-                            <div className='flex items-center gap-2'>
+                          <td className='px-4 py-4 whitespace-nowrap text-sm text-gray-800'>
+                            <div className='flex items-center gap-1'>
                               <OfficersDropdown officers={officers} setSelectedOfficer={setSelectedOfficer} />
                               <RedirectButton ticketid={ticket.id} selectedOfficer={selectedOfficer}/>
                             </div>

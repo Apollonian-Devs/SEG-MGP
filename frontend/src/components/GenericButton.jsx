@@ -7,6 +7,7 @@ const GenericButton = ({ children, onClick, className, type = "button", style })
       className={className}
       style={style} 
       onClick={onClick}
+      data-testid = "generic-button"
     >
       {children}
     </button>

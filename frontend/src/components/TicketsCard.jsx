@@ -4,12 +4,15 @@ import { ACCESS_TOKEN } from "../constants";
 import Chat from "./Chat";
 import GenericButton from "./GenericButton";
 import PopUp from "./Popup";
+import OfficersDropdown from "./OfficersDropdown";
+import RedirectButton from "./RedirectButton";
 
 const TicketsCard = ({ user, officers, openPopup }) => {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [selectedOfficer, setSelectedOfficer] = useState(null);
 
   // Sorting State
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
@@ -168,6 +171,14 @@ const TicketsCard = ({ user, officers, openPopup }) => {
                             Chat
                           </GenericButton>
                         </td>
+                        {user.is_staff && (
+                          <td className='px-4 py-4 whitespace-nowrap text-sm text-gray-800'>
+                            <div className='flex items-center gap-1'>
+                              <OfficersDropdown officers={officers} setSelectedOfficer={setSelectedOfficer} />
+                              <RedirectButton ticketid={ticket.id} selectedOfficer={selectedOfficer}/>
+                            </div>
+                          </td>
+                        )}
                       </tr>
                     ))
                   )}

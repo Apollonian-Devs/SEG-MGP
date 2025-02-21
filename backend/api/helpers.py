@@ -57,7 +57,7 @@ def send_query(student_user, subject, description, message_body, attachments=Non
     return ticket
 
 
-def send_response(sender_user, ticket, message_body, is_internal=False, attachments=None):
+def send_response(sender_profile, ticket, message_body, is_internal=False, attachments=None):
     """
     Allows a user (student or staff) to add a new message to an existing ticket.
     Optionally mark it as an internal note (is_internal=True) and attach files.
@@ -74,7 +74,7 @@ def send_response(sender_user, ticket, message_body, is_internal=False, attachme
     :raises PermissionDenied: if the user is None or the ticket is closed.
     :return: The newly created TicketMessage object.
     """
-    if sender_user is None:
+    if sender_profile is None:
         raise PermissionDenied("No authenticated user to send a response.")
     if ticket is None:
         raise ValidationError("Invalid ticket provided.")
@@ -84,7 +84,7 @@ def send_response(sender_user, ticket, message_body, is_internal=False, attachme
     # Create the new TicketMessage.
     new_msg = TicketMessage.objects.create(
         ticket=ticket,
-        sender_profile=sender_user,
+        sender_profile=sender_profile,
         message_body=message_body,
         is_internal=is_internal
     )
@@ -105,7 +105,7 @@ def send_response(sender_user, ticket, message_body, is_internal=False, attachme
     ticket.save()
 
     # Create a Notification for the other party.
-    if sender_user.is_staff:
+    if sender_profile.is_staff:
         Notification.objects.create(
             user_profile=ticket.created_by,
             ticket=ticket,

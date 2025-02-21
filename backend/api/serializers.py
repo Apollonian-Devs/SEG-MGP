@@ -56,9 +56,7 @@ class TicketMessageSerializer(serializers.ModelSerializer):
 
 
 class TicketSerializer(serializers.ModelSerializer):
-    #message = serializers.CharField(required=True)
-
-    message = TicketMessageSerializer(write_only=True)
+    message = serializers.CharField(required=False)
 
     attachments = serializers.ListField(child=serializers.DictField(), required=False)
     created_by = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())  
@@ -66,7 +64,7 @@ class TicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticket
         fields = ["id", "subject", "description", "created_by", "assigned_to", "status", 
-                "priority", "created_at", "updated_at", "closed_at", "due_date", "is_overdue", "attachments"]
+                "priority", "created_at", "updated_at", "closed_at", "due_date", "is_overdue", "attachments", "message"]
         extra_kwargs = {
             "created_by": {"read_only": True},
             "subject": {"required": True},

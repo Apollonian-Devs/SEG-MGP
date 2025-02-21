@@ -20,14 +20,13 @@ class TicketListCreate(generics.ListCreateAPIView):
         return Ticket.objects.filter(created_by=user)
 
     def perform_create(self, serializer):
-    
         data = serializer.validated_data
         new_ticket = send_query(
             student_user=self.request.user,
             subject=data.get("subject"),
             description=data.get("description"),
             message_body=data.get("message"),
-            attachments=data.get("attachments", None)
+            attachments=data.get("attachments")
         )
 
         return new_ticket

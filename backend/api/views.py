@@ -84,10 +84,9 @@ class TicketSendResponseView(views.APIView):
         
             try:
 
-                ticket = Ticket.objects.get(id=ticket_id)
                 comment = send_response(
-                    sender_user=request.user,
-                    ticket=ticket,
+                    sender_profile=serializer.validated_data['sender_profile'],
+                    ticket=serializer.validated_data['ticket'],
                     message_body=serializer.validated_data['message_body'],
                 )
                 

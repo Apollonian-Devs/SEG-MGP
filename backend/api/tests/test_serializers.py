@@ -113,7 +113,7 @@ class TicketSerializerTestCase(TestCase):
         valid_data = {
             'subject': 'Valid Ticket',
             'description': 'Description for valid ticket',
-            'created_by': self.student_user.id,  
+            # 'created_by': self.student_user.id, => Remove since created_by is read_only so will be ignored by the serializer
             'assigned_to': self.superuser.id,
             'status': 'Open',
             'priority': 'Medium',
@@ -124,10 +124,12 @@ class TicketSerializerTestCase(TestCase):
         serializer = TicketSerializer(data=valid_data)
 
         self.assertTrue(serializer.is_valid())
-
        
-
-        ticket = serializer.save()
+        """
+        CHECK: explicitly setting the created_by field for the ticket object, as otherwise the ticket won't have a created_by value,
+        since it is read_only in the serializer 
+        """
+        ticket = serializer.save(created_by=self.student_user)
 
         self.assertEqual(ticket.subject, valid_data['subject'])
         self.assertEqual(ticket.description, valid_data['description'])
@@ -142,7 +144,7 @@ class TicketSerializerTestCase(TestCase):
         invalid_data = {
             'subject': 'Valid Ticket',
             'description': 'Description for valid ticket',
-            'created_by': 'john',  
+            # 'created_by': 'john', => No need for this as created_by is read_only so will be ignored by the serializer
             'assigned_to': 'smith',
             'status': 'Open',
             'priority': 'Medium',
@@ -154,7 +156,11 @@ class TicketSerializerTestCase(TestCase):
 
         self.assertFalse(serializer.is_valid())
        
-        self.assertIn('created_by', serializer.errors)
+        """
+        CHECK: remove created_by assertion, since created_by is read_only, it isn't validated by the serializer 
+        when passing it to the serializer as data 
+        """
+        # self.assertIn('created_by', serializer.errors)
         self.assertIn('assigned_to', serializer.errors)
 
 class DepartmentSerializerTestCase(TestCase):
@@ -231,12 +237,46 @@ class OfficerSerializerTestCase(TestCase):
 
     
         self.assertEqual(serialized_data['id'], self.officerOne.id)
-        self.assertEqual(serialized_data['user'], self.userOne.id)
+        
+        """
+        CHECK THIS IS FINE: changed from self.assertEqual(serialized_data['user'], self.userOne.id) to pass
+        This is because OfficerSerializer has been changed to now include the entire user object, 
+        so serialized_data['user'] will return the entire user.
+        """
+        self.assertEqual(serialized_data['user']['id'], self.userOne.id)
+        ## MORE TESTS
+        self.assertEqual(serialized_data['user']['username'], self.userOne.username)
+        self.assertEqual(serialized_data['user']['email'], self.userOne.email)
+
         self.assertEqual(serialized_data['department'], self.departmentOne.id)
 
 
     def test_deserialization_valid_data(self):
 
+        """
+        What I tried, but still not sure how to get this test to work ...
+        """
+        # valid_data = {
+        #     'user': {
+        #         'username': "jane_doe",
+        #         'email': "jane.doe@example.com",
+        #         'password': "testpassword123"
+        #     },
+        #     'department': self.departmentTwo.id,
+        # }
+        
+        # serializer = OfficerSerializer(data=valid_data)
+
+        # self.assertTrue(serializer.is_valid())
+        
+        # new_officer = serializer.save()
+
+        # self.assertEqual(new_officer.user.username, "jane_doe")
+        # self.assertEqual(new_officer.department, self.departmentTwo)
+
+        """
+        Original test ...
+        """
         valid_data = {
             'user': self.userTwo.id,
             'department': self.departmentTwo.id,
@@ -248,7 +288,7 @@ class OfficerSerializerTestCase(TestCase):
 
         self.assertEqual(new_officer.user, self.userTwo)
         self.assertEqual(new_officer.department, self.departmentTwo)
-
+        
     def test_deserialization_invalid_data(self):
 
         invalid_data = {

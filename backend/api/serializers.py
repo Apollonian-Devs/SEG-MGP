@@ -35,7 +35,7 @@ class DepartmentSerializer(serializers.ModelSerializer):
         fields = ["id", "name"]
 
 class OfficerSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())  
+    user = UserSerializer()
     department = serializers.PrimaryKeyRelatedField(queryset=Department.objects.all())  
 
     class Meta:

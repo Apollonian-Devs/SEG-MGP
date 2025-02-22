@@ -117,21 +117,24 @@ const TicketsCard = ({ user, officers, openPopup }) => {
                 }
                 data={tickets}
                 dataName="tickets"
+                  
                 rowDefinition={(ticket) => (
                   <tr key={ticket.id}
-                  className='hover:bg-gray-100 cursor-pointer'
-                  onClick={() => openPopup("viewTicket", ticket)}
+                      className='hover:bg-gray-100 cursor-pointer'
+                      onClick={() => openPopup("viewTicket", ticket)}
                   >
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">
+                    <td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800'>
                       {ticket.subject}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{ticket.status}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                    <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-800'>
+                      {ticket.status}
+                    </td>
+                    <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-800'>
                       {ticket.priority || "Not Set"}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
+                    <td className='px-6 py-4 whitespace-nowrap text-end text-sm font-medium'>
                       <GenericButton
-                        className="text-blue-600 hover:text-blue-800"
+                        className='text-blue-600 hover:text-blue-800'
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedTicket(ticket);
@@ -142,18 +145,20 @@ const TicketsCard = ({ user, officers, openPopup }) => {
                       </GenericButton>
                     </td>
                     {user.is_staff && (
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                        <div className="flex items-center gap-2">
-    
-                          <OfficersDropdown officers={officers} setSelectedOfficer={setSelectedOfficer} />
-                          <RedirectButton ticketid={ticket.id} selectedOfficer={selectedOfficer} />
-                        </div>
-                      </td>
-                    )}
-                  </tr>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                    <div className="flex items-center gap-2">
+
+                      <OfficersDropdown officers={officers} setSelectedOfficer={setSelectedOfficer} />
+                      <RedirectButton ticketid={ticket.id} selectedOfficer={selectedOfficer} />
+                    </div>
+                  </td>
                 )}
+
+              </tr>
+                    
+            )}
                 
-              />
+          />
             </div>
           </div>
         </div>

@@ -26,7 +26,7 @@ class TicketListCreate(generics.ListCreateAPIView):
             subject=data.get("subject"),
             description=data.get("description"),
             message_body=data.get("message"),
-            attachments=data.get("attachments", None)
+            attachments=data.get("attachments")
         )
 
         return new_ticket
@@ -71,7 +71,6 @@ class UserTicketsView(views.APIView):
         return Response({"tickets": tickets})
 
 
-#TODO: Possibly send ticket with the message rather than as parameter 
 #sender_user, ticket, message_body, is_internal=False
 class TicketSendResponseView(views.APIView):
     permission_classes = [IsAuthenticated]
@@ -83,10 +82,9 @@ class TicketSendResponseView(views.APIView):
         
             try:
 
-                ticket = Ticket.objects.get(id=ticket_id)
                 comment = send_response(
-                    sender_user=request.user,
-                    ticket=ticket,
+                    sender_profile=serializer.validated_data['sender_profile'],
+                    ticket=serializer.validated_data['ticket'],
                     message_body=serializer.validated_data['message_body'],
                 )
                 

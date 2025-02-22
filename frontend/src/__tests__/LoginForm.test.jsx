@@ -53,6 +53,7 @@ describe('LoginForm', () => {
 		).toBeInTheDocument();
 	});
 
+
 	it('shows an error message when login fails', async () => {
 		api.post.mockRejectedValue({
 			response: { data: { message: 'Invalid credentials' } },
@@ -69,6 +70,22 @@ describe('LoginForm', () => {
 		await waitFor(() =>
 			expect(screen.getByText('Invalid credentials')).toBeInTheDocument()
 		);
+	});
+
+	it ('shows default error message when login response message fails', async () => {
+		api.post.mockRejectedValue({ response: { data: {} } });
+
+		fireEvent.change(screen.getByLabelText(/Username/i), {
+			target: { value: 'wronguser' },
+		});
+		fireEvent.change(screen.getByLabelText(/Password/i), {
+			target: { value: 'wrongpassword' },
+		});
+		fireEvent.submit(screen.getByRole('button', { name: /Sign in/i }));
+
+		await waitFor(() =>
+			expect(screen.getByText('Login failed. Please try again.')).toBeInTheDocument()
+		)
 	});
 
 	it('redirects to dashboard on successful login', async () => {

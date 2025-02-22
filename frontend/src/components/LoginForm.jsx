@@ -33,44 +33,40 @@ const LoginForm = () => {
 		}
 	};
 
-	return (
-		<>
-			<h1 className="text-left mb-10">Sign in</h1>
-			<GenericForm
-				className="space-y-3"
-				onSubmit={handleSubmit}
-				buttonLabel="Sign in"
-			>
-				<GenericInput
-					id="username"
-					label="Username"
-					type="text"
-					required={true}
-					onChange={(e) => setUsername(e.target.value)}
-					placeholder="Enter your username"
-				></GenericInput>
+  return (
+    <>
+      <h1 className='text-left mb-10'>Sign in</h1>
+      <GenericForm className='space-y-3' onSubmit={handleSubmit} buttonLabel="Sign in" data-testid="login-form">
 
-				<GenericInput
-					id="password"
-					label="Password"
-					labelClass="block text-sm font-medium text-black"
-					type="password"
-					required={true}
-					onChange={(e) => setPassword(e.target.value)}
-					placeholder="Enter your username"
-				></GenericInput>
+          <GenericInput
+            id="username"
+            label="Username"
+            type="text"
+            required={true}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Enter your username"
+          ></GenericInput>
 
-				<a
-					href="#"
-					className="text-xs text-customOrange-dark hover:text-customOrange-light"
-				>
-					Forgot password?
-				</a>
-
-				{error && <p className="text-red-500">{error}</p>}
-			</GenericForm>
-		</>
-	);
+          <GenericInput
+            id="password"
+            label="Password"
+            labelClass="block text-sm font-medium text-black"
+            type="password"
+            required={true}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Enter your username"
+          ></GenericInput>
+          
+          <a href='#' className='text-xs text-customOrange-dark hover:text-customOrange-light'>
+              Forgot password?
+          </a>
+          
+        
+        {error && <p className='text-red-500'>{error}</p>}
+        
+      </GenericForm>
+    </>
+  );
 };
 
 export default LoginForm;

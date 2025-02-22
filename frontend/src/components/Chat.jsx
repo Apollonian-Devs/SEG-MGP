@@ -36,7 +36,9 @@ const Chat = ({ ticket, onClose, user }) => {
       const token = localStorage.getItem(ACCESS_TOKEN);
       const response = await api.post(
         `/api/tickets/${ticket.id}/messages/post/`, // Updated URL
-        { message_body }, // Pass the message body
+        { sender_profile: user.id,
+          ticket: ticket.id,
+          message_body:message_body }, // Pass the message body
         {
           headers: { Authorization: `Bearer ${token}` },
         }

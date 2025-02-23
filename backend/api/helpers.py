@@ -438,8 +438,3 @@ def get_random_department():
 
 
 
-
-
-
-
-

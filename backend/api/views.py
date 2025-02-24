@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import generics, views
 from rest_framework.response import Response
-from .serializers import UserSerializer, TicketSerializer, TicketMessageSerializer, TicketRedirectSerializer, OfficerSerializer, NotificationSerializer
+from .serializers import UserSerializer, TicketSerializer, TicketMessageSerializer, TicketRedirectSerializer, OfficerSerializer, NotificationSerializer, ChangeTicketDateSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Ticket
 from django.core.exceptions import ObjectDoesNotExist
@@ -179,3 +179,24 @@ class TicketRedirectView(views.APIView):
         else:
             return Response(serializer.errors)
 
+
+class ChangeTicketDate(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        
+        user = request.user
+        serializer = ChangeTicketDateSerializer(data=request.data)
+
+        if serializer.is_valid():
+            try:
+                ticket_id = request.data.get("id")
+                ticket = Ticket.objects.get(id=ticket_id)
+                new_due_date = serializer.validated_data['due_date']
+                updated_ticket = changeTicketDueDate(ticket, user, new_due_date)
+                return Response(serializer.data, status=201)
+            except Exception as e:
+                print("The error: ", str(e))
+                return Response({"error": str(e)})
+        else:
+            return Response(serializer.errors)

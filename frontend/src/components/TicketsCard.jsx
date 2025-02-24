@@ -7,6 +7,7 @@ import PopUp from "./Popup";
 import GenericTable from "./GenericTable";
 import OfficersDropdown from "./OfficersDropdown";
 import RedirectButton from "./RedirectButton";
+import ChangeDateButton from "./ChangeDateButton";
 
 const TicketsCard = ({ user, officers, openPopup }) => {
   const [tickets, setTickets] = useState([]);
@@ -111,7 +112,10 @@ const TicketsCard = ({ user, officers, openPopup }) => {
                     </th>
                     <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase">Actions</th>
                     {user.is_staff && (
+                      <>
                       <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase">Redirect</th>
+                      <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase">Change Due Date</th>
+                      </>
                     )}
                   </>
                 }
@@ -145,13 +149,18 @@ const TicketsCard = ({ user, officers, openPopup }) => {
                       </GenericButton>
                     </td>
                     {user.is_staff && (
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                    <div className="flex items-center gap-2">
-
-                      <OfficersDropdown officers={officers} setSelectedOfficer={setSelectedOfficer} />
-                      <RedirectButton ticketid={ticket.id} selectedOfficer={selectedOfficer} />
-                    </div>
-                  </td>
+                      <>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                        <div className="flex items-center gap-2">
+                          <OfficersDropdown officers={officers} setSelectedOfficer={setSelectedOfficer} />
+                          <RedirectButton ticketid={ticket.id} selectedOfficer={selectedOfficer} />
+                        </div>
+                      </td>
+                      
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                        <ChangeDateButton ticket_id={ticket.id}/>
+                      </td>
+                      </>
                 )}
 
               </tr>

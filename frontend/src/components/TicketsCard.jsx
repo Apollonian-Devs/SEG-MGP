@@ -7,6 +7,7 @@ import PopUp from "./Popup";
 import GenericTable from "./GenericTable";
 import OfficersDropdown from "./OfficersDropdown";
 import RedirectButton from "./RedirectButton";
+import StatusHistoryButton from "./StatusHistoryButton";
 
 const TicketsCard = ({ user, officers, openPopup }) => {
   const [tickets, setTickets] = useState([]);
@@ -14,6 +15,7 @@ const TicketsCard = ({ user, officers, openPopup }) => {
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [selectedOfficer, setSelectedOfficer] = useState(null);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
   // Sorting State
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
@@ -64,14 +66,26 @@ const TicketsCard = ({ user, officers, openPopup }) => {
     <>
       <div className="relative">
         {selectedTicket && (
-          <PopUp
-            isOpen={isChatOpen}
+          <>
+            <PopUp
+              isOpen={isChatOpen}
+              onClose={() => setSelectedTicket(null)}
+              width="w-[100%]"
+              height="h-[100%]"
+            >
+              <Chat ticket={selectedTicket} onClose={() => setIsChatOpen(false)} user={user} />
+            </PopUp>
+
+            <PopUp
+            isOpen={isHistoryOpen}
             onClose={() => setSelectedTicket(null)}
-            width="w-[100%]"
-            height="h-[100%]"
-          >
-            <Chat ticket={selectedTicket} onClose={() => setIsChatOpen(false)} user={user} />
-          </PopUp>
+            width="w-[80%]"
+            height="h-[80%]"
+            >
+           
+            <StatusHistoryButton ticketId={selectedTicket.id}  />
+            </PopUp>
+          </>
         )}
       </div>
       <div className="flex flex-col bg-white rounded-3xl drop-shadow-[0_20px_50px_rgba(0,0,0,0.1)]">
@@ -82,7 +96,7 @@ const TicketsCard = ({ user, officers, openPopup }) => {
               <GenericTable
                 columnDefinition={
                   <>
-                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase cursor-pointer">
+                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 cursor-pointer">
                       <GenericButton
                         className="flex items-center w-full gap-x-1"
                         onClick={() => sortTickets("subject")}
@@ -91,7 +105,7 @@ const TicketsCard = ({ user, officers, openPopup }) => {
                         {sortConfig.key === "subject" ? (sortConfig.direction === "asc" ? "▲" : "▼") : ""}
                       </GenericButton>
                     </th>
-                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase cursor-pointer">
+                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 cursor-pointer">
                       <GenericButton
                         className="flex items-center w-full gap-x-1"
                         onClick={() => sortTickets("status")}
@@ -100,7 +114,7 @@ const TicketsCard = ({ user, officers, openPopup }) => {
                         {sortConfig.key === "status" ? (sortConfig.direction === "asc" ? "▲" : "▼") : ""}
                       </GenericButton>
                     </th>
-                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase cursor-pointer">
+                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 cursor-pointer">
                       <GenericButton
                         className="flex items-center w-full gap-x-1"
                         onClick={() => sortTickets("priority")}
@@ -109,9 +123,12 @@ const TicketsCard = ({ user, officers, openPopup }) => {
                         {sortConfig.key === "priority" ? (sortConfig.direction === "asc" ? "▲" : "▼") : ""}
                       </GenericButton>
                     </th>
-                    <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase">Actions</th>
+                    <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 "><p>Actions</p></th>
                     {user.is_staff && (
-                      <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase">Redirect</th>
+                      <>
+                      <th className="px-6 py-3 text-end text-xs font-medium text-gray-500"><p>Redirect</p></th>
+                      <th className="px-6 py-3 text-end text-xs font-medium text-gray-500"><p>Status History</p></th>
+                      </>
                     )}
                   </>
                 }
@@ -145,13 +162,31 @@ const TicketsCard = ({ user, officers, openPopup }) => {
                       </GenericButton>
                     </td>
                     {user.is_staff && (
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                    <div className="flex items-center gap-2">
+                    <>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                        <div className="flex items-center gap-2">
 
-                      <OfficersDropdown officers={officers} setSelectedOfficer={setSelectedOfficer} />
-                      <RedirectButton ticketid={ticket.id} selectedOfficer={selectedOfficer} />
-                    </div>
-                  </td>
+                          <OfficersDropdown officers={officers} setSelectedOfficer={setSelectedOfficer} />
+                          <RedirectButton ticketid={ticket.id} selectedOfficer={selectedOfficer} />
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                        
+
+                          <GenericButton
+                            className="px-3 py-1 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedTicket(ticket);
+                              setIsHistoryOpen(true);
+                            }}
+                          >
+                            Status History
+                          </GenericButton>
+                          {/* <StatusHistoryButton ticketId={ticket.id}/> */}
+                       
+                      </td>
+                    </>
                 )}
 
               </tr>

@@ -10,6 +10,7 @@ urlpatterns = [
     path("tickets/<int:ticket_id>/messages/post/", views.TicketSendResponseView.as_view(), name="send-ticket"),
     path("all-officers/", views.AllOfficersView.as_view(), name="all-officers"),
     path("user-notifications/", views.UserNotificationsView.as_view(), name="user-notifications"),
-    path("redirect-ticket/", views.TicketRedirectView.as_view(), name="redirect-ticket"),  
+    path("redirect-ticket/", views.TicketRedirectView.as_view(), name="redirect-ticket"), 
+    path("ticket-status-history/<int:ticket_id>/", views.TicketStatusHistoryView.as_view(), name="ticket-status-history"),  
 ]
 

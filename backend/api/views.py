@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import generics, views
 from rest_framework.response import Response
-from .serializers import UserSerializer, TicketSerializer, TicketMessageSerializer, TicketRedirectSerializer, OfficerSerializer, NotificationSerializer
+from .serializers import UserSerializer, TicketSerializer, TicketMessageSerializer, TicketRedirectSerializer, OfficerSerializer, NotificationSerializer,TicketStatusHistorySerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Ticket
 from django.core.exceptions import ObjectDoesNotExist
@@ -178,4 +178,13 @@ class TicketRedirectView(views.APIView):
                 return Response({"error": "an error has occured"})
         else:
             return Response(serializer.errors)
+        
+class TicketStatusHistoryView(views.APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, ticket_id):
+        user = request.user
+        ticket = Ticket.objects.get(id=ticket_id)
+        status_history = get_ticket_history(user,ticket)
+        serializer = TicketStatusHistorySerializer(status_history, many=True)
+        return Response({"status_history": serializer.data})
 

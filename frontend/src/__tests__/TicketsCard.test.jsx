@@ -274,4 +274,53 @@ describe("TicketsCard", () => {
         expect(within(rowsDesc[4]).getByText("ticket 1")).toBeInTheDocument();
     })
     
+    it("status history button clicked and closed",async()=>{
+      api.get.mockResolvedValue({
+          data: {
+            tickets: [
+              { id: 1, subject: "ticket 1", status: "test status", },
+              
+            ],
+            status_history:[
+              {notes:"note 1"}
+            ]
+          },
+      });
+      const mockOfficer = {
+        user: {
+            id: 101,
+            username: "@officer1",
+        },
+        department: "IT",
+      };
+
+      render(
+          <TicketsCard
+              user={{ is_staff: true }}
+              officers={[mockOfficer]} 
+              openPopup={() => {}}
+          />
+      );
+      await waitFor(() =>
+        expect(screen.getByRole("button", { name: "Status History" })).toBeInTheDocument()
+      );
+      
+      fireEvent.click(screen.getByRole("button", { name: "Status History" }));
+      await waitFor(() => expect(screen.getByText("note 1")).toBeInTheDocument());
+      const buttons = screen.getAllByRole("button");
+      fireEvent.click(buttons[1]);
+      await waitFor(() =>
+        expect(screen.getByRole("button", { name: "Status History" })).toBeInTheDocument()
+      );
+      fireEvent.click(screen.getByRole("button", { name: "Status History" }));
+      const buttons2 = screen.getAllByRole("button");
+      fireEvent.click(buttons2[0]);
+      await waitFor(() =>
+        expect(screen.getByRole("button", { name: "Status History" })).toBeInTheDocument()
+      );
+
+      
+  })
+
+ 
 })

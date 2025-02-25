@@ -183,7 +183,7 @@ const TicketsCard = ({ user, officers, openPopup }) => {
                           >
                             Status History
                           </GenericButton>
-                          {/* <StatusHistoryButton ticketId={ticket.id}/> */}
+                          
                        
                       </td>
                     </>

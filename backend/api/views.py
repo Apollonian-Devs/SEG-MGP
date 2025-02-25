@@ -197,6 +197,12 @@ class ChangeTicketDate(views.APIView):
                 
                 return Response(serializer.data, status=201)
             
+                # updated_ticket = changeTicketDueDate(ticket, user, new_due_date)
+                
+                # serializer = ChangeTicketDateSerializer(updated_ticket)
+
+                # return Response({"ticket": serializer.data}, status=201)
+            
             except Ticket.DoesNotExist:
                 return Response({"error": "Ticket not found"}, status=404)
             except ValueError as e:

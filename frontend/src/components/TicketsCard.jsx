@@ -7,7 +7,7 @@ import PopUp from "./Popup";
 import GenericTable from "./GenericTable";
 import OfficersDropdown from "./OfficersDropdown";
 import RedirectButton from "./RedirectButton";
-import ChangeDateButton from "./ChangeDateButton";
+import ChangeDate from "./ChangeDate";
 
 const TicketsCard = ({ user, officers, openPopup }) => {
   const [tickets, setTickets] = useState([]);
@@ -15,6 +15,7 @@ const TicketsCard = ({ user, officers, openPopup }) => {
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [selectedOfficer, setSelectedOfficer] = useState(null);
+  const [isChangeDateOpen, setChangeDateOpen] = useState(null);
 
   // Sorting State
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
@@ -60,9 +61,13 @@ const TicketsCard = ({ user, officers, openPopup }) => {
     return <p>Loading tickets...</p>;
   }
 
+  const toggleChangeDate = () => {
+    setChangeDateOpen((prev) => !prev);
+  }
 
   return (
     <>
+      {/* Pop up for chat */}
       <div className="relative">
         {selectedTicket && (
           <PopUp
@@ -73,6 +78,21 @@ const TicketsCard = ({ user, officers, openPopup }) => {
           >
             <Chat ticket={selectedTicket} onClose={() => setIsChatOpen(false)} user={user} />
           </PopUp>
+        )}
+      </div>
+
+      {/* Pop up for change date form */}
+      <div className="relative">
+        {selectedTicket && (
+          <PopUp
+            isOpen={isChangeDateOpen}
+            onClose={toggleChangeDate}
+            width="w-[25%]"
+            height="h-[25%]"
+          >
+            <ChangeDate ticket={selectedTicket} />
+          </PopUp>
+
         )}
       </div>
       <div className="flex flex-col bg-white rounded-3xl drop-shadow-[0_20px_50px_rgba(0,0,0,0.1)]">
@@ -136,6 +156,7 @@ const TicketsCard = ({ user, officers, openPopup }) => {
                     <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-800'>
                       {ticket.priority || "Not Set"}
                     </td>
+                    
                     <td className='px-6 py-4 whitespace-nowrap text-end text-sm font-medium'>
                       <GenericButton
                         className='text-blue-600 hover:text-blue-800'
@@ -158,7 +179,16 @@ const TicketsCard = ({ user, officers, openPopup }) => {
                       </td>
                       
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                        <ChangeDateButton ticket_id={ticket.id}/>
+                        <GenericButton
+                          className="px-3 py-1 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedTicket(ticket);
+                            toggleChangeDate();
+                          }}
+                          >
+                          Select Date
+                        </GenericButton>
                       </td>
                       </>
                 )}

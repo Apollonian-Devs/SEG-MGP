@@ -4,7 +4,7 @@ import { ACCESS_TOKEN } from "../constants";
 import GenericForm from "./GenericForm";
 import api from "../api";
 
-const ChangeDate = ({ ticket_id }) => {
+const ChangeDate = ({ ticket }) => {
 
     const[date, setDate] = useState(null);
 
@@ -17,7 +17,7 @@ const ChangeDate = ({ ticket_id }) => {
             const response = await api.post(
                 "api/tickets/change-date", 
                 {
-                    id: ticket_id,
+                    id: ticket.id,
                     due_date: date
                 },
                 {

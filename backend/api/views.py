@@ -180,7 +180,7 @@ class TicketRedirectView(views.APIView):
             return Response(serializer.errors)
 
 
-class ChangeTicketDate(views.APIView):
+class ChangeTicketDateView(views.APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -193,15 +193,12 @@ class ChangeTicketDate(views.APIView):
                 ticket_id = serializer.validated_data['id']
                 ticket = Ticket.objects.get(id=ticket_id)
                 new_due_date = serializer.validated_data['due_date']
+            
                 updated_ticket = changeTicketDueDate(ticket, user, new_due_date)
                 
-                return Response(serializer.data, status=201)
-            
-                # updated_ticket = changeTicketDueDate(ticket, user, new_due_date)
-                
-                # serializer = ChangeTicketDateSerializer(updated_ticket)
+                serializer = TicketSerializer(updated_ticket)
 
-                # return Response({"ticket": serializer.data}, status=201)
+                return Response({"ticket": serializer.data}, status=201)
             
             except Ticket.DoesNotExist:
                 return Response({"error": "Ticket not found"}, status=404)

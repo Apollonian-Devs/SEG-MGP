@@ -202,6 +202,8 @@ def view_ticket_details(ticket):
         "due_date": ticket.due_date,
         "is_overdue": ticket.is_overdue,
     }
+
+    print(details)
     return details
 #---------------------------------------------------------
 
@@ -419,6 +421,9 @@ def changeTicketDueDate(ticket, user, new_due_date):
                 f"by {user.username}."
             ),
         )
+
+        return ticket
+    
     else:
         raise PermissionDenied("Only officers or admins can change ticket due date.")
 

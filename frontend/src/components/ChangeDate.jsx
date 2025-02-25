@@ -27,6 +27,9 @@ const ChangeDate = ({ ticket }) => {
                 })
             if (response.status === 201) {
                 alert("The due date for the ticket has been successfully updated")
+                console.log(`updated ticket: ${response.data.ticket.id}`);
+                console.log(`updated subject: ${response.data.ticket.subject}`);
+                console.log(`updated due date: ${response.data.ticket.due_date}`);
             }
         }
         catch (error) {

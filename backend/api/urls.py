@@ -11,6 +11,6 @@ urlpatterns = [
     path("all-officers/", views.AllOfficersView.as_view(), name="all-officers"),
     path("user-notifications/", views.UserNotificationsView.as_view(), name="user-notifications"),
     path("redirect-ticket/", views.TicketRedirectView.as_view(), name="redirect-ticket"), 
-    path("tickets/change-date", views.ChangeTicketDate.as_view(), name="change-ticket-date"), 
+    path("tickets/change-date", views.ChangeTicketDateView.as_view(), name="change-ticket-date"), 
 ]
 

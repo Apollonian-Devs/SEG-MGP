@@ -31,7 +31,12 @@ const ChangeDate = ({ ticket_id }) => {
         }
         catch (error) {
             console.error("The reason for the error is: ", error)
-            alert("There has been an error trying to update the due date of the ticket");
+            if (error.response.status === 400) {
+                alert("Please ensure you pick a valid date that isn't in the past and isn't today's date")
+            }
+            else {
+                alert("There has been an error trying to update the due date of the ticket");
+            }
         }
     }
 

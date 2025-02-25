@@ -6,7 +6,6 @@ from api.models import (
     TicketAttachment, Notification, Officer, STATUS_CHOICES, PRIORITY_CHOICES
 )
 import random
-from datetime import datetime
 
 
 
@@ -406,8 +405,8 @@ def changeTicketDueDate(ticket, user, new_due_date):
     Also notify the ticket owner (student) that a new due date is set.
     """
     if user.is_staff:
-        # if new_due_date < datetime.now():
-        #     raise ValueError("You cannot change the due date to be in the past.") 
+        if new_due_date < timezone.now():
+            raise ValueError("You cannot change the due date to be in the past.") 
         ticket.due_date = new_due_date
         ticket.save()
 

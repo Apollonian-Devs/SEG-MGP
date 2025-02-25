@@ -108,8 +108,6 @@ class NotificationSerializer(serializers.ModelSerializer):
         extra_kwargs = {"student": {"read_only": True}}
 
 
-class ChangeTicketDateSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Ticket
-        fields = ["due_date"]
+class ChangeTicketDateSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    due_date = serializers.DateTimeField()

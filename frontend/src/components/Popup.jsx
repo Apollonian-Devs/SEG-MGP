@@ -7,6 +7,7 @@ const Popup = ({ isOpen, onClose, children, width="500px", height="300px"}) => {
 
   return (
     <div 
+      data-testid="popup-overlay"
       className="fixed inset-0 w-full h-full bg-black bg-opacity-50 backdrop-blur-lg flex justify-center items-center z-50" 
       onClick={onClose}
     >

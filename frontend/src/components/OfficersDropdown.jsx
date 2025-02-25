@@ -3,6 +3,7 @@ import GenericDropdown from "./GenericDropdown";
 import GenericButton from "./GenericButton";
 
 const OfficersDropdown = ({ officers, setSelectedOfficer }) => {
+  console.log("Officers in Dropdown", officers)
   const [selectedOfficer, setSelectedOfficerState] = useState(null);
 
   const handleSelect = (officer) => {

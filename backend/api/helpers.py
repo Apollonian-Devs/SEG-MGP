@@ -334,6 +334,7 @@ def changeTicketPriority(ticket, user):
     if user is a student, then raise permission denied
     '''
 
+    old_priority = ticket.priority
     if user.is_staff:
         if ticket.priority == None:
             ticket.priority = PRIORITY_CHOICES[0][0]
@@ -343,6 +344,15 @@ def changeTicketPriority(ticket, user):
                     ticket.priority = PRIORITY_CHOICES[(i+1)%len(PRIORITY_CHOICES)][0]
                     break
         ticket.save()
+
+        TicketStatusHistory.objects.create(
+            ticket=ticket,
+            old_status=ticket.status,
+            new_status=ticket.status,
+            changed_by_profile=user,
+            notes=f"Priority changed from {old_priority} to {ticket.priority}"
+        )
+        
     else:
         raise PermissionDenied("Only officers or admins can change ticket priority.")
     
@@ -354,6 +364,8 @@ def changeTicketStatus(ticket, user):
     if user is a student, then raise permission denied
     '''
 
+    old_status = ticket.status
+
     if user.is_staff:
         if ticket.status == None:
             ticket.status = STATUS_CHOICES[0][0]
@@ -363,6 +375,15 @@ def changeTicketStatus(ticket, user):
                     ticket.status = STATUS_CHOICES[(i+1)%len(STATUS_CHOICES)][0]
                     break
         ticket.save()
+
+        TicketStatusHistory.objects.create(
+            ticket=ticket,
+            old_status=old_status,
+            new_status=ticket.status,
+            changed_by_profile=user,
+            notes="Status changed via changeTicketStatus()"
+        )
+        
     else:
         raise PermissionDenied("Only officers or admins can change ticket status.")
     

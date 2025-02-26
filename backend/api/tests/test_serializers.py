@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 from api.models import Ticket, User, Department, Officer, TicketRedirect, TicketMessage, Notification
-from api.serializers import TicketSerializer, UserSerializer, DepartmentSerializer, OfficerSerializer, TicketRedirectSerializer, TicketMessageSerializer, NotificationSerializer
+from api.serializers import TicketSerializer, UserSerializer, DepartmentSerializer, OfficerSerializer, TicketRedirectSerializer, TicketMessageSerializer, NotificationSerializer, ChangeTicketDateSerializer
 from datetime import datetime
 
 
@@ -522,3 +522,49 @@ class NotificationSerializerTestCase(TestCase):
         serializer = NotificationSerializer(data=invalid_data)
         self.assertFalse(serializer.is_valid())
         self.assertIn('message', serializer.errors)
+
+
+# class DepartmentSerializerTestCase(TestCase):
+#     def setUp(self):
+#         self.department = Department.objects.create(
+#             name = 'Finance'
+#         )
+    
+#     def test_serialization(self):
+#         serializer = DepartmentSerializer(self.department)
+#         serialized_data = serializer.data
+
+#         self.assertEqual(serialized_data['id'], self.department.id)
+#         self.assertEqual(serialized_data['name'], self.department.name)
+        
+#     def test_deserialization_valid_data(self):
+#         valid_data = {
+#             'name': 'TestDepartment',
+#         }
+
+#         serializer = DepartmentSerializer(data=valid_data)
+
+#         self.assertTrue(serializer.is_valid())
+
+#         department = serializer.save()
+
+#         self.assertEqual(department.name, valid_data['name'])
+
+#     def test_deserialization_invalid_data(self):
+#         invalid_data = {
+#             'name': 'Finance',
+#         }
+
+#         serializer = DepartmentSerializer(data=invalid_data)
+
+#         self.assertFalse(serializer.is_valid())
+#         self.assertIn('name', serializer.errors)
+
+
+class ChangeTicketDateSerializerTestCase(TestCase):
+
+    def test_deserialization_valid_data(self):
+        valid_data = {
+            "id": 1,
+            "due_date": 
+        }

@@ -62,7 +62,7 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    if (current_user && current_user.is_staff) {
+    if (current_user && current_user.is_staff && !current_user.is_superuser) {
       fetchOfficers();
     }
   }, [current_user]);

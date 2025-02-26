@@ -144,7 +144,7 @@ const TicketsCard = ({ user, officers, openPopup }) => {
                         Chat
                       </GenericButton>
                     </td>
-                    {user.is_staff && (
+                    {user.is_staff && !user.is_superuser &&(
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
                     <div className="flex items-center gap-2">
 

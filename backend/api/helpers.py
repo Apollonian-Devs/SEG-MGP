@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError, PermissionDenied
 from django.db.models import Count
 from api.models import (
     Ticket, TicketMessage, TicketStatusHistory, TicketRedirect, 
-    TicketAttachment, Notification, Officer, STATUS_CHOICES, PRIORITY_CHOICES
+    TicketAttachment, Notification, Officer, Department,STATUS_CHOICES, PRIORITY_CHOICES
 )
 import random
 
@@ -451,6 +451,9 @@ def get_random_department():
     department_heads = Officer.objects.filter(is_department_head=True)
     department = random.choice(department_heads).department
     return department
+
+def get_all_departments():
+    return Department.objects.all()
 
 
 

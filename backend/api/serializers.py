@@ -30,9 +30,15 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 class DepartmentSerializer(serializers.ModelSerializer):
+    department_head = serializers.SerializerMethodField()
+    
     class Meta:
         model = Department
-        fields = ["id", "name"]
+        fields = ["name", "description", "department_head"]
+    
+    def get_department_head(self, obj):
+        head = Officer.objects.filter(department=obj, is_department_head=True).first()
+        return head if head else None
 
 class OfficerSerializer(serializers.ModelSerializer):
     user = UserSerializer()

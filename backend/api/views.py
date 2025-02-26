@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import generics, views
 from rest_framework.response import Response
-from .serializers import UserSerializer, TicketSerializer, TicketMessageSerializer, TicketRedirectSerializer, OfficerSerializer, NotificationSerializer
+from .serializers import UserSerializer, TicketSerializer, TicketMessageSerializer, TicketRedirectSerializer, OfficerSerializer, NotificationSerializer, DepartmentSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Ticket
 from django.core.exceptions import ObjectDoesNotExist
@@ -130,6 +130,17 @@ class AllOfficersView(views.APIView):
         user = request.user
         officers = get_officers_same_department(user)
         serializer = OfficerSerializer(officers, many=True)
+        return Response(serializer.data)
+    
+class AllDepartmentsView(views.APIView):
+    """
+    API endpoint to get all departments.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        departments = get_all_departments()
+        serializer = DepartmentSerializer(departments, many=True)
         return Response(serializer.data)
 
 class UserNotificationsView(views.APIView):

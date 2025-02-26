@@ -314,6 +314,7 @@ def get_tickets_for_user(user):
             "priority": ticket.priority,
             "created_at": ticket.created_at,
             "updated_at": ticket.updated_at,
+            "due_date": ticket.due_date,
             "is_overdue": ticket.is_overdue,
             "assigned_to": ticket.assigned_to.username if ticket.assigned_to else None
         }

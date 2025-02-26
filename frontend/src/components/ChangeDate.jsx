@@ -5,7 +5,7 @@ import GenericForm from "./GenericForm";
 import api from "../api";
 import { Navigate, useNavigate } from "react-router-dom";
 
-const ChangeDate = ({ ticket }) => {
+const ChangeDate = ({ ticket, setSelectedTicket, setTickets }) => {
 
     const[date, setDate] = useState(null);
     const navigate = useNavigate();
@@ -32,7 +32,17 @@ const ChangeDate = ({ ticket }) => {
                 console.log(`updated ticket: ${response.data.ticket.id}`);
                 console.log(`updated subject: ${response.data.ticket.subject}`);
                 console.log(`updated due date: ${response.data.ticket.due_date}`);
-                navigate("/dashboard");
+
+                setSelectedTicket(prevTicket => ({
+                    ...prevTicket,
+                    due_date: response.data.ticket.due_date
+                }));
+    
+                setTickets(prevTickets => 
+                    prevTickets.map(t => 
+                        t.id === ticket.id ? { ...t, due_date: response.data.ticket.due_date } : t
+                    )
+                );
             }
         }
         catch (error) {

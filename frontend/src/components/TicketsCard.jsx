@@ -9,35 +9,14 @@ import OfficersDropdown from "./OfficersDropdown";
 import RedirectButton from "./RedirectButton";
 import ChangeDate from "./ChangeDate";
 
-const TicketsCard = ({ user, officers, openPopup }) => {
-  const [tickets, setTickets] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedTicket, setSelectedTicket] = useState(null);
+const TicketsCard = ({ user, officers, openPopup, selectedTicket, setSelectedTicket, tickets, setTickets }) => {
+  const [loading, setLoading] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [selectedOfficer, setSelectedOfficer] = useState(null);
   const [isChangeDateOpen, setChangeDateOpen] = useState(null);
 
   // Sorting State
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
-
-  useEffect(() => {
-    const fetchTickets = async () => {
-      try {
-        const access = localStorage.getItem(ACCESS_TOKEN);
-        const response = await api.get("/api/user-tickets/", {
-          headers: { Authorization: `Bearer ${access}` },
-        });
-        setTickets(response.data.tickets);
-        console.log("Tickets:", response.data.tickets);
-      } catch (error) {
-        console.error("Error fetching tickets:", error.response?.data || error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTickets();
-  }, []);
 
   // Sorting Function
   const sortTickets = (key) => {
@@ -90,7 +69,12 @@ const TicketsCard = ({ user, officers, openPopup }) => {
             width="w-[25%]"
             height="h-[25%]"
           >
-            <ChangeDate ticket={selectedTicket} />
+            <ChangeDate 
+            ticket={selectedTicket}
+            setSelectedTicket={setSelectedTicket}
+            setTickets={setTickets} 
+            />
+
           </PopUp>
 
         )}
@@ -145,7 +129,11 @@ const TicketsCard = ({ user, officers, openPopup }) => {
                 rowDefinition={(ticket) => (
                   <tr key={ticket.id}
                       className='hover:bg-gray-100 cursor-pointer'
-                      onClick={() => openPopup("viewTicket", ticket)}
+                      onClick={() => {
+                        console.log(`Selected Ticket ID: ${ticket.id}, Due Date: ${ticket.due_date}`);
+                        setSelectedTicket(ticket);
+                        openPopup("viewTicket");
+                      }}
                   >
                     <td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800'>
                       {ticket.subject}

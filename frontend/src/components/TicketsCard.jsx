@@ -18,25 +18,6 @@ const TicketsCard = ({ user, officers, openPopup, selectedTicket, setSelectedTic
   // Sorting State
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
 
-  //useEffect(() => {
-  //  const fetchTickets = async () => {
-  //    try {
-  //      const access = localStorage.getItem(ACCESS_TOKEN);
-  //      const response = await api.get("/api/user-tickets/", {
-  //        headers: { Authorization: `Bearer ${access}` },
-  //      });
-  //      setTickets(response.data.tickets);
-  //      console.log("Tickets:", response.data.tickets);
-  //    } catch (error) {
-  //      console.error("Error fetching tickets:", error.response?.data || error.message);
-  //    } finally {
-  //      setLoading(false);
-  //    }
-  //  };
-//
-  //  fetchTickets();
-  //}, []);
-
   // Sorting Function
   const sortTickets = (key) => {
     let direction = "asc";
@@ -88,7 +69,12 @@ const TicketsCard = ({ user, officers, openPopup, selectedTicket, setSelectedTic
             width="w-[25%]"
             height="h-[25%]"
           >
-            <ChangeDate ticket={selectedTicket} />
+            <ChangeDate 
+            ticket={selectedTicket}
+            setSelectedTicket={setSelectedTicket}
+            setTickets={setTickets} 
+            />
+
           </PopUp>
 
         )}
@@ -144,7 +130,7 @@ const TicketsCard = ({ user, officers, openPopup, selectedTicket, setSelectedTic
                   <tr key={ticket.id}
                       className='hover:bg-gray-100 cursor-pointer'
                       onClick={() => {
-                        console.log(`Selected Ticket: ${JSON.stringify(ticket)}`);
+                        console.log(`Selected Ticket ID: ${ticket.id}, Due Date: ${ticket.due_date}`);
                         setSelectedTicket(ticket);
                         openPopup("viewTicket");
                       }}

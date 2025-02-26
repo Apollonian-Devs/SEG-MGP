@@ -11,6 +11,7 @@ import Popup from "../components/Popup";
 const Dashboard = () => {
   const [current_user, setCurrent_user] = useState(null);
   const [officers, setOfficers] = useState([]);
+  const [departments, setDepartments] = useState([]);
   const [popupType, setPopupType] = useState(null);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [isPopupOpen, setPopupOpen] = useState(false);
@@ -45,6 +46,21 @@ const Dashboard = () => {
     }
   };
 
+  const fetchDepartments = async () => {
+    try {
+      const access = localStorage.getItem(ACCESS_TOKEN);
+      const response = await api.get("/api/all-departments/", {
+        headers: {
+          Authorization: `Bearer ${access}`,
+        },
+      });
+      console.log("All Departments", response.data);
+      setDepartments(response.data);
+    } catch (error) {
+      console.error("Error fetching departments", error.response?.data || error.message);
+    }
+  };
+
   const openPopup = (type, ticket = null) => {
     setPopupType(type);
     setSelectedTicket(ticket);
@@ -66,6 +82,10 @@ const Dashboard = () => {
       fetchOfficers();
     }
   }, [current_user]);
+
+  useEffect(() => {
+    fetchDepartments();
+  }, []);
 
   // Ensure current_user is available before rendering
   if (!current_user) {
@@ -100,6 +120,7 @@ const Dashboard = () => {
       <TicketsCard
         user={current_user}
         officers={current_user.is_staff && !current_user.is_superuser ? officers : undefined}
+        departments={departments}
         openPopup={openPopup}
       />
 

@@ -6,14 +6,16 @@ import GenericButton from "./GenericButton";
 import PopUp from "./Popup";
 import GenericTable from "./GenericTable";
 import OfficersDropdown from "./OfficersDropdown";
+import DepartmentDropdown from "./DepartmentDropdown";
 import RedirectButton from "./RedirectButton";
 
-const TicketsCard = ({ user, officers, openPopup }) => {
+const TicketsCard = ({ user, officers, departments, openPopup }) => {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [selectedOfficer, setSelectedOfficer] = useState(null);
+  const [selectedDepartment, setSelectedDepartment] = useState(null);
 
   // Sorting State
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
@@ -144,17 +146,29 @@ const TicketsCard = ({ user, officers, openPopup }) => {
                         Chat
                       </GenericButton>
                     </td>
-                    {user.is_staff && !user.is_superuser &&(
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                    <div className="flex items-center gap-2">
+                    {user.is_staff && (
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                        <div className="flex items-center gap-2">
+                          {user.is_superuser ? (
+                            <DepartmentDropdown
+                              departments={departments}
+                              selectedDepartment={selectedDepartment}
+                              setSelectedDepartment={(department) => {
+                                setSelectedDepartment(department);
+                                if (department && department.department_head) {
+                                  setSelectedOfficer(department.department_head);
+                                }
+                              }}
+                            />
+                          ) : (
+                            <OfficersDropdown officers={officers} setSelectedOfficer={setSelectedOfficer} />
+                          )}
+                          <RedirectButton ticketid={ticket.id} selectedOfficer={selectedOfficer} />
+                        </div>
+                      </td>
+                    )}
 
-                      <OfficersDropdown officers={officers} setSelectedOfficer={setSelectedOfficer} />
-                      <RedirectButton ticketid={ticket.id} selectedOfficer={selectedOfficer} />
-                    </div>
-                  </td>
-                )}
-
-              </tr>
+                  </tr>
                     
             )}
                 

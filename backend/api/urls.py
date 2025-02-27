@@ -11,6 +11,7 @@ urlpatterns = [
     path("all-officers/", views.AllOfficersView.as_view(), name="all-officers"),
     path("user-notifications/", views.UserNotificationsView.as_view(), name="user-notifications"),
     path("redirect-ticket/", views.TicketRedirectView.as_view(), name="redirect-ticket"),
-    path('api/departments/', views.DepartmentsListView.as_view(), name='departments-list')   
+    path('api/departments/', views.DepartmentsListView.as_view(), name='departments-list'),
+    path("random-department/", views.RandomDepartmentView.as_view(), name="random-department"),   
 ]
 

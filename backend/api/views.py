@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import generics, views
 from rest_framework.response import Response
-from .serializers import UserSerializer, TicketSerializer, TicketMessageSerializer, TicketRedirectSerializer, OfficerSerializer, NotificationSerializer
+from .serializers import UserSerializer, TicketSerializer, TicketMessageSerializer, TicketRedirectSerializer, OfficerSerializer, NotificationSerializer, DepartmentSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Ticket
 from django.core.exceptions import ObjectDoesNotExist
@@ -200,3 +200,11 @@ class DepartmentsListView(views.APIView):
             "name": dept.name,
             "description": dept.description
         } for dept in departments])
+        
+class RandomDepartmentView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        department = get_random_department()
+        serializer = DepartmentSerializer(department)
+        return Response(serializer.data)

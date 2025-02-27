@@ -111,3 +111,6 @@ class NotificationSerializer(serializers.ModelSerializer):
 class ChangeTicketDateSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     due_date = serializers.DateTimeField()
+
+    def create(self, validated_data):
+        return validated_data

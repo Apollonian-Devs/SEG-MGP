@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from api.models import Ticket, User, Department, Officer, TicketRedirect, TicketMessage, Notification
 from api.serializers import TicketSerializer, UserSerializer, DepartmentSerializer, OfficerSerializer, TicketRedirectSerializer, TicketMessageSerializer, NotificationSerializer, ChangeTicketDateSerializer
 from datetime import datetime
-
+from django.utils.timezone import make_aware
 
 class UserSerializerTestCase(TestCase):
 
@@ -524,47 +524,48 @@ class NotificationSerializerTestCase(TestCase):
         self.assertIn('message', serializer.errors)
 
 
-# class DepartmentSerializerTestCase(TestCase):
-#     def setUp(self):
-#         self.department = Department.objects.create(
-#             name = 'Finance'
-#         )
-    
-#     def test_serialization(self):
-#         serializer = DepartmentSerializer(self.department)
-#         serialized_data = serializer.data
-
-#         self.assertEqual(serialized_data['id'], self.department.id)
-#         self.assertEqual(serialized_data['name'], self.department.name)
-        
-#     def test_deserialization_valid_data(self):
-#         valid_data = {
-#             'name': 'TestDepartment',
-#         }
-
-#         serializer = DepartmentSerializer(data=valid_data)
-
-#         self.assertTrue(serializer.is_valid())
-
-#         department = serializer.save()
-
-#         self.assertEqual(department.name, valid_data['name'])
-
-#     def test_deserialization_invalid_data(self):
-#         invalid_data = {
-#             'name': 'Finance',
-#         }
-
-#         serializer = DepartmentSerializer(data=invalid_data)
-
-#         self.assertFalse(serializer.is_valid())
-#         self.assertIn('name', serializer.errors)
-
-
 class ChangeTicketDateSerializerTestCase(TestCase):
+
+    def test_serialization(self):
+        ticket_data = {
+            "id": 1,
+            "due_date": datetime(2025, 12, 31, 0, 0, 0)
+        }
+
+        serializer = ChangeTicketDateSerializer(ticket_data)
+        
+        expected_data = {
+            "id": 1,
+            "due_date": ticket_data["due_date"].isoformat() + "Z"
+        }
+
+        self.assertEqual(serializer.data, expected_data)
 
     def test_deserialization_valid_data(self):
         valid_data = {
             "id": 1,
-            "due_date": 
+            "due_date": datetime(2025, 12, 31, 0, 0, 0)
         }
+
+        serializer = ChangeTicketDateSerializer(data=valid_data)
+
+        self.assertTrue(serializer.is_valid())
+
+        data = serializer.save()
+
+        self.assertEqual(data['id'], valid_data['id'])
+        # Just comparing dates as we don't care about the time associated with due date
+        self.assertEqual(data['due_date'].date(), valid_data['due_date'].date())
+
+    def test_deserialization_invalid_data(self):
+        invalid_data = {
+            "id": "one",
+            "due_date": 31/12/2025
+        }
+
+        serializer = ChangeTicketDateSerializer(data=invalid_data)
+
+        self.assertFalse(serializer.is_valid())
+
+        self.assertIn("id", serializer.errors)
+        self.assertIn("due_date", serializer.errors)

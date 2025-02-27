@@ -31,7 +31,30 @@ class TicketListCreate(generics.ListCreateAPIView):
 
         return new_ticket
 
+class TicketChangeStatus(views.APIView):
+    permission_classes = [IsAuthenticated]
 
+    def get(self, request, id):
+        try:
+            ticket = Ticket.objects.get(id=id)
+            user = request.user
+            changeTicketStatus(ticket, user)
+            return Response({"message": "Status changed"}, status= 200)
+        except Ticket.DoesNotExist:
+            return Response({"error": "Ticket not found"}, status= 404)
+    
+class TicketChangePriority(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, id):
+        try:
+            ticket = Ticket.objects.get(id=id)
+            user = request.user
+            changeTicketPriority(ticket, user)
+            return Response({"message": "Priority changed"}, status= 200)
+        except Ticket.DoesNotExist:
+            return Response({"error": "Ticket not found"}, status= 404)
+    
 class TicketDelete(generics.DestroyAPIView):
     serializer_class = TicketSerializer
     permission_classes = [IsAuthenticated]
@@ -57,7 +80,7 @@ class CurrentUserView(views.APIView):
         user = request.user
         serializer = UserSerializer(user)  # Use your UserSerializer to serialize the user data
         return Response(serializer.data)
-
+    
     
 class UserTicketsView(views.APIView):
     """

@@ -6,6 +6,7 @@ import GenericButton from "./GenericButton";
 import PopUp from "./Popup";
 import GenericTable from "./GenericTable";
 import OfficersDropdown from "./OfficersDropdown";
+import DepartmentsDropdown from "./DepartmentsDropdown";
 import RedirectButton from "./RedirectButton";
 
 const TicketsCard = ({ user, officers, openPopup }) => {
@@ -14,6 +15,7 @@ const TicketsCard = ({ user, officers, openPopup }) => {
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [selectedOfficer, setSelectedOfficer] = useState(null);
+  const [selectedDepartment, setSelectedDepartment] = useState(null);
 
   // Sorting State
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
@@ -147,18 +149,22 @@ const TicketsCard = ({ user, officers, openPopup }) => {
                     {user.is_staff && (
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
                     <div className="flex items-center gap-2">
-
-                      <OfficersDropdown officers={officers} setSelectedOfficer={setSelectedOfficer} />
-                      <RedirectButton ticketid={ticket.id} selectedOfficer={selectedOfficer} />
+                      {user.is_superuser ? (
+                        <DepartmentsDropdown setSelectedDepartment={setSelectedDepartment} />
+                      ) : (
+                        <OfficersDropdown officers={officers} setSelectedOfficer={setSelectedOfficer} />
+                      )}
+                      <RedirectButton 
+                        ticketid={ticket.id} 
+                        selectedOfficer={selectedOfficer}
+                        departmentId={user.is_superuser ? selectedDepartment?.id : null} 
+                      />
                     </div>
                   </td>
                 )}
-
-              </tr>
-                    
-            )}
-                
-          />
+                  </tr>
+                )}
+              />
             </div>
           </div>
         </div>
@@ -168,4 +174,3 @@ const TicketsCard = ({ user, officers, openPopup }) => {
 };
 
 export default TicketsCard;
-

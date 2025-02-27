@@ -452,7 +452,12 @@ def get_random_department():
     department = random.choice(department_heads).department
     return department
 
-
+def get_department_head(department_id):
+    try:
+        officer = Officer.objects.get(department_id=department_id, is_department_head = True)
+        return officer.user
+    except Officer.DoesNotExist:
+        return None
 
 
 

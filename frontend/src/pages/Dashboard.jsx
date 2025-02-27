@@ -99,7 +99,7 @@ const Dashboard = () => {
       </div>
       <TicketsCard
         user={current_user}
-        officers={current_user.is_staff && !current_user.is_superuser ? officers : undefined}
+        officers={current_user.is_staff || current_user.is_superuser ? officers : undefined}
         openPopup={openPopup}
       />
 

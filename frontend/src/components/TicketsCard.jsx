@@ -8,7 +8,8 @@ import GenericTable from "./GenericTable";
 import OfficersDropdown from "./OfficersDropdown";
 import DepartmentsDropdown from "./DepartmentsDropdown";
 import RedirectButton from "./RedirectButton";
-import GetDepartmentButton from "./GetDepartmentButton";
+import SuggestDepartmentButton from "./SuggestDepartmentButton";
+import AcceptButton from "./AcceptButton";
 
 const TicketsCard = ({ user, officers, openPopup }) => {
   const [tickets, setTickets] = useState([]);
@@ -17,6 +18,7 @@ const TicketsCard = ({ user, officers, openPopup }) => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [selectedOfficer, setSelectedOfficer] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
+  const [suggestedDepartments, setSuggestedDepartments] = useState({});
 
   // Sorting State
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
@@ -81,7 +83,7 @@ const TicketsCard = ({ user, officers, openPopup }) => {
         <div className="-m-1.5 overflow-x-auto">
           <div className="p-10 min-w-full inline-block align-middle">
             <h1 className="flex w-full text-center mb-5">Tickets</h1>
-            <GetDepartmentButton selectedDepartments={selectedDepartment} setSelectedDepartments={setSelectedDepartment} tickets={tickets}/>
+            <SuggestDepartmentButton setSuggestedDepartments={setSuggestedDepartments} tickets={tickets}/>
             <div>
               <GenericTable
                 columnDefinition={
@@ -116,6 +118,9 @@ const TicketsCard = ({ user, officers, openPopup }) => {
                     <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase">Actions</th>
                     {user.is_staff && (
                       <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase">Redirect</th>
+                    )}
+                    {user.is_staff && user.is_superuser && (
+                      <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase">Suggested Departments</th>
                     )}
                   </>
                 }
@@ -163,7 +168,15 @@ const TicketsCard = ({ user, officers, openPopup }) => {
                       />
                     </div>
                   </td>
-                )}
+                    )}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                      {user.is_staff && user.is_superuser && (
+                        <>
+                          {suggestedDepartments[ticket.id]?.name || "No suggestion"}
+                          <AcceptButton ticketId={ticket.id} />
+                        </>
+                      )}
+                    </td>
                   </tr>
                 )}
               />

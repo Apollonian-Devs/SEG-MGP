@@ -6,7 +6,7 @@ import GenericButton from "./GenericButton";
 const AcceptButton = ({ ticketid, selectedOfficer, departmentId }) => {
     const handleRedirect = async () => {
         if (!selectedOfficer && !departmentId) {
-            alert("Please select either an officer or a department to redirect the ticket.");
+            //alert("Please select either an officer or a department to redirect the ticket.");
             return;
         }
 
@@ -40,15 +40,19 @@ const AcceptButton = ({ ticketid, selectedOfficer, departmentId }) => {
         } 
     };
 
+    const isDisabled = !selectedOfficer && !departmentId;
+
     return (
         <GenericButton
-            className="px-3 py-1 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700"
+            className={`px-3 py-1 text-sm font-semibold rounded-md 
+            ${isDisabled ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
             onClick={(e) => { 
-                e.stopPropagation();
-                handleRedirect();
+            e.stopPropagation();
+            handleRedirect();
             }}
+            disabled={isDisabled}
         >
-            Redirect
+            Accept
         </GenericButton>
     );
 };

@@ -83,7 +83,11 @@ const TicketsCard = ({ user, officers, openPopup }) => {
         <div className="-m-1.5 overflow-x-auto">
           <div className="p-10 min-w-full inline-block align-middle">
             <h1 className="flex w-full text-center mb-5">Tickets</h1>
-            <SuggestDepartmentButton setSuggestedDepartments={setSuggestedDepartments} tickets={tickets}/>
+            {user.is_staff && user.is_superuser && (
+              <div className="mb-3">
+                <SuggestDepartmentButton setSuggestedDepartments={setSuggestedDepartments} tickets={tickets} />
+              </div>
+            )}
             <div>
               <GenericTable
                 columnDefinition={
@@ -170,12 +174,14 @@ const TicketsCard = ({ user, officers, openPopup }) => {
                   </td>
                     )}
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                      <div className="flex items-center gap-2">
                       {user.is_staff && user.is_superuser && (
                         <>
                           {suggestedDepartments[ticket.id]?.name || "No suggestion"}
-                          <AcceptButton ticketId={ticket.id} />
+                          <AcceptButton ticketId={ticket.id} selectedOfficer={selectedOfficer} departmentId={suggestedDepartments[ticket.id]?.id}/>
                         </>
                       )}
+                      </div>
                     </td>
                   </tr>
                 )}

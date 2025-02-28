@@ -8,6 +8,7 @@ import GenericTable from "./GenericTable";
 import OfficersDropdown from "./OfficersDropdown";
 import DepartmentsDropdown from "./DepartmentsDropdown";
 import RedirectButton from "./RedirectButton";
+import GetDepartmentButton from "./GetDepartmentButton";
 
 const TicketsCard = ({ user, officers, openPopup }) => {
   const [tickets, setTickets] = useState([]);
@@ -80,6 +81,7 @@ const TicketsCard = ({ user, officers, openPopup }) => {
         <div className="-m-1.5 overflow-x-auto">
           <div className="p-10 min-w-full inline-block align-middle">
             <h1 className="flex w-full text-center mb-5">Tickets</h1>
+            <GetDepartmentButton selectedDepartments={selectedDepartment} setSelectedDepartments={setSelectedDepartment} tickets={tickets}/>
             <div>
               <GenericTable
                 columnDefinition={

@@ -5,8 +5,7 @@ import GenericButton from "./GenericButton";
 
 const AcceptButton = ({ ticketid, selectedOfficer, departmentId }) => {
     const handleRedirect = async () => {
-        if (!selectedOfficer && !departmentId) {
-            //alert("Please select either an officer or a department to redirect the ticket.");
+        if (!selectedOfficer) {
             return;
         }
 
@@ -45,7 +44,7 @@ const AcceptButton = ({ ticketid, selectedOfficer, departmentId }) => {
     return (
         <GenericButton
             className={`px-3 py-1 text-sm font-semibold rounded-md 
-            ${isDisabled ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
+            ${isDisabled ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
             onClick={(e) => { 
             e.stopPropagation();
             handleRedirect();

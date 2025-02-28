@@ -321,8 +321,11 @@ def get_tickets_for_user(user):
 
 
 def get_officers_same_department(user):
-    officer = Officer.objects.get(user=user)
-    return Officer.objects.filter(department=officer.department).exclude(user=user)
+    try:
+        officer = Officer.objects.get(user=user)
+        return Officer.objects.filter(department=officer.department).exclude(user=user)
+    except Officer.DoesNotExist:
+        return Officer.objects.none()
 
 
 
@@ -454,8 +457,8 @@ def get_random_department():
 
 def get_department_head(department_id):
     try:
-        officer = Officer.objects.get(department_id=department_id, is_department_head = True)
-        return officer.user
+        officer = Officer.objects.filter(department_id=department_id, is_department_head=True).first()
+        return officer.user if officer else None
     except Officer.DoesNotExist:
         return None
 

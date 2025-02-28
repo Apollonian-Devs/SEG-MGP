@@ -48,7 +48,10 @@ const DepartmentsDropdown = ({ setSelectedDepartment }) => {
           {departments.map((department) => (
             <GenericButton
               key={department.id}
-              onClick={() => handleSelect(department)}
+              onClick={(e) => { 
+                e.stopPropagation();
+                handleSelect(department);
+              }}
               className="block w-full text-left px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
             >
               {department.name}

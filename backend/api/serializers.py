@@ -36,11 +36,12 @@ class DepartmentSerializer(serializers.ModelSerializer):
 
 class OfficerSerializer(serializers.ModelSerializer):
     user = UserSerializer()
-    department = serializers.PrimaryKeyRelatedField(queryset=Department.objects.all())  
+    department = serializers.PrimaryKeyRelatedField(queryset=Department.objects.all())
+    is_department_head = serializers.BooleanField()  
 
     class Meta:
         model = Officer
-        fields = ["id", "user", "department"]
+        fields = ["id", "user", "department", "is_department_head"]
 
 class TicketMessageSerializer(serializers.ModelSerializer):
     class Meta:

@@ -20,13 +20,23 @@ student_fixtures = [
 
 officer_fixtures = [
 
-    {'username': '@officer1', 'email': 'officer1@example.org', 'first_name': 'Officer', 'last_name': 'One', 'is_staff': True, 'is_superuser': False, 'department': 'IT'},
+    {'username': '@officer1', 'email': 'officer1@example.org', 'first_name': 'Officer', 'last_name': 'One', 'is_staff': True, 'is_superuser': False, 'department': 'IT', 'is_department_head': True},
 
-    {'username': '@officer2', 'email': 'officer2@example.org', 'first_name': 'Officer', 'last_name': 'Two', 'is_staff': True, 'is_superuser': False, 'department': 'HR'},
+    {'username': '@officer2', 'email': 'officer2@example.org', 'first_name': 'Officer', 'last_name': 'Two', 'is_staff': True, 'is_superuser': False, 'department': 'HR', 'is_department_head': True},
 
-    {'username': '@officer3', 'email': 'officer3@example.org', 'first_name': 'Officer', 'last_name': 'Three', 'is_staff': True, 'is_superuser': False, 'department': 'Finance'},
+    {'username': '@officer3', 'email': 'officer3@example.org', 'first_name': 'Officer', 'last_name': 'Three', 'is_staff': True, 'is_superuser': False, 'department': 'Finance', 'is_department_head': True},
 
-    {'username': '@officer4', 'email': 'officer4@example.org', 'first_name': 'Officer', 'last_name': 'Four', 'is_staff': True, 'is_superuser': False, 'department': 'IT'},
+    {'username': '@officer4', 'email': 'officer4@example.org', 'first_name': 'Officer', 'last_name': 'Four', 'is_staff': True, 'is_superuser': False, 'department': 'Wellbeing', 'is_department_head': True},
+
+    {'username': '@officer5', 'email': 'officer5@example.org', 'first_name': 'Officer', 'last_name': 'Five', 'is_staff': True, 'is_superuser': False, 'department': 'Informatics', 'is_department_head': True},
+
+    {'username': '@officer6', 'email': 'officer6@example.org', 'first_name': 'Officer', 'last_name': 'Six', 'is_staff': True, 'is_superuser': False, 'department': 'Classics', 'is_department_head': True},
+
+    {'username': '@officer7', 'email': 'officer7@example.org', 'first_name': 'Officer', 'last_name': 'Seven', 'is_staff': True, 'is_superuser': False, 'department': 'KBS', 'is_department_head': True},
+
+    {'username': '@officer8', 'email': 'officer8@example.org', 'first_name': 'Officer', 'last_name': 'Eight', 'is_staff': True, 'is_superuser': False, 'department': 'Maintenance', 'is_department_head': True},
+
+    {'username': '@officer9', 'email': 'officer9@example.org', 'first_name': 'Officer', 'last_name': 'Nine', 'is_staff': True, 'is_superuser': False, 'department': 'IT', 'is_department_head': False},
 
 
 ]
@@ -395,6 +405,7 @@ class Command(BaseCommand):
             is_superuser=data['is_superuser'],
 
             is_staff=data['is_staff'],
+            
 
         )
 
@@ -410,7 +421,7 @@ class Command(BaseCommand):
 
                 if department_object:
 
-                    officer, created = Officer.objects.get_or_create(user=user, defaults={'department': department_object})
+                    officer, created = Officer.objects.get_or_create(user=user, defaults={'department': department_object, 'is_department_head' : data.get('is_department_head', False)})
 
                     self.stdout.write(f"Officer '{user.username}' assigned to department: {department_object.name}.")
 

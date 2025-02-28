@@ -26,7 +26,7 @@ describe(ChangeDate, () => {
 
     it("Change date form should be successfully submitted with a valid date", async () => {
         api.post.mockResolvedValue({ status: 201 ,
-            data: { ticket: { id: 1, due_date: "2025-12-31" } }
+            data: { ticket: { id: 1, due_date: "2025-12-25" } }
         });
 
         const user = userEvent.setup();
@@ -60,16 +60,25 @@ describe(ChangeDate, () => {
             
         });
 
-        // With help from chatGPT
+
+        // Following tests for setSelectedTicket and setTickets helped by chatGPT //
+
+        expect(mockSetSelectedTicket).toHaveBeenCalledWith(expect.any(Function)); 
+
+        const getSetSelectedTicketCall = mockSetSelectedTicket.mock.calls[0][0]; 
+        const updatedTicket = getSetSelectedTicketCall({ id: 1, due_date: "2025-12-31" }); 
+
+        expect(updatedTicket).toEqual({
+            id: 1,
+            due_date: "2025-12-25",
+        });
 
         expect(mockSetTickets).toHaveBeenCalledWith(expect.any(Function));
 
-        // Now we test the behavior inside the function.
-        const updateFunction = mockSetTickets.mock.calls[0][0];
-        const updatedTickets = updateFunction([{ id: 1, due_date: "2025-12-31" }]); // initial tickets list
+        const getSetTicketsCall = mockSetTickets.mock.calls[0][0];
+        const updatedTickets = getSetTicketsCall([{ id: 1, due_date: "2025-12-31" }, {id: 2, due_date: "2025-12-30"}]); // initial tickets list
 
-        // Check that the ticket in the list has been updated
-        expect(updatedTickets).toEqual([{ id: 1, due_date: "2025-12-31" }]);
+        expect(updatedTickets).toEqual([{ id: 1, due_date: "2025-12-25" }, {id: 2, due_date: "2025-12-30"}]);
     })
 
     it("Console error and correct alert should be displayed when there is a 400 response to an invalid post request", async () => {

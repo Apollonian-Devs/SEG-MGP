@@ -4,6 +4,7 @@ import Dashboard from '../pages/Dashboard'
 import TicketsCard from '../components/TicketsCard';
 import api from "../api";
 import { MemoryRouter } from 'react-router-dom';
+import { useState } from "react";
 
 
 describe("TicketsCard", () => {
@@ -106,18 +107,25 @@ describe("TicketsCard", () => {
   })
     
 
-  it("Sort ticket subject clicked", async () => {
-    const tickets = [
+  // Wrapper written by GPT
+  const SubjectAndSameStatusTest = () => {
+    const [tickets, setTickets] = useState([
       { id: 1, subject: "ticket 1", status: "test status" },
       { id: 2, subject: "ticket 2", status: "test status" },
-    ]
+    ]);
+  
+    return (
+      <TicketsCard
+        user={{}}
+        tickets={tickets}
+        setSelectedTicket={vi.fn()}
+        setTickets={setTickets}
+      />
+    );
+  };
 
-    render(<TicketsCard 
-      user={{}} 
-      tickets={tickets} 
-      setSelectedTicket={vi.fn()} 
-      setTickets={vi.fn()}
-      />);
+  it("Tickets are correctly sorted by subject when subject is clicked", async () => {
+    render(<SubjectAndSameStatusTest />);
 
     await waitFor(() => screen.getByText("ticket 1"));
     await waitFor(() => screen.getByText("ticket 2"));
@@ -132,15 +140,89 @@ describe("TicketsCard", () => {
     await waitFor(() => expect(screen.getByText("▼")).toBeInTheDocument());
     const rowsDesc = screen.getAllByRole("row");
 
-    // Descending tickets won't pass tests ... but still get coverage for the entire sorting function without it
-
-    // expect(within(rowsDesc[1]).getByText("ticket 2")).toBeInTheDocument();
-    // expect(within(rowsDesc[2]).getByText("ticket 1")).toBeInTheDocument();
+    expect(within(rowsDesc[1]).getByText("ticket 2")).toBeInTheDocument();
+    expect(within(rowsDesc[2]).getByText("ticket 1")).toBeInTheDocument();
     
   })
 
+  it("Sorting is handled correctly when status is clicked and both status's are the same", async() => {
+    render(<SubjectAndSameStatusTest />);
 
+    await waitFor(() => screen.getByText("ticket 1"));
+    fireEvent.click(screen.getByText("Status").closest("button"));
+    await waitFor(() => expect(screen.getByText("▲")).toBeInTheDocument());
+    const rowsAsc = screen.getAllByRole("row");
+    expect(within(rowsAsc[1]).getByText("test status")).toBeInTheDocument();
+    expect(within(rowsAsc[2]).getByText("test status")).toBeInTheDocument();
+  })
   
+
+  const DifferentStatusTest = () => {
+    const [tickets, setTickets] = useState([
+      { id: 1, subject: "ticket 1", status: "test status a" },
+      { id: 2, subject: "ticket 2", status: "test status b" },
+    ]);
+
+    return (
+      <TicketsCard
+        user={{}}
+        tickets={tickets}
+        setSelectedTicket={vi.fn()}
+        setTickets={setTickets}
+      />
+    );
+  };
+
+  it("Tickets are correctly sorted by status when status is clicked", async() => {
+    render(<DifferentStatusTest />);
+
+    await waitFor(() => screen.getByText("ticket 1"));
+    fireEvent.click(screen.getByText("Status").closest("button"));
+    await waitFor(() => expect(screen.getByText("▲")).toBeInTheDocument());
+    const rowsAsc = screen.getAllByRole("row");
+    expect(within(rowsAsc[1]).getByText("test status a")).toBeInTheDocument();
+    expect(within(rowsAsc[2]).getByText("test status b")).toBeInTheDocument();
+    fireEvent.click(screen.getByText("Status").closest("button"));
+    await waitFor(() => expect(screen.getByText("▼")).toBeInTheDocument());
+    const rowsDesc = screen.getAllByRole("row");
+    expect(within(rowsDesc[1]).getByText("test status b")).toBeInTheDocument();
+    expect(within(rowsDesc[2]).getByText("test status a")).toBeInTheDocument();
+
+  })
+
+  const DifferentPrioritiesTest = () => {
+    const [tickets, setTickets] = useState([
+      { id: 1, subject: "ticket 1", status: "test status", priority: "Low" },
+      { id: 2, subject: "ticket 2", status: "test status", priority: "High" },
+    ]);
+
+    return (
+      <TicketsCard
+        user={{}}
+        tickets={tickets}
+        setSelectedTicket={vi.fn()}
+        setTickets={setTickets}
+      />
+    );
+  };
+
+  it("Tickets are correctly sorted by priority when priority is clicked", async() => {
+    render(<DifferentPrioritiesTest />);
+
+    await waitFor(() => screen.getByText("ticket 1"));
+    fireEvent.click(screen.getByText("Priority").closest("button"));
+    await waitFor(() => expect(screen.getByText("▲")).toBeInTheDocument());
+    const rowsAsc = screen.getAllByRole("row");
+    expect(within(rowsAsc[1]).getByText("High")).toBeInTheDocument();
+    expect(within(rowsAsc[2]).getByText("Low")).toBeInTheDocument();
+    fireEvent.click(screen.getByText("Priority").closest("button"));
+    await waitFor(() => expect(screen.getByText("▼")).toBeInTheDocument());
+    const rowsDesc = screen.getAllByRole("row");
+    expect(within(rowsDesc[1]).getByText("Low")).toBeInTheDocument();
+    expect(within(rowsDesc[2]).getByText("High")).toBeInTheDocument();
+  })
+
+
 
 
 

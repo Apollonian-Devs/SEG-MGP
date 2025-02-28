@@ -10,7 +10,7 @@ import RedirectButton from "./RedirectButton";
 import ChangeDate from "./ChangeDate";
 
 const TicketsCard = ({ user, officers, openPopup, selectedTicket, setSelectedTicket, tickets, setTickets }) => {
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [selectedOfficer, setSelectedOfficer] = useState(null);
   const [isChangeDateOpen, setChangeDateOpen] = useState(null);
@@ -36,9 +36,10 @@ const TicketsCard = ({ user, officers, openPopup, selectedTicket, setSelectedTic
     setTickets(sortedTickets);
   };
 
-  if (loading) {
-    return <p>Loading tickets...</p>;
-  }
+  // not necessary ? loading is never set in this component ... ?
+  // if (loading) {
+  //   return <p>Loading tickets...</p>;
+  // }
 
   const toggleChangeDate = () => {
     setChangeDateOpen((prev) => !prev);

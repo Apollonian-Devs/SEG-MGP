@@ -47,7 +47,7 @@ const ChangeDate = ({ ticket, setSelectedTicket, setTickets }) => {
         }
         catch (error) {
             console.error("The reason for the error is: ", error)
-            if (error.response.status === 400) {
+            if (error.response?.status === 400) {
                 alert("Please ensure you pick a valid date that isn't in the past and isn't today's date")
             }
             else {
@@ -66,6 +66,7 @@ const ChangeDate = ({ ticket, setSelectedTicket, setTickets }) => {
                 type="date"
                 required={true}
                 onChange={(e) => setDate(e.target.value)}
+                placeholder="Enter the new date"
             ></GenericInput>
             </GenericForm>
         </>

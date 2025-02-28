@@ -391,6 +391,7 @@ def changeTicketStatus(ticket, user):
 
 def get_overdue_tickets(user):
     """Returns queryset of overdue tickets based on user role."""
+    
     queryset = Ticket.objects.filter(due_date__lt=timezone.now()) 
 
     if user.is_superuser:

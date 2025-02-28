@@ -7,6 +7,7 @@ import PopUp from "./Popup";
 import GenericTable from "./GenericTable";
 import OfficersDropdown from "./OfficersDropdown";
 import RedirectButton from "./RedirectButton";
+import ShowOverdueButton from "./ShowOverdueButton";
 
 const TicketsCard = ({ user, officers, openPopup }) => {
   const [tickets, setTickets] = useState([]);
@@ -79,6 +80,12 @@ const TicketsCard = ({ user, officers, openPopup }) => {
           <div className="p-10 min-w-full inline-block align-middle">
             <h1 className="flex w-full text-center mb-5">Tickets</h1>
             <div>
+
+            <div className="flex justify-end p-4">
+              {/* Insert the ShowOverdueButton here */}
+              <ShowOverdueButton setTickets={setTickets} allTickets={tickets} />
+            </div>
+
               <GenericTable
                 columnDefinition={
                   <>

@@ -171,6 +171,7 @@ def redirect_query(ticket, from_user, to_user, reason=None, new_status=None, new
         to_profile=to_user,
     )
 
+
     Notification.objects.create(
         user_profile=to_user,
         ticket=ticket,
@@ -352,7 +353,7 @@ def changeTicketPriority(ticket, user):
             changed_by_profile=user,
             notes=f"Priority changed from {old_priority} to {ticket.priority}"
         )
-        
+
     else:
         raise PermissionDenied("Only officers or admins can change ticket priority.")
     
@@ -389,34 +390,16 @@ def changeTicketStatus(ticket, user):
     
 
 def get_overdue_tickets(user):
-    """
-    Return a list of all overdue tickets visible to the given user:
-      - If the user is superuser (admin), return all overdue tickets.
-      - If the user is staff (officer), return overdue tickets assigned to them.
-      - If the user is a student, return their own overdue tickets.
-    """
-    if user.is_superuser:
-        queryset = Ticket.objects.filter(is_overdue=True)
-    elif user.is_staff:
-        queryset = Ticket.objects.filter(assigned_to=user, is_overdue=True)
-    else:
-        # Student sees only their own tickets
-        queryset = Ticket.objects.filter(created_by=user, is_overdue=True)
+    """Returns queryset of overdue tickets based on user role."""
+    queryset = Ticket.objects.filter(due_date__lt=timezone.now()) 
 
-    # Return a list/dict format that your frontend can easily consume
-    return [
-        {
-            "id": ticket.id,
-            "subject": ticket.subject,
-            "status": ticket.status,
-            "priority": ticket.priority,
-            "due_date": ticket.due_date,
-            "is_overdue": ticket.is_overdue,
-            "created_by": ticket.created_by.username,
-            "assigned_to": ticket.assigned_to.username if ticket.assigned_to else None,
-        }
-        for ticket in queryset
-    ]
+    if user.is_superuser:
+        return queryset 
+    elif user.is_staff:
+        return queryset.filter(assigned_to=user) 
+    else:
+        return queryset.filter(created_by=user) 
+  
 
 
 
@@ -439,6 +422,15 @@ def changeTicketDueDate(ticket, user, new_due_date):
                 f"by {user.username}."
             ),
         )
+
+        TicketStatusHistory.objects.create(
+            ticket=ticket,
+            old_status=ticket.status,
+            new_status=ticket.status,
+            changed_by_profile=user,
+            notes=f"Due date changed to {new_due_date}"
+        )
+
     else:
         raise PermissionDenied("Only officers or admins can change ticket due date.")
 

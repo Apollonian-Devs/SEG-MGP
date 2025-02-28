@@ -1,8 +1,11 @@
 from django.core.management.base import BaseCommand
+from django.utils.timezone import now
+from datetime import timedelta
 
 # from random import randint, random, choice, sample
 
 from django.contrib.auth.models import User
+from django.utils.dateparse import parse_datetime
 
 from api.models import Department, Officer, Ticket, TicketMessage, Notification
 
@@ -68,57 +71,41 @@ department_fixtures = [
 
 
 ticket_fixtures = [
-
     {
-
         'subject': 'Lost Student ID',
-
-        'description': 'I lost my ID card near the library. Need help getting a replacement.',
-
-        'created_by': '@johndoe',   
-
-        'assigned_to': '@officer1', 
-
+        'description': 'I lost my ID card near the library. Need help...',
+        'created_by': '@johndoe',
+        'assigned_to': '@officer1',
         'status': 'Open',
-
         'priority': 'High',
-
     },
-
     {
-
         'subject': 'Check My Fees',
-
         'description': 'Not sure how much I owe in tuition fees this semester.',
-
         'created_by': '@janedoe',
-
         'assigned_to': '@officer2',
-
         'status': 'Open',
-
         'priority': 'Medium',
-
+        'due_date': '2021-01-01T00:00:00Z'  # Past date -> Overdue
     },
-
     {
-
-        'subject': 'Dorm Maintenance Issue',
-
-        'description': 'There is a water leak in my dorm room sink.',
-
-        'created_by': '@charlie',
-
-        'assigned_to': '@officer2',
-
-        'status': 'In Progress',
-
-        'priority': 'High',
-
+        'subject': 'Tuition Payment Confirmation',
+        'description': 'I need confirmation that my recent tuition payment was received.',
+        'created_by': '@janedoe',
+        'assigned_to': '@officer3',
+        'status': 'Open',
+        'priority': 'Low',
+        'due_date': (now() + timedelta(days=7)).isoformat()  # Future date -> Not overdue
     },
-
+    {
+        'subject': 'Dorm Maintenance Issue',
+        'description': 'There is a water leak in my dorm room sink.',
+        'created_by': '@charlie',
+        'assigned_to': '@officer2',
+        'status': 'In Progress',
+        'priority': 'High',
+    },
 ]
-
 
 
 
@@ -429,59 +416,39 @@ class Command(BaseCommand):
 
 
     def seed_tickets(self):
-
-        """
-
-        Seed the tickets using the ticket_fixtures data.
-
-        """
-
         self.stdout.write("Seeding tickets...")
-
-        ticket_map = {}  # To store ticket objects by subject for linking messages
+        ticket_map = {}
 
         for ticket_data in ticket_fixtures:
-
             created_by = User.objects.get(username=ticket_data['created_by'])
+            assigned_to = User.objects.get(username=ticket_data['assigned_to']) if ticket_data.get('assigned_to') else None
 
-            assigned_to = User.objects.get(username=ticket_data['assigned_to']) if ticket_data['assigned_to'] else None
-
-
+            # Convert due_date string to datetime if provided
+            due_date = ticket_data.get('due_date')
+            if due_date:
+                due_date = parse_datetime(due_date) if isinstance(due_date, str) else due_date
 
             ticket, created = Ticket.objects.get_or_create(
-
                 subject=ticket_data['subject'],
-
                 defaults={
-
                     'description': ticket_data['description'],
-
                     'created_by': created_by,
-
                     'assigned_to': assigned_to,
-
                     'status': ticket_data['status'],
-
                     'priority': ticket_data['priority'],
-
+                    'due_date': due_date,  # Now it's a proper datetime object
                 }
-
             )
 
             ticket_map[ticket_data['subject']] = ticket
 
             if created:
-
                 self.stdout.write(f"Ticket '{ticket.subject}' created.")
-
             else:
-
                 self.stdout.write(f"Ticket '{ticket.subject}' already exists.")
 
         self.stdout.write("Tickets seeded.")
-
         return ticket_map
-
 
 
     def seed_ticket_messages(self, ticket_map):

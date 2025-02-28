@@ -11,6 +11,7 @@ const TicketDetails = ({ ticket }) => {
       <p className="text-sm text-gray-500">Assigned to: {ticket.assigned_to || "Unassigned"}</p>
       <p className="text-sm text-gray-500">Created at: {ticket.created_at || "Not Set"}</p>
       <p className="text-sm text-gray-500">Closed at: {ticket.closed_at || "Not Set"}</p>
+      
     </div>
   );
 };

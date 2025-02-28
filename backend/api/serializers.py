@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from .models import Ticket, Department, Officer, TicketMessage, Notification, TicketRedirect
+from django.utils import timezone
 
 
 
@@ -70,6 +71,8 @@ class TicketSerializer(serializers.ModelSerializer):
             "subject": {"required": True},
             "description": {"required": True},
         }
+    
+    
 
         
 class TicketRedirectSerializer(serializers.ModelSerializer):

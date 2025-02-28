@@ -179,3 +179,14 @@ class TicketRedirectView(views.APIView):
         else:
             return Response(serializer.errors)
 
+
+class OverdueTicketsView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        overdue_tickets = get_overdue_tickets(user) 
+        serializer = TicketSerializer(overdue_tickets, many=True)  
+        return Response({"tickets": serializer.data})  
+
+    

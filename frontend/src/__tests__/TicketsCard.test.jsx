@@ -15,7 +15,8 @@ describe("TicketsCard", () => {
 
   it("Tickets Card should be correctly rendered", () => {
     render(<TicketsCard user={{}} tickets={[{ id: 1, subject: "ticket 1", status: "testStatus" }]}/>);
-    expect(screen.getByText(/tickets/i)).toBeInTheDocument();
+    expect(screen.getByText("Tickets")).toBeInTheDocument();
+    
     expect(screen.getByText(/subject/i)).toBeInTheDocument();
     expect(screen.getByText("Status")).toBeInTheDocument();
     expect(screen.getByText(/priority/i)).toBeInTheDocument();

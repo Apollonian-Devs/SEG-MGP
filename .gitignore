@@ -69,6 +69,10 @@ coverage.xml
 .pytest_cache/
 cover/
 
+# Ignore coverage reports
+frontend/coverage/
+
+
 # Translations
 *.mo
 
@@ -234,7 +238,7 @@ Temporary Items
 # Installer logs
 
 # Unit test / coverage reports
-
+frontend/coverage/
 # Translations
 
 # Django stuff:

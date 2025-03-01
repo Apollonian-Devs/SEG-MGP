@@ -200,9 +200,17 @@ class Command(BaseCommand):
 
     
     def seed_users(self):
+<<<<<<< HEAD
+=======
+
+        self.stdout.write("Seeding users...")
+
+>>>>>>> 620339da2e847f0595ee031b411335ea68581783
         self.generate_user_fixtures()
         self.seed_department_heads()
         # self.generate_random_users()
+
+        self.stdout.write("Users seeded.")
 
 
     def generate_user_fixtures(self):

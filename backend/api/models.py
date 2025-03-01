@@ -3,7 +3,21 @@ from django.db.models import Q, F
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.exceptions import ObjectDoesNotExist
+import django.utils.timezone as timezone
 
+
+STATUS_CHOICES = [
+        ("Open", "Open"),
+        ("In Progress", "In Progress"),
+        ("Awaiting Student", "Awaiting Student"),
+        ("Closed", "Closed"),
+    ]
+    
+PRIORITY_CHOICES = [
+    ("Low", "Low"),
+    ("Medium", "Medium"),
+    ("High", "High"),
+]
 
 
 def get_default_superuser():
@@ -11,7 +25,12 @@ def get_default_superuser():
         return User.objects.filter(is_superuser=True).first()
     except ObjectDoesNotExist:
         return None
-    
+
+def is_chief_officer(user):
+    """
+    Checks if a user is a Chief Officer (department head).
+    """
+    return Officer.objects.filter(user=user, is_department_head=True).exists()
 
 
 class Department(models.Model):
@@ -43,17 +62,7 @@ class Category(models.Model):
 """
 
 class Ticket(models.Model):
-    STATUS_CHOICES = [
-        ("Open", "Open"),
-        ("In Progress", "In Progress"),
-        ("Awaiting Student", "Awaiting Student"),
-        ("Closed", "Closed"),
-    ]
-    PRIORITY_CHOICES = [
-        ("Low", "Low"),
-        ("Medium", "Medium"),
-        ("High", "High"),
-    ]
+    
     subject = models.CharField(max_length=255)
     description = models.TextField()
 
@@ -81,9 +90,22 @@ class Ticket(models.Model):
     is_overdue = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
+        # 1) Enforce only students can create tickets
         if self.created_by.is_staff or self.created_by.is_superuser:
             raise ValidationError("Only student users can create tickets.")
+        
+        # 2) If status is "Closed" but closed_at not set, set closed_at to now
+        if self.status == "Closed" and self.closed_at is None:
+            self.closed_at = timezone.now()
+
+        # 3) If due_date is in the past, set is_overdue to True, else False
+        if self.due_date and self.due_date < timezone.now():
+            self.is_overdue = True
+        else:
+            self.is_overdue = False
+
         super().save(*args, **kwargs)
+
 
     def __str__(self):
         return self.subject
@@ -96,7 +118,7 @@ class TicketMessage(models.Model):
      is_internal = models.BooleanField(default=False)
 
      def __str__(self):
-        return f"Msg {self.id} on Ticket {self.ticket_id}"
+        return f"Msg {self.id} on Ticket {self.ticket.id}"
     
     
 
@@ -105,19 +127,20 @@ class TicketStatusHistory(models.Model):
      old_status = models.CharField(max_length=50, null=True)
      new_status = models.CharField(max_length=50)
      changed_by_profile = models.ForeignKey(User, on_delete=models.CASCADE)
-     changed_at = models.DateTimeField(auto_now_add=True)
+     changed_at = models.DateTimeField(auto_now=True)
      notes = models.CharField(max_length=255, null=True, blank=True)
 
      def __str__(self):
-        return f"Ticket #{self.ticket.ticket_id} from {self.old_status} to {self.new_status}"
+        return f"Ticket #{self.ticket.id} from {self.old_status} to {self.new_status}"
     
+
 class TicketRedirect(models.Model):
      ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
      from_profile = models.ForeignKey(User, on_delete=models.CASCADE, related_name='redirect_from')
      to_profile = models.ForeignKey(User, on_delete=models.CASCADE, related_name='redirect_to')
 
      def __str__(self):
-        return f"Redirect #{self.id} for Ticket #{self.ticket.ticket_id}"
+        return f"Redirect #{self.id} for Ticket #{self.ticket.id}"
 
 class TicketAttachment(models.Model):
     message = models.ForeignKey(TicketMessage, on_delete=models.CASCADE)
@@ -127,7 +150,7 @@ class TicketAttachment(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Attachment #{self.id} on Msg {self.message_id}"
+        return f"Attachment #{self.id} on Msg {self.message.id}"
     
 
 
@@ -153,7 +176,7 @@ class AIResponse(models.Model):
          ]
     
      def __str__(self):
-       return f"AI Response #{self.id} for Ticket #{self.ticket.ticket_id}"
+        return f"AI Response #{self.id} for Ticket #{self.ticket.id}"
     
 class Notification(models.Model):
      user_profile = models.ForeignKey(User, on_delete=models.CASCADE)

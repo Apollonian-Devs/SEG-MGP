@@ -23,7 +23,7 @@ const NewTicketButton = () => {
       </GenericButton>
 
       {/* Popup for the New Ticket Form */}
-      <Popup isOpen={isPopupOpen} onClose={togglePopup} width="w-[50%]" height="h-[60%]">
+      <Popup isOpen={isPopupOpen} onClose={togglePopup} width="w-[50%]" height="h-[60%]" data-testid="new-ticket-popup">
         <NewTicketForm onClose={togglePopup} />
       </Popup>
     </>

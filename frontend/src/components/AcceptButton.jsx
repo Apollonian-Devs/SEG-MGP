@@ -5,7 +5,7 @@ import GenericButton from "./GenericButton";
 
 const AcceptButton = ({ ticketid, selectedOfficer, departmentId }) => {
     const handleRedirect = async () => {
-        if (!selectedOfficer) {
+        if (!selectedOfficer && !departmentId) {
             return;
         }
 

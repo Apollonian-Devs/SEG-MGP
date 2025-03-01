@@ -246,19 +246,9 @@ def get_ticket_history(admin_user, ticket):
 
     history = TicketStatusHistory.objects.filter(ticket=ticket).order_by("-changed_at")
 
-    #---------------------------------------------------------
-    #helped by gpt
-    hist_list = []
-    for h in history:
-        hist_list.append({
-            "old_status": h.old_status,
-            "new_status": h.new_status,
-            "changed_by": h.changed_by_profile.username,
-            "changed_at": h.changed_at,
-            "notes": h.notes,
-        })
-    return hist_list
-    #---------------------------------------------------------
+
+    return history
+
     
 
 def get_notifications(user, limit=10):

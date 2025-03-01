@@ -1,9 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-
-from .models import Ticket, Department, Officer, TicketMessage, Notification, TicketRedirect
+from .models import Ticket, Department, Officer, TicketMessage, Notification, TicketRedirect, TicketStatusHistory
 from django.utils import timezone
-
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -46,13 +44,6 @@ class OfficerSerializer(serializers.ModelSerializer):
 class TicketMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = TicketMessage
-        '''
-        ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
-        sender_profile = models.ForeignKey(User, on_delete=models.CASCADE)
-        message_body = models.TextField()
-        created_at = models.DateTimeField(auto_now_add=True)
-        is_internal = models.BooleanField(default=False)
-        '''
         fields = ["message_body"]
 
 
@@ -92,13 +83,6 @@ class TicketMessageSerializer(serializers.ModelSerializer):
     ticket = serializers.PrimaryKeyRelatedField(queryset=Ticket.objects.all())
     class Meta:
         model = TicketMessage
-        '''
-        ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
-        sender_profile = models.ForeignKey(User, on_delete=models.CASCADE)
-        message_body = models.TextField()
-        created_at = models.DateTimeField(auto_now_add=True)
-        is_internal = models.BooleanField(default=False)
-        '''
         fields = ["sender_profile", "ticket", "message_body"]
 
 
@@ -117,3 +101,12 @@ class ChangeTicketDateSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         return validated_data
+
+class TicketStatusHistorySerializer(serializers.ModelSerializer):
+    profile_username = serializers.CharField(source="changed_by_profile.username", read_only=True)
+    class Meta:
+        model = TicketStatusHistory
+        fields = ["old_status", "new_status", "profile_username","changed_at","notes"]
+        extra_kwargs = {"ticket": {"read_only": True}}
+
+        

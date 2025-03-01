@@ -84,7 +84,7 @@ const TicketsCard = ({ user, officers, openPopup }) => {
           <div className="p-10 min-w-full inline-block align-middle">
             <h1 className="flex w-full text-center mb-5">Tickets</h1>
             {user.is_staff && user.is_superuser && (
-              <div className="mb-3">
+              <div className="mb-3 flex justify-end">
                 <SuggestDepartmentButton setSuggestedDepartments={setSuggestedDepartments} tickets={tickets} />
               </div>
             )}
@@ -174,7 +174,7 @@ const TicketsCard = ({ user, officers, openPopup }) => {
                   </td>
                     )}
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center justify-end gap-2">
                       {user.is_staff && user.is_superuser && (
                         <>
                           {suggestedDepartments[ticket.id]?.name || "No suggestion"}

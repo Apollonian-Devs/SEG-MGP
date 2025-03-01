@@ -10,7 +10,6 @@ from .helpers import *
 
 
 
-
 class TicketListCreate(generics.ListCreateAPIView):
     serializer_class = TicketSerializer
     permission_classes = [IsAuthenticated]
@@ -72,7 +71,7 @@ class UserTicketsView(views.APIView):
 
 
 #sender_user, ticket, message_body, is_internal=False
-class TicketSendResponseView(views.APIView):
+"""class TicketSendResponseView(views.APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, ticket_id):
@@ -98,7 +97,38 @@ class TicketSendResponseView(views.APIView):
                 return Response({"error": str(e)}, status=400)
         else:
             print(serializer.errors)
-            return Response(serializer.errors)
+            return Response(serializer.errors)"""
+
+class TicketSendResponseView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, ticket_id):
+       
+        data = {
+            "sender_profile": request.user.id, 
+            "ticket": ticket_id,               
+            "message_body": request.data.get("message_body")
+        }
+        
+        serializer = TicketMessageSerializer(data=data)
+        
+        if serializer.is_valid():
+            try:
+                comment = send_response(
+                    sender_profile=serializer.validated_data["sender_profile"],
+                    ticket=serializer.validated_data["ticket"],
+                    message_body=serializer.validated_data["message_body"],
+                )
+                serializer = TicketMessageSerializer(comment)
+                return Response(serializer.data, status=201)
+            except Ticket.DoesNotExist:
+                return Response({"error": "Ticket not found"}, status=404)
+            except ValueError as e:
+                return Response({"error": str(e)}, status=400)
+        else:
+            print("Serializer errors:", serializer.errors)
+            return Response(serializer.errors, status=400)
+
 
 
 class TicketMessageHistory(views.APIView):

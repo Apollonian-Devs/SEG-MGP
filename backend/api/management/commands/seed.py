@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand, CommandError
 # from random import randint, random, choice, sample
 from django.contrib.auth.models import User
 from api.models import Department, Officer, Ticket, TicketMessage, Notification
+from management.ticketTemplates import ticket_templates_by_department, conversation_templates
 import random
 from faker import Faker
 from random import randint
@@ -321,7 +322,68 @@ class Command(BaseCommand):
                 self.stdout.write(f"Message for ticket '{ticket.subject}' added.")
         self.stdout.write("Ticket messages seeded.")
 
-    
+    def seed_random_tickets(self):
+        """Seed tickets per department."""
+        self.stdout.write("Seeding tickets...")
+
+        for department_name in ticket_templates_by_department.keys():
+            department = Department.objects.get(name=department_name)
+            self.generate_tickets_for_department(department)
+
+        self.stdout.write("Tickets seeded.")
+
+    def generate_tickets_for_department(self, department):
+        """Generate 10 tickets for a given department."""
+        officers = self.officers_by_department.get(department.name, [])
+        department_head = Officer.objects.filter(department=department, is_department_head=True).first()
+
+        for ticket_template in ticket_templates_by_department[department.name]:
+            created_by = random.choice(self.students)
+
+            assigned_to = (
+                department_head if department_head and random.random() < 0.1
+                else random.choice(officers) if officers else None
+            )
+
+            ticket = Ticket.objects.create(
+                subject=ticket_template["subject"],
+                description=ticket_template["description"],
+                created_by=created_by,
+                assigned_to=assigned_to,
+                status="Open",  # Default status
+                priority=ticket_template["priority"],  # Use predefined priority
+            )
+
+            assigned_officer_name = assigned_to.user.username if assigned_to else "Unassigned"
+            self.stdout.write(f"Created Ticket: {ticket.subject} (Dept: {department.name}, Officer: {assigned_officer_name})")
+
+    def seed_ticket_messages(self, ticket_map):
+        """Seed messages for all tickets."""
+        self.stdout.write("Seeding ticket messages...")
+
+        for ticket in ticket_map.values():
+            self.generate_messages_for_ticket(ticket)
+
+        self.stdout.write("Ticket messages seeded.")
+
+    def generate_messages_for_ticket(self, ticket):
+        """Generate a random conversation for a given ticket."""
+        message_template = random.choice(conversation_templates)
+        student = ticket.created_by  # Ticket creator (Student)
+        officer = ticket.assigned_to  # Assigned officer (can be None)
+
+        for message in message_template:
+            sender = student if message["sender_type"] == "student" else officer
+            if sender is None:
+                continue
+            TicketMessage.objects.create(
+                ticket=ticket,
+                sender_profile=sender,
+                message_body=message["text"],
+                is_internal=(message["sender_type"] == "officer" and random.random() < 0.2)  # 20% chance of being internal
+            )
+
+        self.stdout.write(f"Messages added for Ticket: {ticket.subject}")
 
     def seed_notifications(self, ticket_map):
         """
@@ -343,6 +405,39 @@ class Command(BaseCommand):
 
             self.stdout.write(f"Notification for user '{user.username}' on ticket '{ticket.subject}' added.")
         self.stdout.write("Notifications seeded.")
+    
+    def seed_random_notifications(self, ticket_map):
+        """Generate a notification for every ticket, based on assigned user type."""
+        self.stdout.write("Seeding notifications...")
+
+        for ticket in ticket_map.values():
+            self.generate_notification_for_ticket(ticket)
+
+        self.stdout.write("Notifications seeded.")
+
+    def generate_notification_for_ticket(self, ticket):
+        """Generate a notification for a given ticket based on the assigned user type."""
+        user = ticket.assigned_to or ticket.created_by  # If no officer, notify creator
+
+        # Determine notification message
+        if user.is_staff:  # Assigned to an officer or department head
+            officer = Officer.objects.filter(user=user).first()
+            if officer and officer.is_department_head:
+                message = "You need to assign a new ticket."
+            else:
+                message = "You need to respond to a new ticket."
+        else:  # Student case
+            message = "Your ticket has been sent."
+
+        # Create the Notification
+        Notification.objects.create(
+            user_profile=user,
+            ticket=ticket,
+            message=message,
+        )
+
+        self.stdout.write(f"Notification added for '{user.username}' on Ticket: {ticket.subject}")
+
 
     def create_username(first_name, last_name):
         """Generate usernames for users."""

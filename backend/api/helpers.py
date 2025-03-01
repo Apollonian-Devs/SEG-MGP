@@ -9,7 +9,6 @@ import random
 
 
 
-
 def send_query(student_user, subject, description, message_body, attachments=None):
     """
     Creates a new ticket for 'student' user.
@@ -204,6 +203,8 @@ def view_ticket_details(ticket):
         "due_date": ticket.due_date,
         "is_overdue": ticket.is_overdue,
     }
+
+    print(details)
     return details
 #---------------------------------------------------------
 
@@ -314,6 +315,7 @@ def get_tickets_for_user(user):
             "priority": ticket.priority,
             "created_at": ticket.created_at,
             "updated_at": ticket.updated_at,
+            "due_date": ticket.due_date,
             "is_overdue": ticket.is_overdue,
             "assigned_to": ticket.assigned_to.username if ticket.assigned_to else None
         }
@@ -411,6 +413,8 @@ def changeTicketDueDate(ticket, user, new_due_date):
     Also notify the ticket owner (student) that a new due date is set.
     """
     if user.is_staff:
+        if new_due_date < timezone.now():
+            raise ValueError("You cannot change the due date to be in the past.") 
         ticket.due_date = new_due_date
         ticket.save()
 
@@ -424,6 +428,7 @@ def changeTicketDueDate(ticket, user, new_due_date):
             ),
         )
 
+
         TicketStatusHistory.objects.create(
             ticket=ticket,
             old_status=ticket.status,
@@ -431,6 +436,10 @@ def changeTicketDueDate(ticket, user, new_due_date):
             changed_by_profile=user,
             notes=f"Due date changed to {new_due_date}"
         )
+
+
+        return ticket
+    
 
     else:
         raise PermissionDenied("Only officers or admins can change ticket due date.")

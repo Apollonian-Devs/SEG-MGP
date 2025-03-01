@@ -11,6 +11,8 @@ urlpatterns = [
     path("all-officers/", views.AllOfficersView.as_view(), name="all-officers"),
     path("user-notifications/", views.UserNotificationsView.as_view(), name="user-notifications"),
     path("redirect-ticket/", views.TicketRedirectView.as_view(), name="redirect-ticket"),  
-    path("overdue-tickets/", views.OverdueTicketsView.as_view(), name="overdue-tickets"),  
+    path("overdue-tickets/", views.OverdueTicketsView.as_view(), name="overdue-tickets"),   
+    path("tickets/change-date", views.ChangeTicketDateView.as_view(), name="change-ticket-date"), 
+
 ]
 

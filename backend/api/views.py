@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import generics, views
 from rest_framework.response import Response
-from .serializers import UserSerializer, TicketSerializer, TicketMessageSerializer, TicketRedirectSerializer, OfficerSerializer, NotificationSerializer
+from .serializers import UserSerializer, TicketSerializer, TicketMessageSerializer, TicketRedirectSerializer, OfficerSerializer, NotificationSerializer, ChangeTicketDateSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Ticket
 from django.core.exceptions import ObjectDoesNotExist
@@ -210,6 +210,7 @@ class TicketRedirectView(views.APIView):
             return Response(serializer.errors)
 
 
+
 class OverdueTicketsView(views.APIView):
     permission_classes = [IsAuthenticated]
 
@@ -220,3 +221,33 @@ class OverdueTicketsView(views.APIView):
         return Response({"tickets": serializer.data})  
 
     
+
+class ChangeTicketDateView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        
+        user = request.user
+        serializer = ChangeTicketDateSerializer(data=request.data)
+
+        if serializer.is_valid():
+            try:
+                ticket_id = serializer.validated_data['id']
+                ticket = Ticket.objects.get(id=ticket_id)
+                new_due_date = serializer.validated_data['due_date']
+            
+                updated_ticket = changeTicketDueDate(ticket, user, new_due_date)
+                
+                serializer = TicketSerializer(updated_ticket)
+
+                return Response({"ticket": serializer.data}, status=201)
+            
+            except Ticket.DoesNotExist:
+                return Response({"error": "Ticket not found"}, status=404)
+            except ValueError as e:
+                print("The error", str(e))
+                return Response({"error": str(e)}, status=400)
+        else:
+            print("Serializer errors: ", serializer.errors)
+            return Response(serializer.errors)
+

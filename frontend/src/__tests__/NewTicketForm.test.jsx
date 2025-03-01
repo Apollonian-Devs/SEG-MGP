@@ -34,7 +34,7 @@ describe(NewTicketForm, () => {
         api.post.mockResolvedValue({ status: 201 });
         
         const user = userEvent.setup();
-
+        
         const navigate = vi.fn();
         useNavigate.mockReturnValue(navigate);
 

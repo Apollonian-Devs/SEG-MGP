@@ -110,3 +110,10 @@ class NotificationSerializer(serializers.ModelSerializer):
         fields = ["id","user_profile", "ticket_subject" ,"message", "created_at", "read_status"]
         extra_kwargs = {"student": {"read_only": True}}
 
+
+class ChangeTicketDateSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    due_date = serializers.DateTimeField()
+
+    def create(self, validated_data):
+        return validated_data

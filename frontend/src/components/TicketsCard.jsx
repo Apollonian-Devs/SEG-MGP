@@ -7,36 +7,19 @@ import PopUp from "./Popup";
 import GenericTable from "./GenericTable";
 import OfficersDropdown from "./OfficersDropdown";
 import RedirectButton from "./RedirectButton";
-import ShowOverdueButton from "./ShowOverdueButton";
 
-const TicketsCard = ({ user, officers, openPopup }) => {
-  const [tickets, setTickets] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedTicket, setSelectedTicket] = useState(null);
+import ShowOverdueButton from "./ShowOverdueButton";
+import ChangeDate from "./ChangeDate";
+
+
+const TicketsCard = ({ user, officers, openPopup, selectedTicket, setSelectedTicket, tickets, setTickets }) => {
+  // const [loading, setLoading] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [selectedOfficer, setSelectedOfficer] = useState(null);
+  const [isChangeDateOpen, setChangeDateOpen] = useState(null);
 
   // Sorting State
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
-
-  useEffect(() => {
-    const fetchTickets = async () => {
-      try {
-        const access = localStorage.getItem(ACCESS_TOKEN);
-        const response = await api.get("/api/user-tickets/", {
-          headers: { Authorization: `Bearer ${access}` },
-        });
-        setTickets(response.data.tickets);
-        console.log("Tickets:", response.data.tickets);
-      } catch (error) {
-        console.error("Error fetching tickets:", error.response?.data || error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTickets();
-  }, []);
 
   // Sorting Function
   const sortTickets = (key) => {
@@ -56,13 +39,18 @@ const TicketsCard = ({ user, officers, openPopup }) => {
     setTickets(sortedTickets);
   };
 
-  if (loading) {
-    return <p>Loading tickets...</p>;
-  }
+  // not necessary ? loading is never set in this component ... ?
+  // if (loading) {
+  //   return <p>Loading tickets...</p>;
+  // }
 
+  const toggleChangeDate = () => {
+    setChangeDateOpen((prev) => !prev);
+  }
 
   return (
     <>
+      {/* Pop up for chat */}
       <div className="relative">
         {selectedTicket && (
           <PopUp
@@ -73,6 +61,26 @@ const TicketsCard = ({ user, officers, openPopup }) => {
           >
             <Chat ticket={selectedTicket} onClose={() => setIsChatOpen(false)} user={user} />
           </PopUp>
+        )}
+      </div>
+
+      {/* Pop up for change date form */}
+      <div className="relative">
+        {selectedTicket && (
+          <PopUp
+            isOpen={isChangeDateOpen}
+            onClose={toggleChangeDate}
+            width="w-[25%]"
+            height="h-[25%]"
+          >
+            <ChangeDate 
+            ticket={selectedTicket}
+            setSelectedTicket={setSelectedTicket}
+            setTickets={setTickets} 
+            />
+
+          </PopUp>
+
         )}
       </div>
       <div className="flex flex-col bg-white rounded-3xl drop-shadow-[0_20px_50px_rgba(0,0,0,0.1)]">
@@ -118,7 +126,10 @@ const TicketsCard = ({ user, officers, openPopup }) => {
                     </th>
                     <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase">Actions</th>
                     {user.is_staff && (
+                      <>
                       <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase">Redirect</th>
+                      <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase">Change Due Date</th>
+                      </>
                     )}
                   </>
                 }
@@ -128,7 +139,11 @@ const TicketsCard = ({ user, officers, openPopup }) => {
                 rowDefinition={(ticket) => (
                   <tr key={ticket.id}
                       className='hover:bg-gray-100 cursor-pointer'
-                      onClick={() => openPopup("viewTicket", ticket)}
+                      onClick={() => {
+                        console.log(`Selected Ticket ID: ${ticket.id}, Due Date: ${ticket.due_date}`);
+                        setSelectedTicket(ticket);
+                        openPopup("viewTicket");
+                      }}
                   >
                     <td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800'>
                       {ticket.subject}
@@ -139,6 +154,7 @@ const TicketsCard = ({ user, officers, openPopup }) => {
                     <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-800'>
                       {ticket.priority || "Not Set"}
                     </td>
+                    
                     <td className='px-6 py-4 whitespace-nowrap text-end text-sm font-medium'>
                       <GenericButton
                         className='text-blue-600 hover:text-blue-800'
@@ -152,13 +168,27 @@ const TicketsCard = ({ user, officers, openPopup }) => {
                       </GenericButton>
                     </td>
                     {user.is_staff && (
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                    <div className="flex items-center gap-2">
-
-                      <OfficersDropdown officers={officers} setSelectedOfficer={setSelectedOfficer} />
-                      <RedirectButton ticketid={ticket.id} selectedOfficer={selectedOfficer} />
-                    </div>
-                  </td>
+                      <>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                        <div className="flex items-center gap-2">
+                          <OfficersDropdown officers={officers} setSelectedOfficer={setSelectedOfficer} />
+                          <RedirectButton ticketid={ticket.id} selectedOfficer={selectedOfficer} />
+                        </div>
+                      </td>
+                      
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                        <GenericButton
+                          className="px-3 py-1 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedTicket(ticket);
+                            toggleChangeDate();
+                          }}
+                          >
+                          Select Date
+                        </GenericButton>
+                      </td>
+                      </>
                 )}
 
               </tr>

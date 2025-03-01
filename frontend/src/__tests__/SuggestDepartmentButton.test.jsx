@@ -4,7 +4,6 @@ import { vi } from "vitest";
 import SuggestDepartmentButton from "../components/SuggestDepartmentButton";
 import api from "../api";
 
-// Mock API requests
 vi.mock("../api");
 
 describe("SuggestDepartmentButton", () => {
@@ -15,7 +14,7 @@ describe("SuggestDepartmentButton", () => {
   ];
 
   beforeEach(() => {
-    vi.clearAllMocks(); // Reset mock function calls before each test
+    vi.clearAllMocks();
   });
 
   test("renders the button correctly", () => {
@@ -26,16 +25,11 @@ describe("SuggestDepartmentButton", () => {
       />
     );
 
-    expect(
-      screen.getByRole("button", { name: /Suggest Departments/i })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Suggest Departments/i })).toBeInTheDocument();
   });
 
   test("fetches random department and updates state when clicked", async () => {
-    // Mock API response for random department
-    api.get.mockResolvedValueOnce({
-      data: { id: 101, name: "IT Department" },
-    });
+    api.get.mockResolvedValueOnce({ data: { id: 101, name: "IT Department" } });
 
     render(
       <SuggestDepartmentButton
@@ -47,15 +41,15 @@ describe("SuggestDepartmentButton", () => {
     const button = screen.getByRole("button", { name: /Suggest Departments/i });
     fireEvent.click(button);
 
-    // Wait for all API calls to finish
     await waitFor(() => {
-      expect(api.get).toHaveBeenCalledTimes(mockTickets.length); // Should call API for each ticket
-      expect(mockSetSuggestedDepartments).toHaveBeenCalled(); // Ensure state is updated
+      expect(api.get).toHaveBeenCalledTimes(mockTickets.length);
+      expect(mockSetSuggestedDepartments).toHaveBeenCalled();
     });
   });
 
   test("handles API errors gracefully", async () => {
-    // Mock API error response
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
     api.get.mockRejectedValueOnce(new Error("API Error"));
 
     render(
@@ -68,10 +62,43 @@ describe("SuggestDepartmentButton", () => {
     const button = screen.getByRole("button", { name: /Suggest Departments/i });
     fireEvent.click(button);
 
-    // Wait for API call to be made
     await waitFor(() => {
       expect(api.get).toHaveBeenCalledTimes(mockTickets.length);
       expect(mockSetSuggestedDepartments).toHaveBeenCalled();
     });
+
+    expect(consoleErrorSpy).toHaveBeenCalled();
+
+    consoleErrorSpy.mockRestore();
   });
+
+  test("handles API errors when error.response is undefined", async () => {
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+  
+    api.get.mockRejectedValueOnce(new Error("Network Error"));
+  
+    render(
+      <SuggestDepartmentButton
+        setSuggestedDepartments={mockSetSuggestedDepartments}
+        tickets={mockTickets}
+      />
+    );
+  
+    const button = screen.getByRole("button", { name: /Suggest Departments/i });
+    fireEvent.click(button);
+  
+    await waitFor(() => {
+      expect(api.get).toHaveBeenCalledTimes(mockTickets.length);
+      expect(mockSetSuggestedDepartments).toHaveBeenCalled();
+    });
+  
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      "Error fetching random department:",
+      "Network Error"
+    );
+  
+    consoleErrorSpy.mockRestore();
+  });
+  
+  
 });

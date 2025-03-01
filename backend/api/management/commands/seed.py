@@ -1,11 +1,13 @@
 from django.core.management.base import BaseCommand, CommandError
 # from random import randint, random, choice, sample
 from django.contrib.auth.models import User
-from api.models import Department, Officer, Ticket, TicketMessage, Notification
-from management.ticketTemplates import ticket_templates_by_department, conversation_templates
+from api.models import Department, Officer, Ticket, TicketMessage, Notification, TicketStatusHistory
+from api.management.ticketTemplates import ticket_templates_by_department, conversation_templates
 import random
 from faker import Faker
 from random import randint
+from datetime import timedelta
+import django.utils.timezone as timezone
 
 student_fixtures = [
     {'username': '@johndoe', 'email': 'john.doe@example.org', 'first_name': 'John', 'last_name': 'Doe', 'is_staff': False, 'is_superuser': False},
@@ -144,18 +146,24 @@ class Command(BaseCommand):
     DEFAULT_PASSWORD = '1234'
 
     def __init__(self):
+        super().__init__()  
         self.faker = Faker('en_GB')
 
     def handle(self, *args, **options):
         self.stdout.write("Seeding the database...")
 
-
-        self.seed_departments()
-        self.seed_users()
-        x = self.seed_tickets()
-        self.seed_ticket_messages(x)
+        self.seed_departments()  
+        self.seed_users()  
+        self.map_officers_by_department()
+        fixed_ticket_map = self.seed_tickets()
+        self.seed_random_ticket_messages(fixed_ticket_map)  
+        self.seed_notifications(fixed_ticket_map)
+        random_ticket_map = self.seed_random_tickets()  
+        self.seed_ticket_messages(random_ticket_map)  
+        self.seed_random_notifications(random_ticket_map) 
 
         self.stdout.write("Database seeding complete!")
+
 
     def seed_departments(self):
         self.stdout.write("Seeding departments...")
@@ -182,9 +190,14 @@ class Command(BaseCommand):
         """Determine the number of officers per department and call generate_officers."""
         self.stdout.write("Seeding regular officers...")
         for department in Department.objects.all():
-            # Determine number of officers 
-            num_officers = random.choices(range(1, 11), weights=[40, 40, 20], k=1)[0]
-            # Generate the officers
+            r = random.random()
+            if r < 0.8:
+                num_officers = random.randint(1,4)
+            elif r < 0.9:
+                num_officers = random.randint(5,8)
+            else:
+                num_officers = random.randint(9,10)
+
             self.generate_officers(department, num_officers)
         self.stdout.write("Regular officers seeded.")
 
@@ -198,17 +211,32 @@ class Command(BaseCommand):
                 department=department
             )
 
-    
+    def map_officers_by_department(self):
+        """Creates a dictionary mapping department names to lists of officers."""
+        self.officers_by_department = {}
+        for officer in Officer.objects.all():
+            dept_name = officer.department.name
+            if dept_name not in self.officers_by_department:
+                self.officers_by_department[dept_name] = []
+            self.officers_by_department[dept_name].append(officer)
+
+        self.stdout.write("Mapped officers to departments.")
+
+    def generate_students(self):
+        """Randomly generate 200 students"""
+        self.students = []  # Store students for later use
+        for _ in range(20):
+            student = self.seed_random_user(is_staff=False, is_superuser=False)
+            self.students.append(student)
+
+        self.stdout.write("200 random students seeded.")
+   
     def seed_users(self):
-<<<<<<< HEAD
-=======
-
         self.stdout.write("Seeding users...")
-
->>>>>>> 620339da2e847f0595ee031b411335ea68581783
         self.generate_user_fixtures()
         self.seed_department_heads()
-        # self.generate_random_users()
+        self.seed_officers()
+        self.generate_students()
 
         self.stdout.write("Users seeded.")
 
@@ -271,12 +299,10 @@ class Command(BaseCommand):
                 department=department,
                 is_department_head=is_department_head
             )
-            role = "Department Head" if is_department_head else "Officer"
-            self.stdout.write(f"Created {role} for '{department.name}': {user.username}")
-        else:
-            self.stdout.write(f"Created Student: {user.username}")
+        self.stdout.write(f"Created User: {user.username} ({'Staff' if is_staff else 'Student'})")
 
         return user  # Return the created user object for further use if needed
+
  
 
     def seed_tickets(self):
@@ -331,48 +357,94 @@ class Command(BaseCommand):
         self.stdout.write("Ticket messages seeded.")
 
     def seed_random_tickets(self):
-        """Seed tickets per department."""
-        self.stdout.write("Seeding tickets...")
+        """Seed tickets per department and return a ticket map."""
+        self.stdout.write("Seeding random tickets...")
+
+        ticket_map = {}  # Store ticket objects by subject
 
         for department_name in ticket_templates_by_department.keys():
             department = Department.objects.get(name=department_name)
-            self.generate_tickets_for_department(department)
+            generated_tickets = self.generate_tickets_for_department(department)
+
+            # Add generated tickets to ticket_map
+            for ticket in generated_tickets:
+                ticket_map[ticket.subject] = ticket
 
         self.stdout.write("Tickets seeded.")
+        return ticket_map  # Return the ticket map
+
 
     def generate_tickets_for_department(self, department):
-        """Generate 10 tickets for a given department."""
+        """Generate 10 tickets for a given department and return the created tickets."""
         officers = self.officers_by_department.get(department.name, [])
         department_head = Officer.objects.filter(department=department, is_department_head=True).first()
+        admin = User.objects.filter(is_superuser=True).first()  # Get the first admin user
+
+        generated_tickets = []  # Store tickets
 
         for ticket_template in ticket_templates_by_department[department.name]:
-            created_by = random.choice(self.students)
-
+            created_by = random.choice(User.objects.filter(is_staff=False))
             assigned_to = (
-                department_head if department_head and random.random() < 0.1
-                else random.choice(officers) if officers else None
+                department_head.user if department_head and random.random() < 0.1
+                else random.choice(officers).user if officers else None
             )
 
+
+            # Determine if ticket is overdue (10% chance)
+            is_overdue = random.random() < 0.1
+            due_date = (
+                timezone.datetime(2024, 2, 26, tzinfo=timezone.get_current_timezone()) if is_overdue
+                else timezone.now() + timedelta(days=9)
+            )
+
+            # Create the Ticket
             ticket = Ticket.objects.create(
                 subject=ticket_template["subject"],
                 description=ticket_template["description"],
                 created_by=created_by,
                 assigned_to=assigned_to,
-                status="Open",  # Default status
-                priority=ticket_template["priority"],  # Use predefined priority
+                status="Open",
+                priority=ticket_template["priority"],
+                due_date=due_date,
+                is_overdue=is_overdue
             )
 
-            assigned_officer_name = assigned_to.user.username if assigned_to else "Unassigned"
-            self.stdout.write(f"Created Ticket: {ticket.subject} (Dept: {department.name}, Officer: {assigned_officer_name})")
+            generated_tickets.append(ticket)  # Add to the list of created tickets
 
-    def seed_ticket_messages(self, ticket_map):
+            # First TicketStatusHistory Entry - Ticket Created by Student
+            TicketStatusHistory.objects.create(
+                ticket=ticket,
+                old_status=None,
+                new_status="Open",
+                changed_by_profile=created_by,
+                notes="Ticket created by student."
+            )
+
+            # Second TicketStatusHistory Entry - Ticket Assigned to Officer/Department Head
+            if assigned_to:
+                TicketStatusHistory.objects.create(
+                    ticket=ticket,
+                    old_status="Open",
+                    new_status="Open",
+                    changed_by_profile=admin,
+                    notes=f"Ticket assigned to {assigned_to.username}."
+                )
+
+            assigned_officer_name = assigned_to.username if assigned_to else "Unassigned"
+            self.stdout.write(f"Created Ticket: {ticket.subject} (Dept: {department.name}, Officer: {assigned_officer_name}, Overdue: {is_overdue})")
+
+        return generated_tickets  # Return created tickets
+
+
+
+    def seed_random_ticket_messages(self, ticket_map):
         """Seed messages for all tickets."""
-        self.stdout.write("Seeding ticket messages...")
+        self.stdout.write("Seeding random ticket messages...")
 
         for ticket in ticket_map.values():
             self.generate_messages_for_ticket(ticket)
 
-        self.stdout.write("Ticket messages seeded.")
+        self.stdout.write("Random ticket messages seeded.")
 
     def generate_messages_for_ticket(self, ticket):
         """Generate a random conversation for a given ticket."""
@@ -416,12 +488,12 @@ class Command(BaseCommand):
     
     def seed_random_notifications(self, ticket_map):
         """Generate a notification for every ticket, based on assigned user type."""
-        self.stdout.write("Seeding notifications...")
+        self.stdout.write("Seeding random notifications...")
 
         for ticket in ticket_map.values():
             self.generate_notification_for_ticket(ticket)
 
-        self.stdout.write("Notifications seeded.")
+        self.stdout.write("Random notifications seeded.")
 
     def generate_notification_for_ticket(self, ticket):
         """Generate a notification for a given ticket based on the assigned user type."""
@@ -447,11 +519,11 @@ class Command(BaseCommand):
         self.stdout.write(f"Notification added for '{user.username}' on Ticket: {ticket.subject}")
 
 
-    def create_username(first_name, last_name):
+    def create_username(self,first_name, last_name):
         """Generate usernames for users."""
         return '@' + first_name.lower() + last_name.lower()
 
 
-    def create_email(first_name, last_name):
+    def create_email(self,first_name, last_name):
         """Generate emails for users."""
         return first_name + '.' + last_name + '@example.org'

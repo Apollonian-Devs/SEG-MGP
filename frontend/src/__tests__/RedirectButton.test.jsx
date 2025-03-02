@@ -33,10 +33,11 @@ describe('RedirectButton Component', () => {
     await screen.findByText('Redirect'); 
 
     expect(mockAlert).toHaveBeenCalledWith(
-      'Ticket successfully redirected to john_doe'
+      'Ticket successfully redirected to officer john_doe'
     );
 
   });
+
 
 //---------------------------------------------------------------------------
 
@@ -80,7 +81,7 @@ it('alerts when no officer is selected', async () => {
   await screen.findByText('Redirect'); 
 
   expect(mockAlert).toHaveBeenCalledWith(
-    "No officer selected. Please select an officer to redirect the ticket."
+    "Please select either an officer or a department to redirect the ticket."
   );
 
 });

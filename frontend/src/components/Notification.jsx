@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import api from "../api";
 import { ACCESS_TOKEN } from "../constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBell,faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faBell } from "@fortawesome/free-solid-svg-icons";
 import Popup from "./Popup";
 import GenericTable from "./GenericTable";
 import GenericButton from "./GenericButton";

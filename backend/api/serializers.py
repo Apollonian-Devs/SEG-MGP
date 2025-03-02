@@ -1,9 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-
-from .models import Ticket, Department, Officer, TicketMessage, Notification, TicketRedirect, TicketAttachment
-
-
+from django.utils import timezone
+from .models import Ticket, Department, Officer, TicketMessage, Notification, TicketRedirect, TicketStatusHistory, TicketAttachment
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -35,12 +33,21 @@ class DepartmentSerializer(serializers.ModelSerializer):
         fields = ["id", "name"]
 
 class OfficerSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
-    department = serializers.PrimaryKeyRelatedField(queryset=Department.objects.all())  
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())  # Use ID instead of nested serializer
+    department = serializers.PrimaryKeyRelatedField(queryset=Department.objects.all())
+    is_department_head = serializers.BooleanField(default=False, required=False)
 
     class Meta:
         model = Officer
-        fields = ["id", "user", "department"]
+        fields = ["id", "user", "department", "is_department_head"]
+
+    def create(self, validated_data):
+        user = validated_data.pop('user')  # This will now be an actual User instance
+        officer = Officer.objects.create(user=user, **validated_data)
+        return officer
+
+
+
 
 class TicketAttachmentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -99,3 +106,19 @@ class NotificationSerializer(serializers.ModelSerializer):
         fields = ["id","user_profile", "ticket_subject" ,"message", "created_at", "read_status"]
         extra_kwargs = {"student": {"read_only": True}}
 
+
+class ChangeTicketDateSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    due_date = serializers.DateTimeField()
+
+    def create(self, validated_data):
+        return validated_data
+
+class TicketStatusHistorySerializer(serializers.ModelSerializer):
+    profile_username = serializers.CharField(source="changed_by_profile.username", read_only=True)
+    class Meta:
+        model = TicketStatusHistory
+        fields = ["old_status", "new_status", "profile_username","changed_at","notes"]
+        extra_kwargs = {"ticket": {"read_only": True}}
+
+        

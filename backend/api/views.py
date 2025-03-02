@@ -1,13 +1,13 @@
 from django.contrib.auth.models import User
 from rest_framework import generics, views
 from rest_framework.response import Response
-from .serializers import UserSerializer, TicketSerializer, TicketMessageSerializer, TicketRedirectSerializer, OfficerSerializer, NotificationSerializer
+from .serializers import UserSerializer, TicketSerializer, TicketMessageSerializer, TicketRedirectSerializer, OfficerSerializer, NotificationSerializer, ChangeTicketDateSerializer, TicketStatusHistorySerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Ticket
 from django.core.exceptions import ObjectDoesNotExist
+from .models import Department
 
 from .helpers import *
-
 
 
 
@@ -29,7 +29,7 @@ class TicketListCreate(generics.ListCreateAPIView):
             attachments=data.get("attachments")
         )
 
-        return new_ticket
+        serializer.instance = new_ticket
 
 
 class TicketDelete(generics.DestroyAPIView):
@@ -172,6 +172,16 @@ class TicketRedirectView(views.APIView):
     def post(self, request):
         request.data['from_profile'] = request.user.id
 
+        department_id = request.data.get('department_id')
+        if department_id and request.user.is_superuser:
+            department_head = get_department_head(department_id)
+            if department_head:
+                request.data['to_profile'] = department_head.id
+            else:
+                return Response({"error": "No department head found for this department"}, status=400)
+
+
+
         serializer = TicketRedirectSerializer(data=request.data)
         
         if serializer.is_valid():
@@ -196,4 +206,65 @@ class TicketRedirectView(views.APIView):
                 return Response({"error": "an error has occured"})
         else:
             return Response(serializer.errors)
+        
+class TicketStatusHistoryView(views.APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, ticket_id):
+        user = request.user
+        ticket = Ticket.objects.get(id=ticket_id)
+        status_history = get_ticket_history(user,ticket)
+        serializer = TicketStatusHistorySerializer(status_history, many=True)
+        return Response({"status_history": serializer.data})
 
+
+
+class OverdueTicketsView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        overdue_tickets = get_overdue_tickets(user) 
+        serializer = TicketSerializer(overdue_tickets, many=True)  
+        return Response({"tickets": serializer.data})  
+
+    
+
+class ChangeTicketDateView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        
+        user = request.user
+        serializer = ChangeTicketDateSerializer(data=request.data)
+
+        if serializer.is_valid():
+            try:
+                ticket_id = serializer.validated_data['id']
+                ticket = Ticket.objects.get(id=ticket_id)
+                new_due_date = serializer.validated_data['due_date']
+            
+                updated_ticket = changeTicketDueDate(ticket, user, new_due_date)
+                
+                serializer = TicketSerializer(updated_ticket)
+
+                return Response({"ticket": serializer.data}, status=201)
+            
+            except Ticket.DoesNotExist:
+                return Response({"error": "Ticket not found"}, status=404)
+            except ValueError as e:
+                print("The error", str(e))
+                return Response({"error": str(e)}, status=400)
+        else:
+            print("Serializer errors: ", serializer.errors)
+            return Response(serializer.errors)
+
+class DepartmentsListView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        departments = Department.objects.all()
+        return Response([{
+            "id": dept.id,
+            "name": dept.name,
+            "description": dept.description
+        } for dept in departments])

@@ -178,6 +178,7 @@ class AIResponse(models.Model):
      def __str__(self):
         return f"AI Response #{self.id} for Ticket #{self.ticket.id}"
     
+    
 class Notification(models.Model):
      user_profile = models.ForeignKey(User, on_delete=models.CASCADE)
      ticket= models.ForeignKey(Ticket, on_delete=models.CASCADE, null=True, blank=True)

@@ -521,9 +521,16 @@ class Command(BaseCommand):
         self.stdout.write(f"Notification added for '{user.username}' on Ticket: {ticket.subject}")
 
 
-    def create_username(self,first_name, last_name):
-        """Generate usernames for users."""
-        return '@' + first_name.lower() + last_name.lower()
+    def create_username(self, first_name, last_name):
+        base_username = '@' + first_name.lower() + last_name.lower()
+        username = base_username
+        counter = 1
+        # Loop until a unique username is found
+        while User.objects.filter(username=username).exists():
+            username = f"{base_username}{counter}"
+            counter += 1
+        return username
+
 
 
     def create_email(self,first_name, last_name):

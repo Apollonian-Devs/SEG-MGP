@@ -9,8 +9,16 @@ const TicketDetails = ({ ticket }) => {
       <p className="text-sm text-gray-500 mt-2">Status: {ticket.status}</p>
       <p className="text-sm text-gray-500">Priority: {ticket.priority || "Not Set"}</p>
       <p className="text-sm text-gray-500">Assigned to: {ticket.assigned_to || "Unassigned"}</p>
-      <p className="text-sm text-gray-500">Created at: {ticket.created_at || "Not Set"}</p>
-      <p className="text-sm text-gray-500">Closed at: {ticket.closed_at || "Not Set"}</p>
+      <p className="text-sm text-gray-500">
+        Created at: {ticket.created_at ? new Date(ticket.created_at).toLocaleString() : "Not Set"}
+      </p>
+      <p className="text-sm text-gray-500">
+        Closed at: {ticket.closed_at ? new Date(ticket.closed_at).toLocaleString() : "Not Set"}
+      </p>
+      <p className="text-sm text-gray-500">
+        Due Date: {ticket.due_date ? new Date(ticket.due_date).toLocaleString() : "Not Set"}
+      </p>
+      
     </div>
   );
 };

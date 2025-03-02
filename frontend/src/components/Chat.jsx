@@ -55,7 +55,7 @@ const Chat = ({ ticket, onClose, user }) => {
       //setError(null);
       fetchMessages();
       setMessage_body("");
-      setAttachments([]);
+      setAttachments(undefined);
       
 
       alert("Your message has been sent. Please reload the page to check any new messages.");
@@ -139,6 +139,7 @@ const Chat = ({ ticket, onClose, user }) => {
             onChange={(e) => setMessage_body(e.target.value)}
             placeholder="Enter your message"
             style={styles.chatInput}
+            required={true}
             />
             <input
             type="file"

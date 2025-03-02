@@ -1,6 +1,6 @@
 import React from "react";
 
-const GenericTable = ({ tableClass = `min-w-full divide-y divide-gray-200`,bodyClass = "divide-y divide-gray-200",columnDefinition,data,dataName='data',rowDefinition}) => {
+const GenericTable = ({ tableClass = `min-w-full divide-y divide-gray-200`,bodyClass = "divide-y divide-gray-200",columnDefinition,data=[],dataName='data',rowDefinition}) => {
     return (
         <table className = {tableClass}>
             <thead>

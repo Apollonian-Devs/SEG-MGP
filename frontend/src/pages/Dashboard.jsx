@@ -9,11 +9,12 @@ import TicketDetails from '../components/TicketDetails';
 import Popup from '../components/Popup';
 
 const Dashboard = () => {
-	const [current_user, setCurrent_user] = useState(null);
-	const [officers, setOfficers] = useState([]);
-	const [popupType, setPopupType] = useState(null);
-	const [selectedTicket, setSelectedTicket] = useState(null);
-	const [isPopupOpen, setPopupOpen] = useState(false);
+  const [current_user, setCurrent_user] = useState(null);
+  const [officers, setOfficers] = useState([]);
+  const [tickets, setTickets] = useState([]);
+  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [popupType, setPopupType] = useState(null);
+  const [isPopupOpen, setPopupOpen] = useState(false);
 
 	const fetchCurrentUser = async () => {
 		try {
@@ -51,9 +52,23 @@ const Dashboard = () => {
 		}
 	};
 
+  const fetchTickets = async () => {
+    try {
+      const access = localStorage.getItem(ACCESS_TOKEN);
+      const response = await api.get("/api/user-tickets/", {
+        headers: { Authorization: `Bearer ${access}` },
+      });
+      setTickets(response.data.tickets);
+      console.log("Tickets:", response.data.tickets);
+    } catch (error) {
+		
+      console.error("Error fetching tickets:", error.response?.data || error.message);
+    } 
+  };
+
 	const openPopup = (type, ticket = null) => {
 		setPopupType(type);
-		setSelectedTicket(ticket);
+		// setSelectedTicket(ticket);
 		setPopupOpen(true);
 	};
 
@@ -63,18 +78,34 @@ const Dashboard = () => {
 		setSelectedTicket(null);
 	};
 
+	// useEffect(() => {
+	// 	fetchCurrentUser();
+	// 	console.log(current_user)
+	// 	if (current_user && current_user.is_staff) {
+	// 		fetchOfficers();
+	// 	}
+	// }, []);
+
+
 	useEffect(() => {
 		fetchCurrentUser();
+	  }, []);
+	
+	useEffect(() => {
 		if (current_user && current_user.is_staff) {
-			fetchOfficers();
+		  fetchOfficers();
 		}
-	}, []);
+	}, [current_user]);
 
-	// Ensure current_user is available before rendering
-	if (!current_user) {
-		return <p>Loading user details...</p>;
-	}
 
+  useEffect(() => {
+    fetchTickets();
+  }, []);
+
+  // Ensure current_user is available before rendering
+  if (!current_user) {
+    return <p>Loading user details...</p>;
+  }
 	return (
 		<div data-testid="dashboard-container">
 			<div className="flex justify-space-around items-center gap-x-5">
@@ -109,19 +140,23 @@ const Dashboard = () => {
 					<NotificationsTab user={current_user} />
 				</div>
 			</div>
+			
 			<TicketsCard
 				user={current_user}
-				officers={current_user.is_staff ? officers : undefined}
+				officers={current_user.is_staff && !current_user.is_superuser ? officers : []}
 				openPopup={openPopup}
+				selectedTicket={selectedTicket}
+				setSelectedTicket={setSelectedTicket}
+				tickets={tickets}
+				setTickets={setTickets}
 			/>
 
 			<Popup isOpen={isPopupOpen} onClose={closePopup}>
-				{popupType === 'addTicket' && <AddTicketPopup />}
-				{popupType === 'viewTicket' && selectedTicket && (
-					<TicketDetails ticket={selectedTicket} />
-				)}
+				{popupType === "addTicket" && <AddTicketPopup />}
+				{popupType === "viewTicket" && selectedTicket && <TicketDetails ticket={selectedTicket} />}
 			</Popup>
 		</div>
+
 	);
 };
 

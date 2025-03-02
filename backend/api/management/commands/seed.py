@@ -22,7 +22,6 @@ officer_fixtures = [
     {'username': '@officer4', 'email': 'officer4@example.org', 'first_name': 'Officer', 'last_name': 'Four', 'is_staff': True, 'is_superuser': False, 'department': 'IT'},
 ]
 
-
 admin_fixtures = [
     {'username': '@admin1', 'email': 'admin1@example.org', 'first_name': 'Admin', 'last_name': 'One', 'is_staff': True, 'is_superuser': True},
 ]
@@ -155,15 +154,18 @@ class Command(BaseCommand):
         self.seed_departments()  
         self.seed_users()  
         self.map_officers_by_department()
+        self.seed_ticket_notification_messages()
+
+        self.stdout.write("Database seeding complete!")
+
+
+    def seed_ticket_notification_messages(self):
         fixed_ticket_map = self.seed_tickets()
         self.seed_random_ticket_messages(fixed_ticket_map)  
         self.seed_notifications(fixed_ticket_map)
         random_ticket_map = self.seed_random_tickets()  
         self.seed_ticket_messages(random_ticket_map)  
-        self.seed_random_notifications(random_ticket_map) 
-
-        self.stdout.write("Database seeding complete!")
-
+        self.seed_random_notifications(random_ticket_map)
 
     def seed_departments(self):
         self.stdout.write("Seeding departments...")
@@ -191,9 +193,9 @@ class Command(BaseCommand):
         self.stdout.write("Seeding regular officers...")
         for department in Department.objects.all():
             r = random.random()
-            if r < 0.8:
+            if r < 0.4:
                 num_officers = random.randint(1,4)
-            elif r < 0.9:
+            elif r < 0.8:
                 num_officers = random.randint(5,8)
             else:
                 num_officers = random.randint(9,10)
@@ -225,7 +227,7 @@ class Command(BaseCommand):
     def generate_students(self):
         """Randomly generate 200 students"""
         self.students = []  # Store students for later use
-        for _ in range(20):
+        for _ in range(200):
             student = self.seed_random_user(is_staff=False, is_superuser=False)
             self.students.append(student)
 

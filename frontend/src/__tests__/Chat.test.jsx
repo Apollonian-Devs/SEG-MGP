@@ -129,7 +129,9 @@ describe("Chat", () => {
     await waitFor(() => {
       expect(api.post).toHaveBeenCalledWith(
         "/api/tickets/1/messages/post/",
-        { message_body: "Hello" },
+        { message_body: "Hello",
+          attachments: []
+        },
         { headers: { Authorization: "Bearer token" } }
       );
     });
@@ -175,7 +177,9 @@ describe("Chat", () => {
     await waitFor(() => {
       expect(api.post).toHaveBeenCalledWith(
         "/api/tickets/1/messages/post/",
-        { message_body: "Hello" },
+        { message_body: "Hello",
+          attachments: [] 
+        },
         { headers: { Authorization: "Bearer token" } }
       );
     });
@@ -273,7 +277,9 @@ describe("Chat", () => {
     await waitFor(() => {
       expect(api.post).toHaveBeenCalledWith(
         "/api/tickets/1/messages/post/",
-        { message_body: "Hello" },
+        { message_body: "Hello",
+          attachments: []
+        },
         { headers: { Authorization: "Bearer token" } }
       );
     });

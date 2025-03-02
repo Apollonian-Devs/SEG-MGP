@@ -55,7 +55,7 @@ const Chat = ({ ticket, onClose, user }) => {
       //setError(null);
       fetchMessages();
       setMessage_body("");
-      setAttachments([]);
+      setAttachments(undefined);
       
 
       alert("Your message has been sent. Please reload the page to check any new messages.");

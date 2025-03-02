@@ -101,6 +101,7 @@ const TicketsCard = ({ user, officers, openPopup, selectedTicket, setSelectedTic
           height="h-[80%]"
           >
           <StatusHistoryButton ticketId={selectedTicket.id}  />
+
           </PopUp>
         )}
 
@@ -152,9 +153,14 @@ const TicketsCard = ({ user, officers, openPopup, selectedTicket, setSelectedTic
                       <>
                       <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase">Redirect</th>
                       <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase">Change Due Date</th>
-                      <th className="px-6 py-3 text-end text-xs font-medium text-gray-500"><p>Status History</p></th>
-
                       </>
+                    )}
+
+                    {user.is_superuser && 
+                    (
+                     <>
+                     <th className="px-6 py-3 text-end text-xs font-medium text-gray-500"><p>Status History</p></th>
+                     </>
                     )}
                   </>
                 }
@@ -215,7 +221,8 @@ const TicketsCard = ({ user, officers, openPopup, selectedTicket, setSelectedTic
                         </GenericButton>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                      
+                          
+                          {user.is_superuser &&
                           <GenericButton
                             className="px-3 py-1 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700"
                             onClick={(e) => {
@@ -227,7 +234,7 @@ const TicketsCard = ({ user, officers, openPopup, selectedTicket, setSelectedTic
                             Status History
                           </GenericButton>
                           
-                       
+                          }
                       </td>
                     </>
                 )}

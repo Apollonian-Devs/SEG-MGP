@@ -33,10 +33,7 @@ const StatusHistoryButton = ({ ticketId }) => {
 
     return (
       <>
-      
-      
-        
- 
+
           
           <GenericTable
               columnDefinition={[

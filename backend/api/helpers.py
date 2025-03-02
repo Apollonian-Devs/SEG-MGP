@@ -290,18 +290,14 @@ def get_tickets_for_user(user):
     If the user is an admin, return all tickets.
     """
 
-    # # Both Admin and Officers get only their assigned tickets
-    # if user.is_superuser or user.is_staff:
-    #     tickets = Ticket.objects.filter(assigned_to=user)
-    # else:
-    #     tickets = Ticket.objects.filter(created_by=user)  # Students get their own tickets
 
-    if user.is_superuser:
-        tickets = Ticket.objects.all()  # Admin gets all tickets
-    elif user.is_staff:
-        tickets = Ticket.objects.filter(assigned_to=user)  # Officers get assigned tickets
+     # Both Admin and Officers get only their assigned tickets
+    if user.is_superuser or user.is_staff:
+        tickets = Ticket.objects.filter(assigned_to=user)
     else:
         tickets = Ticket.objects.filter(created_by=user)  # Students get their own tickets
+
+
 
     return [
         {
@@ -393,9 +389,7 @@ def get_overdue_tickets(user):
     
     queryset = Ticket.objects.filter(due_date__lt=timezone.now()) 
 
-    if user.is_superuser:
-        return queryset 
-    elif user.is_staff:
+    if user.is_superuser or user.is_staff:
         return queryset.filter(assigned_to=user) 
     else:
         return queryset.filter(created_by=user) 

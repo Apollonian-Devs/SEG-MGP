@@ -64,16 +64,6 @@ const TicketsCard = ({ user, officers, openPopup, selectedTicket, setSelectedTic
             >
               <Chat ticket={selectedTicket} onClose={() => setIsChatOpen(false)} user={user} />
             </PopUp>
-
-            <PopUp
-            isOpen={isHistoryOpen}
-            onClose={() => setSelectedTicket(null)}
-            width="w-[80%]"
-            height="h-[80%]"
-            >
-           
-            <StatusHistoryButton ticketId={selectedTicket.id}  />
-            </PopUp>
           </>
         )}
       </div>
@@ -97,6 +87,25 @@ const TicketsCard = ({ user, officers, openPopup, selectedTicket, setSelectedTic
 
         )}
       </div>
+
+      {/* Pop up for status history */}
+      <div className="relative">
+        {selectedTicket && (
+          <PopUp
+          isOpen={isHistoryOpen}
+          onClose={() => {
+            setSelectedTicket(null)
+            setIsHistoryOpen(false)
+          }}
+          width="w-[80%]"
+          height="h-[80%]"
+          >
+          <StatusHistoryButton ticketId={selectedTicket.id}  />
+          </PopUp>
+        )}
+
+      </div>
+
       <div className="flex flex-col bg-white rounded-3xl drop-shadow-[0_20px_50px_rgba(0,0,0,0.1)]">
         <div className="-m-1.5 overflow-x-auto">
           <div className="p-10 min-w-full inline-block align-middle">

@@ -289,6 +289,13 @@ def get_tickets_for_user(user):
     If the user is an officer, return tickets assigned to them.
     If the user is an admin, return all tickets.
     """
+
+    # # Both Admin and Officers get only their assigned tickets
+    # if user.is_superuser or user.is_staff:
+    #     tickets = Ticket.objects.filter(assigned_to=user)
+    # else:
+    #     tickets = Ticket.objects.filter(created_by=user)  # Students get their own tickets
+
     if user.is_superuser:
         tickets = Ticket.objects.all()  # Admin gets all tickets
     elif user.is_staff:

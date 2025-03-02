@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import api from "../api"
 import GenericForm from "./GenericForm";
 import GenericInput from "./GenericInput";
+import { handleFileChange } from "../utils/attachmentUtils";
+
 
 const NewTicketForm = () => {
 
@@ -13,22 +15,6 @@ const NewTicketForm = () => {
     const[attachments, setAttachments] = useState([]);
     const[loading, setLoading] = useState(false);
     const navigate = useNavigate();
-
-
-    const handleFileChange = (e) => {
-        const files = e.target.files;
-    
-        // Generate metadata for the selected files
-        const fileMetadata = Array.from(files).map((file) => ({
-            file_name: file.name,
-            file_path: `https://your-storage-service.com/uploads/${file.name}`, // Assuming a pre-uploaded location
-            mime_type: file.type,
-        }));
-    
-        setAttachments(fileMetadata);
-    };
-
-    
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -96,7 +82,7 @@ const NewTicketForm = () => {
                 label="Attachments"
                 type="file"
                 multiple={true}
-                onChange={handleFileChange}
+                onChange={(e) => handleFileChange(e, setAttachments)}
                 placeholder="Optionally attach relevant files"
             />
         </GenericForm>

@@ -2,11 +2,14 @@ import React, { useState, useEffect } from "react";
 import api from "../api";
 import { ACCESS_TOKEN } from "../constants";
 import GenericButton from "./GenericButton";
+import { handleFileChange } from "../utils/attachmentUtils";
+
 
 const Chat = ({ ticket, onClose, user }) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [attachments, setAttachments] = useState([]);
 
   // Fetch messages for the given ticket
   const fetchMessages = async () => {
@@ -23,7 +26,6 @@ const Chat = ({ ticket, onClose, user }) => {
     }
   };
 
-  // ✅ Call fetchMessages in useEffect when the component loads
   useEffect(() => {
     fetchMessages();
   }, [ticket.id]);
@@ -34,9 +36,13 @@ const Chat = ({ ticket, onClose, user }) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem(ACCESS_TOKEN);
+      const payload = {   
+        message_body,   
+        attachments: attachments.length > 0 ? attachments : [] 
+    };
       const response = await api.post(
         `/api/tickets/${ticket.id}/messages/post/`, // Updated URL
-        { message_body }, // Pass the message body
+        payload, // Pass a single payload object
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -49,6 +55,7 @@ const Chat = ({ ticket, onClose, user }) => {
       //setError(null);
       fetchMessages();
       setMessage_body("");
+      setAttachments([]);
       
 
       alert("Your message has been sent. Please reload the page to check any new messages.");
@@ -108,6 +115,16 @@ const Chat = ({ ticket, onClose, user }) => {
                       }
                     >
                       {msg.body}
+                      {msg.attachments && msg.attachments.length > 0 && (
+                      <div>
+                        {msg.attachments.map((attachment) => (
+                          <a key={attachment.file_name} href={attachment.file_path} target="_blank" rel="noopener noreferrer">
+                            {attachment.file_name}
+                          </a>
+                        ))}
+                      </div>
+                    )}
+
                     </div>
                   </div>
                 ))
@@ -121,6 +138,14 @@ const Chat = ({ ticket, onClose, user }) => {
             value={message_body}
             onChange={(e) => setMessage_body(e.target.value)}
             placeholder="Enter your message"
+            style={styles.chatInput}
+            required={true}
+            />
+            <input
+            type="file"
+            multiple={true}
+            onChange={(e) => handleFileChange(e, setAttachments)}
+            placeholder="Optionally attach relevant files"
             style={styles.chatInput}
             />
             <GenericButton 

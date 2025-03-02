@@ -28,7 +28,7 @@ class TicketListCreate(generics.ListCreateAPIView):
             attachments=data.get("attachments")
         )
 
-        return new_ticket
+        serializer.instance = new_ticket
 
 
 class TicketDelete(generics.DestroyAPIView):
@@ -70,48 +70,20 @@ class UserTicketsView(views.APIView):
         return Response({"tickets": tickets})
 
 
-#sender_user, ticket, message_body, is_internal=False
-"""class TicketSendResponseView(views.APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request, ticket_id):
-
-        serializer = TicketMessageSerializer(data=request.data)
-        if serializer.is_valid():
-        
-            try:
-
-                comment = send_response(
-                    sender_profile=serializer.validated_data['sender_profile'],
-                    ticket=serializer.validated_data['ticket'],
-                    message_body=serializer.validated_data['message_body'],
-                )
-                
-            
-                serializer = TicketMessageSerializer(comment)
-                return Response(serializer.data, status=201)
-
-            except Ticket.DoesNotExist:
-                return Response({"error": "Ticket not found"}, status=404)
-            except ValueError as e:
-                return Response({"error": str(e)}, status=400)
-        else:
-            print(serializer.errors)
-            return Response(serializer.errors)"""
-
 class TicketSendResponseView(views.APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, ticket_id):
-       
         data = {
-            "sender_profile": request.user.id, 
-            "ticket": ticket_id,               
-            "message_body": request.data.get("message_body")
+            "sender_profile": request.user.id,
+            "ticket": ticket_id,
+            "message_body": request.data.get("message_body"),
+            "attachments": request.data.get("attachments", [])  
         }
-        
+
+        print("Processed data before validation:", data)  # Debugging output
+
         serializer = TicketMessageSerializer(data=data)
-        
         if serializer.is_valid():
             try:
                 comment = send_response(
@@ -119,15 +91,29 @@ class TicketSendResponseView(views.APIView):
                     ticket=serializer.validated_data["ticket"],
                     message_body=serializer.validated_data["message_body"],
                 )
+
+                for attachment in data["attachments"]:
+
+                        TicketAttachment.objects.create(
+                            message=comment,
+                            file_name=attachment["file_name"],
+                            file_path=attachment["file_path"],
+                            mime_type=attachment["mime_type"]
+                        )
+
                 serializer = TicketMessageSerializer(comment)
                 return Response(serializer.data, status=201)
+
             except Ticket.DoesNotExist:
                 return Response({"error": "Ticket not found"}, status=404)
             except ValueError as e:
                 return Response({"error": str(e)}, status=400)
         else:
-            print("Serializer errors:", serializer.errors)
+            print(" Serializer errors:", serializer.errors)
             return Response(serializer.errors, status=400)
+
+
+
 
 
 
@@ -136,18 +122,19 @@ class TicketMessageHistory(views.APIView):
 
     def get(self, request, ticket_id):
         try:
-         
             ticket = Ticket.objects.get(id=ticket_id)
-            
-   
             messages = get_message_history(ticket)
-            
+
+            for msg in messages:
+                ticket_message_obj = TicketMessage.objects.get(id=msg["message_id"])
+                msg["attachments"] = TicketMessageSerializer(ticket_message_obj).data.get("attachments", [])
 
             return Response({"messages": messages}, status=200)
         except ObjectDoesNotExist:
             return Response({"error": "Ticket not found"}, status=404)
         except Exception as e:
             return Response({"error": str(e)}, status=500)
+
         
 
 class AllOfficersView(views.APIView):

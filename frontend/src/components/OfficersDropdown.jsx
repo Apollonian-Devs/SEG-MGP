@@ -23,7 +23,9 @@ const OfficersDropdown = ({ officers, setSelectedOfficer }) => {
           {officers.map((officer) => (
             <GenericButton
               key={officer.user.id}
-              onClick={() => handleSelect(officer)}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleSelect(officer)}}
               className="block w-full text-left px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
             >
               {officer.user.username}

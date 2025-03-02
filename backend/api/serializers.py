@@ -1,8 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Ticket, Department, Officer, TicketMessage, Notification, TicketRedirect, TicketStatusHistory
 from django.utils import timezone
-
+from .models import Ticket, Department, Officer, TicketMessage, Notification, TicketRedirect, TicketStatusHistory, TicketAttachment
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -41,15 +40,15 @@ class OfficerSerializer(serializers.ModelSerializer):
         model = Officer
         fields = ["id", "user", "department"]
 
-class TicketMessageSerializer(serializers.ModelSerializer):
+class TicketAttachmentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = TicketMessage
-        fields = ["message_body"]
+        model = TicketAttachment
+        fields = ["file_name", "file_path", "mime_type"]
 
 
 class TicketSerializer(serializers.ModelSerializer):
     message = serializers.CharField(required=False, write_only=True)
-    attachments = serializers.ListField(child=serializers.DictField(), required=False, write_only=True)
+    attachments = serializers.SerializerMethodField()
     
     class Meta:
         model = Ticket
@@ -62,8 +61,11 @@ class TicketSerializer(serializers.ModelSerializer):
             "subject": {"required": True},
             "description": {"required": True},
         }
-    
-    
+    def get_attachments(self, obj):
+        """ Fetch all attachments related to this ticket through its messages. """
+        ticket_messages = TicketMessage.objects.filter(ticket=obj) 
+        attachments = TicketAttachment.objects.filter(message__in=ticket_messages)
+        return TicketAttachmentSerializer(attachments, many=True).data 
 
         
 class TicketRedirectSerializer(serializers.ModelSerializer):
@@ -77,13 +79,14 @@ class TicketRedirectSerializer(serializers.ModelSerializer):
         fields = ["ticket", "from_profile", "to_profile"]
 
 
-
 class TicketMessageSerializer(serializers.ModelSerializer):
     sender_profile = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     ticket = serializers.PrimaryKeyRelatedField(queryset=Ticket.objects.all())
+    attachments = TicketAttachmentSerializer(source="ticketattachment_set", many=True, read_only=True)
+
     class Meta:
         model = TicketMessage
-        fields = ["sender_profile", "ticket", "message_body"]
+        fields = ["sender_profile", "ticket", "message_body", "created_at", "attachments"]
 
 
 class NotificationSerializer(serializers.ModelSerializer):

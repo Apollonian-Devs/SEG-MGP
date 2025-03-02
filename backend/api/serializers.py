@@ -33,12 +33,21 @@ class DepartmentSerializer(serializers.ModelSerializer):
         fields = ["id", "name"]
 
 class OfficerSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
-    department = serializers.PrimaryKeyRelatedField(queryset=Department.objects.all())  
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())  # Use ID instead of nested serializer
+    department = serializers.PrimaryKeyRelatedField(queryset=Department.objects.all())
+    is_department_head = serializers.BooleanField(default=False, required=False)
 
     class Meta:
         model = Officer
-        fields = ["id", "user", "department"]
+        fields = ["id", "user", "department", "is_department_head"]
+
+    def create(self, validated_data):
+        user = validated_data.pop('user')  # This will now be an actual User instance
+        officer = Officer.objects.create(user=user, **validated_data)
+        return officer
+
+
+
 
 class TicketAttachmentSerializer(serializers.ModelSerializer):
     class Meta:

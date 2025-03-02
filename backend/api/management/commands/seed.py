@@ -1,9 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
-
 # from random import randint, random, choice, sample
 from django.contrib.auth.models import User
-from django.utils.dateparse import parse_datetime
-
 from api.models import Department, Officer, Ticket, TicketMessage, Notification, TicketStatusHistory
 from api.management.ticketTemplates import ticket_templates_by_department, conversation_templates
 import random
@@ -338,7 +335,6 @@ class Command(BaseCommand):
         self.stdout.write("Tickets seeded.")
         return ticket_map
 
-
     def seed_ticket_messages(self, ticket_map):
         """
         Seed the ticket messages using the ticket_message_fixtures data.
@@ -525,9 +521,16 @@ class Command(BaseCommand):
         self.stdout.write(f"Notification added for '{user.username}' on Ticket: {ticket.subject}")
 
 
-    def create_username(self,first_name, last_name):
-        """Generate usernames for users."""
-        return '@' + first_name.lower() + last_name.lower()
+    def create_username(self, first_name, last_name):
+        base_username = '@' + first_name.lower() + last_name.lower()
+        username = base_username
+        counter = 1
+        # Loop until a unique username is found
+        while User.objects.filter(username=username).exists():
+            username = f"{base_username}{counter}"
+            counter += 1
+        return username
+
 
 
     def create_email(self,first_name, last_name):

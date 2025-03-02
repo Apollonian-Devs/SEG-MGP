@@ -5,6 +5,7 @@ from .serializers import UserSerializer, TicketSerializer, TicketMessageSerializ
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Ticket
 from django.core.exceptions import ObjectDoesNotExist
+from .models import Department
 
 from .helpers import *
 
@@ -171,6 +172,16 @@ class TicketRedirectView(views.APIView):
     def post(self, request):
         request.data['from_profile'] = request.user.id
 
+        department_id = request.data.get('department_id')
+        if department_id and request.user.is_superuser:
+            department_head = get_department_head(department_id)
+            if department_head:
+                request.data['to_profile'] = department_head.id
+            else:
+                return Response({"error": "No department head found for this department"}, status=400)
+
+
+
         serializer = TicketRedirectSerializer(data=request.data)
         
         if serializer.is_valid():
@@ -247,3 +258,13 @@ class ChangeTicketDateView(views.APIView):
             print("Serializer errors: ", serializer.errors)
             return Response(serializer.errors)
 
+class DepartmentsListView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        departments = Department.objects.all()
+        return Response([{
+            "id": dept.id,
+            "name": dept.name,
+            "description": dept.description
+        } for dept in departments])

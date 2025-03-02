@@ -6,6 +6,7 @@ import GenericButton from "./GenericButton";
 import PopUp from "./Popup";
 import GenericTable from "./GenericTable";
 import OfficersDropdown from "./OfficersDropdown";
+import DepartmentsDropdown from "./DepartmentsDropdown";
 import RedirectButton from "./RedirectButton";
 import StatusHistoryButton from "./StatusHistoryButton";
 
@@ -19,6 +20,7 @@ const TicketsCard = ({ user, officers, openPopup, selectedTicket, setSelectedTic
   const [selectedOfficer, setSelectedOfficer] = useState(null);
   const [isChangeDateOpen, setChangeDateOpen] = useState(null);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [selectedDepartment, setSelectedDepartment] = useState(null);
 
   // Sorting State
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
@@ -201,12 +203,19 @@ const TicketsCard = ({ user, officers, openPopup, selectedTicket, setSelectedTic
                     {user.is_staff && (
                     <>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                        <div className="flex items-center gap-2">
-
-                          <OfficersDropdown officers={officers} setSelectedOfficer={setSelectedOfficer} />
-                          <RedirectButton ticketid={ticket.id} selectedOfficer={selectedOfficer} />
-                        </div>
-                      </td>
+                    <div className="flex items-center gap-2">
+                      {user.is_superuser ? (
+                        <DepartmentsDropdown setSelectedDepartment={setSelectedDepartment} />
+                      ) : (
+                        <OfficersDropdown officers={officers} setSelectedOfficer={setSelectedOfficer} />
+                      )}
+                      <RedirectButton 
+                        ticketid={ticket.id} 
+                        selectedOfficer={selectedOfficer}
+                        departmentId={user.is_superuser ? selectedDepartment?.id : null} 
+                      />
+                    </div>
+                  </td>
                       
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
                         <GenericButton
@@ -237,13 +246,11 @@ const TicketsCard = ({ user, officers, openPopup, selectedTicket, setSelectedTic
                           }
                       </td>
                     </>
-                )}
 
-              </tr>
-                    
-            )}
-                
-          />
+                )}
+                  </tr>
+                )}
+              />
             </div>
           </div>
         </div>
@@ -253,4 +260,3 @@ const TicketsCard = ({ user, officers, openPopup, selectedTicket, setSelectedTic
 };
 
 export default TicketsCard;
-

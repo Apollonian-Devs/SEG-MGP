@@ -1,3 +1,10 @@
+import { render, screen, fireEvent } from '@testing-library/react';
+import React from 'react';
+import GenericDropdown from '../components/GenericDropdown';
+import { describe, it, expect } from 'vitest';
+import '@testing-library/jest-dom/vitest';
+
+/*
 import React, { useState } from "react";
 import GenericDropdown from "./GenericDropdown";
 import GenericButton from "./GenericButton";
@@ -39,3 +46,24 @@ const OfficersDropdown = ({ officers, setSelectedOfficer }) => {
 };
 
 export default OfficersDropdown;
+*/
+
+describe('GenericDropdown Component', () => {
+    it('renders with correct button name', () => {
+        render(<GenericDropdown buttonName="Click Me" />);
+        expect(screen.getByText('Click Me')).toBeInTheDocument();
+    });
+
+    
+
+    it('renders children when dropdown is open', () => {
+        render(
+            <GenericDropdown buttonName="Click Me">
+                <div>Dropdown Content</div>
+            </GenericDropdown>
+        );
+        const button = screen.getByText('Click Me');
+        fireEvent.click(button);
+        expect(screen.getByText('Dropdown Content')).toBeInTheDocument();
+    });
+});

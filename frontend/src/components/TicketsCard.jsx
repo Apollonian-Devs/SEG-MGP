@@ -9,7 +9,7 @@ import OfficersDropdown from "./OfficersDropdown";
 import DepartmentsDropdown from "./DepartmentsDropdown";
 import RedirectButton from "./RedirectButton";
 
-const TicketsCard = ({ user, officers, openPopup }) => {
+const TicketsCard = ({ user, officers, admin, openPopup }) => {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTicket, setSelectedTicket] = useState(null);
@@ -152,7 +152,7 @@ const TicketsCard = ({ user, officers, openPopup }) => {
                       {user.is_superuser ? (
                         <DepartmentsDropdown setSelectedDepartment={setSelectedDepartment} />
                       ) : (
-                        <OfficersDropdown officers={officers} setSelectedOfficer={setSelectedOfficer} />
+                        <OfficersDropdown officers={officers} admin={admin} setSelectedOfficer={setSelectedOfficer} />
                       )}
                       <RedirectButton 
                         ticketid={ticket.id} 

@@ -5,7 +5,7 @@ from .serializers import UserSerializer, TicketSerializer, TicketMessageSerializ
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Ticket
 from django.core.exceptions import ObjectDoesNotExist
-from .models import Department
+from .models import *
 
 from .helpers import *
 
@@ -130,8 +130,23 @@ class AllOfficersView(views.APIView):
     def get(self, request):
         user = request.user
         officers = get_officers_same_department(user)
-        serializer = OfficerSerializer(officers, many=True)
-        return Response(serializer.data)
+
+        officer_serializer = OfficerSerializer(officers, many=True)
+
+        admin = None
+        if is_chief_officer(user):
+            admin = get_default_superuser()
+            admin_serializer = UserSerializer(admin)
+            admin_data = admin_serializer.data
+        else:
+            admin_data = None
+
+        response_data = {
+            "officers": officer_serializer.data,
+            "admin": admin_data
+        }
+
+        return Response(response_data)
 
 class UserNotificationsView(views.APIView):
     """

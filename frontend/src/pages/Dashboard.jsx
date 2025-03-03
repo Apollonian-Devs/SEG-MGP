@@ -11,6 +11,7 @@ import Popup from "../components/Popup";
 const Dashboard = () => {
   const [current_user, setCurrent_user] = useState(null);
   const [officers, setOfficers] = useState([]);
+  const [admin, setAdmin] = useState(null); 
   const [popupType, setPopupType] = useState(null);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [isPopupOpen, setPopupOpen] = useState(false);
@@ -39,7 +40,8 @@ const Dashboard = () => {
         },
       });
       console.log("All Officers", response.data);
-      setOfficers(response.data); // No need to manually restructure the object
+      setOfficers(response.data.officers); // No need to manually restructure the object
+      setAdmin(response.data.admin);  
     } catch (error) {
       console.error("Error fetching officers", error.response?.data || error.message);
     }
@@ -100,6 +102,7 @@ const Dashboard = () => {
       <TicketsCard
         user={current_user}
         officers={current_user.is_staff || current_user.is_superuser ? officers : undefined}
+        admin={admin}
         openPopup={openPopup}
       />
 

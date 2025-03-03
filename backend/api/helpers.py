@@ -462,6 +462,12 @@ def get_department_head(department_id):
     except Officer.DoesNotExist:
         return None
 
+def is_chief_officer(user):
+    """
+    Checks if a user is a Chief Officer (department head).
+    """
+    return Officer.objects.filter(user=user, is_department_head=True).exists()
+
 
 
 

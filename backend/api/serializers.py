@@ -33,7 +33,8 @@ class DepartmentSerializer(serializers.ModelSerializer):
         fields = ["id", "name"]
 
 class OfficerSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())  # Use ID instead of nested serializer
+    #user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())  # Use ID instead of nested serializer
+    user = UserSerializer()
     department = serializers.PrimaryKeyRelatedField(queryset=Department.objects.all())
     is_department_head = serializers.BooleanField(default=False, required=False)
 

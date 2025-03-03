@@ -22,6 +22,29 @@ officer_fixtures = [
     {'username': '@officer4', 'email': 'officer4@example.org', 'first_name': 'Officer', 'last_name': 'Four', 'is_staff': True, 'is_superuser': False, 'department': 'IT'},
 ]
 
+#chief_officer_fixtures = [
+#
+#    {'username': '@chiefofficer1', 'email': 'chiefofficer1@example.org', 'first_name': 'ChiefOfficer', 'last_name': 'One', 'is_staff': True, 'is_superuser': False, 'is_department_head': True,'department': 'IT'},
+#
+#    {'username': '@chiefofficer2', 'email': 'chiefofficer2@example.org', 'first_name': 'ChiefOfficer', 'last_name': 'Two', 'is_staff': True, 'is_superuser': False, 'is_department_head': True, 'department': 'HR'},
+#
+#    {'username': '@chiefofficer3', 'email': 'chiefofficer3@example.org', 'first_name': 'ChiefOfficer', 'last_name': 'Three', 'is_staff': True, 'is_superuser': False, 'is_department_head': True, 'department': 'Finance'},
+#
+#    {'username': '@chiefofficer4', 'email': 'chiefofficer4@example.org', 'first_name': 'ChiefOfficer', 'last_name': 'Four', 'is_staff': True, 'is_superuser': False, 'is_department_head': True, 'department': 'Wellbeing'},
+#    
+#    {'username': '@chiefofficer5', 'email': 'chiefofficer5@example.org', 'first_name': 'ChiefOfficer', 'last_name': 'Five', 'is_staff': True, 'is_superuser': False, 'is_department_head': True,'department': 'Maintenance'},
+#
+#    {'username': '@chiefofficer6', 'email': 'chiefofficer6@example.org', 'first_name': 'ChiefOfficer', 'last_name': 'Six', 'is_staff': True, 'is_superuser': False, 'is_department_head': True, 'department': 'Housing'},
+#
+#    {'username': '@chiefofficer7', 'email': 'chiefofficer7@example.org', 'first_name': 'ChiefOfficer', 'last_name': 'Seven', 'is_staff': True, 'is_superuser': False, 'is_department_head': True, 'department': 'Admissions'},
+#
+#    {'username': '@chiefofficer8', 'email': 'chiefofficer8@example.org', 'first_name': 'ChiefOfficer', 'last_name': 'Eight', 'is_staff': True, 'is_superuser': False, 'is_department_head': True, 'department': 'Library Services'},
+#]
+
+
+
+
+
 admin_fixtures = [
     {'username': '@admin1', 'email': 'admin1@example.org', 'first_name': 'Admin', 'last_name': 'One', 'is_staff': True, 'is_superuser': True},
 ]
@@ -249,6 +272,10 @@ class Command(BaseCommand):
 
         for officer in officer_fixtures:
             self.create_user(officer)
+            
+        #for chief_officer in chief_officer_fixtures:
+        #    
+        #    self.create_user(chief_officer)
 
         for admin in admin_fixtures:
             self.create_user(admin)
@@ -266,13 +293,29 @@ class Command(BaseCommand):
 
         # Assign a single department to officers
         if data['is_staff'] and not data['is_superuser']:
+            
             if 'department' in data:
+                
                 department_object = Department.objects.filter(name=data['department']).first()
+                
                 if department_object:
-                    officer, created = Officer.objects.get_or_create(user=user, defaults={'department': department_object})
+                    
+                    officer, created = Officer.objects.get_or_create(
+                        
+                        user=user,
+                        
+                        defaults={
+                            'department': department_object,
+                            'is_department_head': data.get('is_department_head', False)  # Ensure department head status is set
+                        }
+                        
+                    )
+                    
                     self.stdout.write(f"Officer '{user.username}' assigned to department: {department_object.name}.")
+                    
                 else:
-                    self.stdout.write(self.style.ERROR(f"Department '{data['department']}' not found for officer '{user.username}'."))   
+                    
+                    self.stdout.write(self.style.ERROR(f"Department '{data['department']}' not found for officer '{user.username}'."))    
 
     def seed_random_user(self, is_staff=False, is_superuser=False, is_department_head=False, department=None):
         """

@@ -14,7 +14,8 @@ urlpatterns = [
     path("tickets/change-date", views.ChangeTicketDateView.as_view(), name="change-ticket-date"), 
     path("ticket-status-history/<int:ticket_id>/", views.TicketStatusHistoryView.as_view(), name="ticket-status-history"),  
     path("redirect-ticket/", views.TicketRedirectView.as_view(), name="redirect-ticket"),
-    path('api/departments/', views.DepartmentsListView.as_view(), name='departments-list')   
+    path('api/departments/', views.DepartmentsListView.as_view(), name='departments-list'),
+    path("random-department/", views.RandomDepartmentView.as_view(), name="random-department"),   
 
 ]
 

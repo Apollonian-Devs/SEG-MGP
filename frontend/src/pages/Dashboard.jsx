@@ -52,19 +52,20 @@ const Dashboard = () => {
 		}
 	};
 
-  const fetchTickets = async () => {
-    try {
-      const access = localStorage.getItem(ACCESS_TOKEN);
-      const response = await api.get("/api/user-tickets/", {
-        headers: { Authorization: `Bearer ${access}` },
-      });
-      setTickets(response.data.tickets);
-      console.log("Tickets:", response.data.tickets);
-    } catch (error) {
-		
-      console.error("Error fetching tickets:", error.response?.data || error.message);
-    } 
-  };
+	const fetchTickets = async () => {
+		try {
+		  const access = localStorage.getItem(ACCESS_TOKEN);
+		  const response = await api.get("/api/user-tickets/", {
+			headers: { Authorization: `Bearer ${access}` },
+		  });
+		  setTickets(response.data.tickets);
+		  console.log("Tickets:", response.data.tickets);
+		} catch (error) {
+			
+		  console.error("Error fetching tickets:", error.response?.data || error.message);
+		} 
+	  };
+
 
 	const openPopup = (type, ticket = null) => {
 		setPopupType(type);
@@ -97,10 +98,9 @@ const Dashboard = () => {
 		}
 	}, [current_user]);
 
-
-  useEffect(() => {
-    fetchTickets();
-  }, []);
+	useEffect(() => {
+		fetchTickets();
+	  }, []);
 
   // Ensure current_user is available before rendering
   if (!current_user) {
@@ -145,10 +145,10 @@ const Dashboard = () => {
 				user={current_user}
 				officers={current_user.is_staff && !current_user.is_superuser ? officers : []}
 				openPopup={openPopup}
-				selectedTicket={selectedTicket}
-				setSelectedTicket={setSelectedTicket}
 				tickets={tickets}
 				setTickets={setTickets}
+				selectedTicket={selectedTicket}
+				setSelectedTicket={setSelectedTicket}
 			/>
 
 			<Popup isOpen={isPopupOpen} onClose={closePopup}>

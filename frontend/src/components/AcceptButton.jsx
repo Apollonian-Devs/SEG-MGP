@@ -3,7 +3,7 @@ import { ACCESS_TOKEN } from "../constants";
 import api from "../api";
 import GenericButton from "./GenericButton";
 
-const AcceptButton = ({ ticketid, selectedOfficer, departmentId }) => {
+const AcceptButton = ({ ticketId, selectedOfficer, departmentId }) => {
     const handleRedirect = async () => {
         if (!selectedOfficer && !departmentId) {
             return;
@@ -14,7 +14,7 @@ const AcceptButton = ({ ticketid, selectedOfficer, departmentId }) => {
             const response = await api.post(
                 "/api/redirect-ticket/",
                 {
-                    ticket: ticketid,
+                    ticket: ticketId,
                     to_profile: selectedOfficer ? selectedOfficer.user.id : null,
                     department_id: departmentId,
                 },

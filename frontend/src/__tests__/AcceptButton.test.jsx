@@ -17,19 +17,19 @@ describe("AcceptButton", () => {
   });
 
   test("renders the Accept button correctly", () => {
-    render(<AcceptButton ticketid={mockTicketId} selectedOfficer={null} departmentId={null} />);
+    render(<AcceptButton ticketId={mockTicketId} selectedOfficer={null} departmentId={null} />);
     expect(screen.getByRole("button", { name: /Accept/i })).toBeInTheDocument();
   });
 
   //test("button is disabled when neither selectedOfficer nor departmentId is set", () => {
-  //  render(<AcceptButton ticketid={mockTicketId} selectedOfficer={null} departmentId={null} />);
+  //  render(<AcceptButton ticketId={mockTicketId} selectedOfficer={null} departmentId={null} />);
   //  expect(screen.getByRole("button", { name: /Accept/i })).toBeDisabled();
   //});
 
   test("calls API correctly when selectedOfficer is provided", async () => {
     api.post.mockResolvedValueOnce({ data: { message: "Redirected successfully" } });
 
-    render(<AcceptButton ticketid={mockTicketId} selectedOfficer={mockSelectedOfficer} departmentId={null} />);
+    render(<AcceptButton ticketId={mockTicketId} selectedOfficer={mockSelectedOfficer} departmentId={null} />);
     
     const button = screen.getByRole("button", { name: /Accept/i });
     fireEvent.click(button);
@@ -50,7 +50,7 @@ describe("AcceptButton", () => {
   test("calls API correctly when departmentId is provided", async () => {
     api.post.mockResolvedValueOnce({ data: { message: "Redirected successfully" } });
 
-    render(<AcceptButton ticketid={mockTicketId} selectedOfficer={null} departmentId={mockDepartmentId} />);
+    render(<AcceptButton ticketId={mockTicketId} selectedOfficer={null} departmentId={mockDepartmentId} />);
     
     const button = screen.getByRole("button", { name: /Accept/i });
     fireEvent.click(button);
@@ -72,7 +72,7 @@ describe("AcceptButton", () => {
     const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     api.post.mockRejectedValueOnce(new Error("API Error"));
 
-    render(<AcceptButton ticketid={mockTicketId} selectedOfficer={mockSelectedOfficer} departmentId={null} />);
+    render(<AcceptButton ticketId={mockTicketId} selectedOfficer={mockSelectedOfficer} departmentId={null} />);
     
     const button = screen.getByRole("button", { name: /Accept/i });
     fireEvent.click(button);

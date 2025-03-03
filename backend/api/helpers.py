@@ -126,8 +126,6 @@ def send_response(sender_profile, ticket, message_body, is_internal=False, attac
 def validate_redirection(from_user, to_user):
     if not from_user.is_staff:
         raise PermissionDenied("Only officers or admins can redirect tickets.")
-    if not from_user.is_superuser and from_user.officer.department != to_user.officer.department:
-        raise ValidationError("Officers can only redirect tickets within their department.")
     if from_user == to_user:
         raise ValidationError("Redirection failed: Cannot redirect the ticket to the same user.")
 

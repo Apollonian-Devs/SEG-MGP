@@ -11,9 +11,10 @@ import Popup from '../components/Popup';
 const Dashboard = () => {
   const [current_user, setCurrent_user] = useState(null);
   const [officers, setOfficers] = useState([]);
+  const [admin, setAdmin] = useState(null); 
+  const [popupType, setPopupType] = useState(null);
   const [tickets, setTickets] = useState([]);
   const [selectedTicket, setSelectedTicket] = useState(null);
-  const [popupType, setPopupType] = useState(null);
   const [isPopupOpen, setPopupOpen] = useState(false);
 
 	const fetchCurrentUser = async () => {
@@ -36,36 +37,36 @@ const Dashboard = () => {
 
 	const fetchOfficers = async () => {
 		try {
-			const access = localStorage.getItem(ACCESS_TOKEN);
-			const response = await api.get('/api/all-officers/', {
-				headers: {
-					Authorization: `Bearer ${access}`,
-				},
-			});
-			console.log('All Officers', response.data);
-			setOfficers(response.data); // No need to manually restructure the object
-		} catch (error) {
-			console.error(
-				'Error fetching officers',
-				error.response?.data || error.message
-			);
-		}
-	};
-
-	const fetchTickets = async () => {
-		try {
 		  const access = localStorage.getItem(ACCESS_TOKEN);
-		  const response = await api.get("/api/user-tickets/", {
-			headers: { Authorization: `Bearer ${access}` },
+		  const response = await api.get("/api/all-officers/", {
+			headers: {
+			  Authorization: `Bearer ${access}`,
+			},
 		  });
-		  setTickets(response.data.tickets);
-		  console.log("Tickets:", response.data.tickets);
+		  console.log("All Officers", response.data);
+		  setOfficers(response.data.officers); // No need to manually restructure the object
+		  setAdmin(response.data.admin);  
 		} catch (error) {
-			
-		  console.error("Error fetching tickets:", error.response?.data || error.message);
-		} 
+		  console.error("Error fetching officers", error.response?.data || error.message);
+		}
 	  };
+	
 
+
+
+  const fetchTickets = async () => {
+	try {
+	  const access = localStorage.getItem(ACCESS_TOKEN);
+	  const response = await api.get("/api/user-tickets/", {
+		headers: { Authorization: `Bearer ${access}` },
+	  });
+	  setTickets(response.data.tickets);
+	  console.log("Tickets:", response.data.tickets);
+	} catch (error) {
+		
+	  console.error("Error fetching tickets:", error.response?.data || error.message);
+	} 
+  };
 
 	const openPopup = (type, ticket = null) => {
 		setPopupType(type);
@@ -137,13 +138,13 @@ const Dashboard = () => {
 						</a>
 					</GenericDropdown>
 
-					<NotificationsTab user={current_user} />
-				</div>
-			</div>
-			
-			<TicketsCard
+          <NotificationsTab user={current_user} />
+        </div>
+      </div>
+	  <TicketsCard
 				user={current_user}
 				officers={current_user.is_staff && !current_user.is_superuser ? officers : []}
+				admin={admin}
 				openPopup={openPopup}
 				tickets={tickets}
 				setTickets={setTickets}

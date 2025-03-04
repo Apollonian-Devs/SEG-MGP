@@ -16,7 +16,7 @@ import ShowOverdueButton from "./ShowOverdueButton";
 import ChangeDate from "./ChangeDate";
 
 
-const TicketsCard = ({ user, officers, openPopup, tickets, setTickets, selectedTicket, setSelectedTicket }) => {
+const TicketsCard = ({ user, officers, admin, openPopup, tickets, setTickets, selectedTicket, setSelectedTicket }) => {
   //const [loading, setLoading] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [selectedOfficer, setSelectedOfficer] = useState(null);
@@ -106,20 +106,20 @@ const TicketsCard = ({ user, officers, openPopup, tickets, setTickets, selectedT
         <div className="-m-1.5 overflow-x-auto">
           <div className="p-10 min-w-full inline-block align-middle">
             <h1 className="flex w-full text-center mb-5">Tickets</h1>
-  
+
             {/* Suggest Department Button (Only for Superuser Staff) */}
             {user.is_staff && user.is_superuser && (
               <div className="mb-3 flex justify-end">
                 <SuggestDepartmentButton setSuggestedDepartments={setSuggestedDepartments} tickets={tickets} />
               </div>
             )}
-  
+
             {/* Show Overdue Button */}
             <div className="flex justify-end p-4">
               <ShowOverdueButton setTickets={setTickets} allTickets={tickets} />
             </div>
-  
-            {/* Table */}
+
+            {/* Single Table Rendering */}
             <GenericTable
               columnDefinition={
                 <>
@@ -131,16 +131,16 @@ const TicketsCard = ({ user, officers, openPopup, tickets, setTickets, selectedT
                       </GenericButton>
                     </th>
                   ))}
-  
+
                   <th className="px-6 py-3 text-end text-xs font-medium text-gray-500">Actions</th>
-  
+
                   {user.is_staff && (
                     <>
                       <th className="px-6 py-3 text-end text-xs font-medium text-gray-500">Redirect</th>
                       <th className="px-6 py-3 text-end text-xs font-medium text-gray-500">Change Due Date</th>
                     </>
                   )}
-  
+
                   {user.is_superuser && (
                     <>
                       <th className="px-6 py-3 text-end text-xs font-medium text-gray-500">Status History</th>
@@ -156,7 +156,6 @@ const TicketsCard = ({ user, officers, openPopup, tickets, setTickets, selectedT
                   key={ticket.id}
                   className="hover:bg-gray-100 cursor-pointer"
                   onClick={() => {
-                    console.log(`Selected Ticket ID: ${ticket.id}, Due Date: ${ticket.due_date}`);
                     setSelectedTicket(ticket);
                     openPopup("viewTicket");
                   }}
@@ -167,7 +166,7 @@ const TicketsCard = ({ user, officers, openPopup, tickets, setTickets, selectedT
                       {ticket[key] || (key === "priority" ? "Not Set" : "")}
                     </td>
                   ))}
-  
+
                   {/* Chat Button */}
                   <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                     <GenericButton
@@ -181,7 +180,7 @@ const TicketsCard = ({ user, officers, openPopup, tickets, setTickets, selectedT
                       Chat
                     </GenericButton>
                   </td>
-  
+
                   {/* Staff-Specific Actions */}
                   {user.is_staff && (
                     <>
@@ -191,16 +190,16 @@ const TicketsCard = ({ user, officers, openPopup, tickets, setTickets, selectedT
                           {user.is_superuser ? (
                             <DepartmentsDropdown setSelectedDepartment={setSelectedDepartment} />
                           ) : (
-                            <OfficersDropdown officers={officers} setSelectedOfficer={setSelectedOfficer} />
+                            <OfficersDropdown officers={officers} admin={admin} setSelectedOfficer={setSelectedOfficer} />
                           )}
-                          <RedirectButton 
-                            ticketid={ticket.id} 
+                          <RedirectButton
+                            ticketid={ticket.id}
                             selectedOfficer={selectedOfficer}
-                            departmentId={user.is_superuser ? selectedDepartment?.id : null} 
+                            departmentId={user.is_superuser ? selectedDepartment?.id : null}
                           />
                         </div>
                       </td>
-  
+
                       {/* Change Due Date */}
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
                         <GenericButton
@@ -216,7 +215,7 @@ const TicketsCard = ({ user, officers, openPopup, tickets, setTickets, selectedT
                       </td>
                     </>
                   )}
-  
+
                   {/* Superuser-Specific Actions */}
                   {user.is_superuser && (
                     <>
@@ -238,9 +237,9 @@ const TicketsCard = ({ user, officers, openPopup, tickets, setTickets, selectedT
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
                         <div className="flex item-center gap-2">
                           {suggestedDepartments[ticket.id]?.name || "No suggestion"}
-                          <AcceptButton 
-                            ticketId={ticket.id} 
-                            selectedOfficer={selectedOfficer} 
+                          <AcceptButton
+                            ticketId={ticket.id}
+                            selectedOfficer={selectedOfficer}
                             departmentId={suggestedDepartments[ticket.id]?.id}
                           />
                         </div>
@@ -255,6 +254,6 @@ const TicketsCard = ({ user, officers, openPopup, tickets, setTickets, selectedT
       </div>
     </>
   );
-}
+};
 
 export default TicketsCard;

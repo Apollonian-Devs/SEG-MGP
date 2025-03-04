@@ -17,7 +17,9 @@ const RedirectButton = ({ ticketid, selectedOfficer, departmentId }) => {
                 "/api/redirect-ticket/",
                 {
                     ticket: ticketid,
-                    to_profile: selectedOfficer ? selectedOfficer.user.id : null,
+                    to_profile: selectedOfficer 
+                    ? (selectedOfficer.is_superuser ? selectedOfficer.id : selectedOfficer.user.id) 
+                    : null,
                     department_id: departmentId,
                 },
                 {
@@ -26,12 +28,8 @@ const RedirectButton = ({ ticketid, selectedOfficer, departmentId }) => {
                     },
                 }
             );
-        
-            const redirectTarget = selectedOfficer ? 
-                `officer ${selectedOfficer.user.username}` : 
-                `department's chief officer`;
             
-            alert(`Ticket successfully redirected to ${redirectTarget}`);
+            alert(`Ticket successfully redirected`);
             
             console.log("Redirect response:", response.data);
         

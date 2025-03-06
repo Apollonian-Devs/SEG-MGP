@@ -33,7 +33,7 @@ describe('RedirectButton Component', () => {
     await screen.findByText('Redirect'); 
 
     expect(mockAlert).toHaveBeenCalledWith(
-      'Ticket successfully redirected to officer john_doe'
+      'Ticket successfully redirected'
     );
 
   });

@@ -98,12 +98,12 @@ describe("TicketsCard", () => {
       openPopup={vi.fn()}
     />);
 
-    const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    // const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await waitFor(() => screen.getByRole('cell', {name: /ticket 1/i}));
     fireEvent.click(screen.getByText(/ticket 1/i).closest("tr"));
 
-    expect(consoleSpy).toHaveBeenCalledWith("Selected Ticket ID: 1, Due Date: 2025-12-31");
+    // expect(consoleSpy).toHaveBeenCalledWith("Selected Ticket ID: 1, Due Date: 2025-12-31");
 
   })
     

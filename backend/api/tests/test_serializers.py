@@ -108,8 +108,8 @@ class OfficerSerializerTestCase(TestCase):
         serialized_data = serializer.data
         self.assertEqual(serialized_data['id'], self.officerOne.id)
         
-        # Fix: Check `user` as an ID instead of a dictionary
-        self.assertEqual(serialized_data['user'], self.userOne.id)  # Now user is just an ID
+        # Fix: Get the id from the user dictionary
+        self.assertEqual(serialized_data['user']['id'], self.userOne.id)  
         self.assertEqual(serialized_data['department'], self.departmentOne.id)
 
 
@@ -124,7 +124,11 @@ class OfficerSerializerTestCase(TestCase):
             Officer.objects.filter(user=self.userTw).delete()
 
         valid_data = {
-            'user': self.userTw.id,  # Pass just the ID, since serializer expects a PrimaryKeyRelatedField
+            # Pass in a dictionary since we now have the embedded user serializer
+            'user': {'id': '3',
+                     'username': '@charlie',
+                     'email': 'charlie@example.com',
+                     'password': 'testpassword123'},  
             'department': self.departmentTwo.id,
             'is_department_head': False
         }
@@ -134,7 +138,7 @@ class OfficerSerializerTestCase(TestCase):
         self.assertTrue(serializer.is_valid(), "[ERROR] Serializer validation failed when it should be valid.")
         new_officer = serializer.save()
 
-        self.assertEqual(new_officer.user.id, self.userTw.id, "[ERROR] User ID mismatch after deserialization.")
+        self.assertEqual(new_officer.user.id, 3, "[ERROR] User ID mismatch after deserialization.")
         self.assertEqual(new_officer.department.id, self.departmentTwo.id, "[ERROR] Department ID mismatch after deserialization.")
 
 

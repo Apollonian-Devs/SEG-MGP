@@ -43,7 +43,8 @@ class OfficerSerializer(serializers.ModelSerializer):
         fields = ["id", "user", "department", "is_department_head"]
 
     def create(self, validated_data):
-        user = validated_data.pop('user')  # This will now be an actual User instance
+        user_data = validated_data.pop('user')  # This will now be an actual User instance
+        user, created = User.objects.get_or_create(**user_data) # Suggested by ChatGPT
         officer = Officer.objects.create(user=user, **validated_data)
         return officer
 

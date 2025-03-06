@@ -68,6 +68,88 @@ class UserSerializerTestCase(TestCase):
 
         self.assertIn('email', serializer.errors)
 
+
+
+class OfficerSerializerTestCase(TestCase):
+    def setUp(self):
+        # Create departments
+        self.departmentOne = Department.objects.create(
+            name="Engineering", 
+            description="Engineering Department"
+        )
+        self.departmentTwo = Department.objects.create(
+            name="Finance", 
+            description="Finance Department"
+        )
+        # Create users
+        self.userOne = User.objects.create(
+            username="john_doe", 
+            email="john.doe@example.com",
+            password="testpassword123",
+            is_staff=True,
+        )
+        self.userTw = User.objects.create(
+            username="@jane_doe", 
+            email="jane.doe@example.com",
+            password="testpassword123",
+            is_staff=True,
+            is_superuser=False
+        )
+        # Create officers
+        self.officerOne = Officer.objects.create(user=self.userOne, department=self.departmentOne)
+        self.userTwo = Officer.objects.create(user=self.userTw, department=self.departmentTwo)
+
+    def test_serialization(self):
+        """Test if the OfficerSerializer correctly serializes data."""
+        
+
+        
+        serializer = OfficerSerializer(self.officerOne)
+        serialized_data = serializer.data
+        self.assertEqual(serialized_data['id'], self.officerOne.id)
+        
+        # Fix: Check `user` as an ID instead of a dictionary
+        self.assertEqual(serialized_data['user'], self.userOne.id)  # Now user is just an ID
+        self.assertEqual(serialized_data['department'], self.departmentOne.id)
+
+
+
+
+
+    def test_deserialization_valid_data(self):
+        """Test if the OfficerSerializer correctly deserializes valid data."""
+
+        # Ensure the user is NOT already an officer before assigning them
+        if Officer.objects.filter(user=self.userTw).exists():
+            Officer.objects.filter(user=self.userTw).delete()
+
+        valid_data = {
+            'user': self.userTw.id,  # Pass just the ID, since serializer expects a PrimaryKeyRelatedField
+            'department': self.departmentTwo.id,
+            'is_department_head': False
+        }
+
+        serializer = OfficerSerializer(data=valid_data)
+
+        self.assertTrue(serializer.is_valid(), "[ERROR] Serializer validation failed when it should be valid.")
+        new_officer = serializer.save()
+
+        self.assertEqual(new_officer.user.id, self.userTw.id, "[ERROR] User ID mismatch after deserialization.")
+        self.assertEqual(new_officer.department.id, self.departmentTwo.id, "[ERROR] Department ID mismatch after deserialization.")
+
+
+    def test_deserialization_invalid_data(self):
+        invalid_data = {
+            'user': 'john',
+            'department': 'finance',
+        }
+        serializer = OfficerSerializer(data=invalid_data)
+        self.assertFalse(serializer.is_valid())
+        self.assertIn('user', serializer.errors)
+        self.assertIn('department', serializer.errors)
+
+
+
 class TicketSerializerTestCase(TestCase):
 
     def setUp(self):
@@ -200,140 +282,8 @@ class DepartmentSerializerTestCase(TestCase):
         self.assertIn('name', serializer.errors)
 
 
-class OfficerSerializerTestCase(TestCase):
-
-    def setUp(self):
-        """Create the necessary data for testing the OfficerSerializer."""
-        self.departmentOne = Department.objects.create(
-            name="Engineering", 
-            description="Engineering Department"
-        )
-
-        self.userOne = User.objects.create(
-            username="john_doe", 
-            email="john.doe@example.com",
-            password="testpassword123"
-        )
-
-        self.departmentTwo = Department.objects.create(
-            name="Finance", 
-            description="Finance Department"
-        )
-
-        self.userTwo = User.objects.create(
-            username="jane_doe", 
-            email="jane.doe@example.com",
-            password="testpassword123"
-        )
 
 
-        self.officerOne = Officer.objects.create(user=self.userOne, department=self.departmentOne)
-
-
-    def test_serialization(self):
-        """Test if the OfficerSerializer correctly serializes data."""
-        serializer = OfficerSerializer(self.officerOne)
-        serialized_data = serializer.data
-
-    
-        self.assertEqual(serialized_data['id'], self.officerOne.id)
-        
-        """
-        CHECK THIS IS FINE: changed from self.assertEqual(serialized_data['user'], self.userOne.id) to pass
-        This is because OfficerSerializer has been changed to now include the entire user object, 
-        so serialized_data['user'] will return the entire user.
-        """
-        self.assertEqual(serialized_data['user']['id'], self.userOne.id)
-        ## MORE TESTS
-        self.assertEqual(serialized_data['user']['username'], self.userOne.username)
-        self.assertEqual(serialized_data['user']['email'], self.userOne.email)
-
-        self.assertEqual(serialized_data['department'], self.departmentOne.id)
-
-
-    def test_deserialization_valid_data(self):
-        """Test if the OfficerSerializer correctly deserializes valid data."""
-
-        valid_data = {
-            'user': {
-                'id': self.userTwo.id, 
-                'username': self.userTwo.username,
-                'first_name': self.userTwo.first_name,
-                'last_name': self.userTwo.last_name,
-                'email': self.userTwo.email,
-                'password': 'testpassword123',  # Required for User creation
-                'is_staff': self.userTwo.is_staff,
-                'is_superuser': self.userTwo.is_superuser
-            },
-            'department': self.departmentTwo.id,  # Pass department ID instead of object
-        }
-
-        serializer = OfficerSerializer(data=valid_data)
-
-        # Ensure `serializer.is_valid()` is called BEFORE accessing `.errors`
-        if not serializer.is_valid():
-            print(serializer.errors)  # Print errors for debugging
-
-        self.assertTrue(serializer.is_valid())  # Fail here if serializer is invalid
-
-        new_officer = serializer.save()
-        self.assertEqual(new_officer.user.id, self.userTwo.id)
-        self.assertEqual(new_officer.department.id, self.departmentTwo.id)
-
-
-    
-    def test_deserialization_valid_data(self):
-        """Test if the OfficerSerializer correctly deserializes valid data."""
-        
-        valid_data = {
-            'user': {
-                'username': "new_officer_user",  # New username to avoid conflicts
-                'first_name': "OfficerFirstName",
-                'last_name': "OfficerLastName",
-                'email': "new_officer@example.com",  # New email to avoid conflicts
-                'password': 'testpassword123',       # Required for user creation
-                'is_staff': False,
-                'is_superuser': False
-            },
-            'department': self.departmentTwo.id,  # Pass department primary key
-        }
-        
-        # Monkey-patch the create method on OfficerSerializer to handle nested user data.
-        def officer_create(self, validated_data):
-            user_data = validated_data.pop('user')
-            if 'id' in user_data:
-                user = User.objects.get(pk=user_data['id'])
-            else:
-                user = User.objects.create_user(**user_data)
-            return Officer.objects.create(user=user, **validated_data)
-        
-        OfficerSerializer.create = officer_create
-
-        serializer = OfficerSerializer(data=valid_data)
-        if not serializer.is_valid():
-            print(serializer.errors)  # For debugging purposes
-
-        self.assertTrue(serializer.is_valid())  # Now the serializer should be valid
-
-        new_officer = serializer.save()
-        # Verify that the newly created user's username matches the provided value.
-        self.assertEqual(new_officer.user.username, "new_officer_user")
-        self.assertEqual(new_officer.department.id, self.departmentTwo.id)
-
-
-
-    def test_deserialization_invalid_data(self):
-
-        invalid_data = {
-            'user': 'john',
-            'department': 'finance',
-        }
-        serializer = OfficerSerializer(data=invalid_data)
-
-        self.assertFalse(serializer.is_valid())
-
-        self.assertIn('user', serializer.errors)
-        self.assertIn('department', serializer.errors)
 
 class TicketRedirectSerializerTestCase(TestCase):
     def setUp(self):

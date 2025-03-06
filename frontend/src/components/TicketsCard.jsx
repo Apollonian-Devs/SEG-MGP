@@ -6,15 +6,33 @@ import GenericButton from './GenericButton';
 import PopUp from './Popup';
 import GenericTable from './GenericTable';
 import OfficersDropdown from './OfficersDropdown';
+import DepartmentsDropdown from './DepartmentsDropdown';
 import RedirectButton from './RedirectButton';
-import { RefreshCw, MessageSquareMore } from 'lucide-react';
+import SuggestDepartmentButton from './SuggestDepartmentButton';
+import AcceptButton from './AcceptButton';
+import StatusHistoryButton from './StatusHistoryButton';
 
-const TicketsCard = ({ user, officers, openPopup }) => {
-	const [tickets, setTickets] = useState([]);
-	const [loading, setLoading] = useState(true);
-	const [selectedTicket, setSelectedTicket] = useState(null);
+import ShowOverdueButton from './ShowOverdueButton';
+import ChangeDate from './ChangeDate';
+import { MessageSquareMore, RefreshCw } from 'lucide-react';
+
+const TicketsCard = ({
+	user,
+	officers,
+	admin,
+	openPopup,
+	tickets,
+	setTickets,
+	selectedTicket,
+	setSelectedTicket,
+	fetchTickets,
+}) => {
 	const [isChatOpen, setIsChatOpen] = useState(false);
 	const [selectedOfficer, setSelectedOfficer] = useState(null);
+	const [isChangeDateOpen, setChangeDateOpen] = useState(null);
+	const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+	const [selectedDepartment, setSelectedDepartment] = useState(null);
+	const [suggestedDepartments, setSuggestedDepartments] = useState({});
 
 	// Sorting State
 	const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
@@ -37,28 +55,6 @@ const TicketsCard = ({ user, officers, openPopup }) => {
 		}
 	};
 
-	const fetchTickets = async () => {
-		try {
-			const access = localStorage.getItem(ACCESS_TOKEN);
-			const response = await api.get('/api/user-tickets/', {
-				headers: { Authorization: `Bearer ${access}` },
-			});
-			setTickets(response.data.tickets);
-			console.log('Tickets:', response.data.tickets);
-		} catch (error) {
-			console.error(
-				'Error fetching tickets:',
-				error.response?.data || error.message
-			);
-		} finally {
-			setLoading(false);
-		}
-	};
-
-	useEffect(() => {
-		fetchTickets();
-	}, []);
-
 	// Sorting Function
 	const sortTickets = (key) => {
 		let direction = 'asc';
@@ -80,162 +76,262 @@ const TicketsCard = ({ user, officers, openPopup }) => {
 		setTickets(sortedTickets);
 	};
 
-	if (loading) {
-		return <p>Loading tickets...</p>;
-	}
+	const toggleChangeDate = () => {
+		setChangeDateOpen((prev) => !prev);
+	};
 
 	return (
 		<>
+			{/* Pop-ups */}
 			<div className="relative">
 				{selectedTicket && (
-					<PopUp
-						isOpen={isChatOpen}
-						onClose={() => setSelectedTicket(null)}
-						width="w-[100%]"
-						height="h-[100%]"
-					>
-						<Chat
-							ticket={selectedTicket}
-							onClose={() => setIsChatOpen(false)}
-							user={user}
-						/>
-					</PopUp>
+					<>
+						{/* Chat Pop-up */}
+						<PopUp
+							isOpen={isChatOpen}
+							onClose={() => setSelectedTicket(null)}
+							width="w-[100%]"
+							height="h-[100%]"
+						>
+							<Chat
+								ticket={selectedTicket}
+								onClose={() => setIsChatOpen(false)}
+								user={user}
+							/>
+						</PopUp>
+
+						{/* Change Due Date Pop-up */}
+						<PopUp
+							isOpen={isChangeDateOpen}
+							onClose={toggleChangeDate}
+							width="w-[25%]"
+							height="h-[25%]"
+						>
+							<ChangeDate
+								ticket={selectedTicket}
+								setSelectedTicket={setSelectedTicket}
+								setTickets={setTickets}
+							/>
+						</PopUp>
+
+						{/* Status History Pop-up */}
+						<PopUp
+							isOpen={isHistoryOpen}
+							onClose={() => {
+								setSelectedTicket(null);
+								setIsHistoryOpen(false);
+							}}
+							width="w-[80%]"
+							height="h-[80%]"
+						>
+							<StatusHistoryButton ticketId={selectedTicket.id} />
+						</PopUp>
+					</>
 				)}
 			</div>
+
+			{/* Ticket Table */}
 			<div className="flex flex-col bg-white rounded-3xl drop-shadow-[0_20px_50px_rgba(0,0,0,0.1)]">
 				<div className="-m-1.5 overflow-x-auto">
 					<div className="p-10 min-w-full inline-block align-middle">
 						<h1 className="flex w-full text-center mb-5">Tickets</h1>
-						<div>
-							<GenericTable
-								columnDefinition={
-									<>
-										<th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase cursor-pointer">
+
+						{/* Suggest Department Button (Only for Superuser Staff) */}
+						{user.is_staff && user.is_superuser && (
+							<div className="mb-3 flex justify-end">
+								<SuggestDepartmentButton
+									setSuggestedDepartments={setSuggestedDepartments}
+									tickets={tickets}
+								/>
+							</div>
+						)}
+
+						{/* Show Overdue Button */}
+						<div className="flex justify-end p-4">
+							<ShowOverdueButton setTickets={setTickets} allTickets={tickets} />
+						</div>
+
+						{/* Single Table Rendering */}
+						<GenericTable
+							columnDefinition={
+								<>
+									{['Subject', 'Status', 'Priority'].map((header) => (
+										<th
+											key={header}
+											className="px-6 py-3 text-start text-xs font-medium text-gray-500 cursor-pointer"
+										>
 											<GenericButton
 												className="flex items-center w-full gap-x-1"
-												onClick={() => sortTickets('subject')}
+												onClick={() => sortTickets(header.toLowerCase())}
 											>
-												<p>Subject</p>
-												{sortConfig.key === 'subject'
+												<p>{header}</p>
+												{sortConfig.key === header.toLowerCase()
 													? sortConfig.direction === 'asc'
 														? '▲'
 														: '▼'
 													: ''}
 											</GenericButton>
 										</th>
-										<th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase cursor-pointer">
-											<GenericButton
-												className="flex items-center w-full gap-x-1"
-												onClick={() => sortTickets('status')}
-											>
-												<p>Status</p>
-												{sortConfig.key === 'status'
-													? sortConfig.direction === 'asc'
-														? '▲'
-														: '▼'
-													: ''}
-											</GenericButton>
-										</th>
-										<th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase cursor-pointer">
-											<GenericButton
-												className="flex items-center w-full gap-x-1"
-												onClick={() => sortTickets('priority')}
-											>
-												<p>Priority</p>
-												{sortConfig.key === 'priority'
-													? sortConfig.direction === 'asc'
-														? '▲'
-														: '▼'
-													: ''}
-											</GenericButton>
-										</th>
-										<th className="px-6 py-3 text-end text-xs font-medium text-gray-500">
-											<p>Actions</p>
-										</th>
-										{user.is_staff && (
+									))}
+
+									<th className="px-6 py-3 text-end text-xs font-medium text-gray-500">
+										<p>Actions</p>
+									</th>
+
+									{user.is_staff && (
+										<>
 											<th className="px-6 py-3 text-end text-xs font-medium text-gray-500">
 												<p>Redirect</p>
 											</th>
-										)}
-									</>
-								}
-								data={tickets}
-								dataName="tickets"
-								rowDefinition={(ticket) => (
-									<tr
-										key={ticket.id}
-										className="hover:bg-gray-100 cursor-pointer"
-									>
-										<td
-											className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800"
-											onClick={() => openPopup('viewTicket', ticket)}
-										>
-											{ticket.subject}
-										</td>
-										<td
-											className="px-6 py-4 whitespace-nowrap text-sm text-gray-800"
-											onClick={() => openPopup('viewTicket', ticket)}
-										>
-											{ticket.status}
-										</td>
-										<td
-											className="px-6 py-4 whitespace-nowrap text-sm text-gray-800"
-											onClick={() => openPopup('viewTicket', ticket)}
-										>
-											{ticket.priority || 'Not Set'}
-										</td>
-										<td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium flex items-center justify-between gap-2">
-											{!user.is_superuser && (
-												<GenericButton
-													className="flex items-center justify-items-center px-2 py-1 gap-2 text-white hover:bg-customOrange-light transition-colors duration-500 bg-customOrange-dark rounded-full"
-													onClick={(e) => {
-														e.stopPropagation();
-														setSelectedTicket(ticket);
-														setIsChatOpen(true);
-													}}
-												>
-													<MessageSquareMore className="size-4" />
-													Chat
-												</GenericButton>
-											)}
+											<th className="px-6 py-3 text-end text-xs font-medium text-gray-500">
+												<p>Change Due Date</p>
+											</th>
+										</>
+									)}
 
-											{user.is_superuser && (
-												<>
-													<GenericButton
-														className="flex items-center justify-items-center px-2 py-1 gap-2 text-white hover:bg-customOrange-light transition-colors duration-500 bg-customOrange-dark rounded-full"
-														onClick={() => toggleChange('status', ticket.id)}
-													>
-														<RefreshCw className="size-4" />
-														Status
-													</GenericButton>
-													<GenericButton
-														className="flex items-center justify-items-center px-2 py-1 gap-2 text-white hover:bg-customOrange-light transition-colors duration-500 bg-customOrange-dark rounded-full"
-														onClick={() => toggleChange('priority', ticket.id)}
-													>
-														<RefreshCw className="size-4" />
-														Priority
-													</GenericButton>
-												</>
-											)}
+									{user.is_superuser && (
+										<>
+											<th className="px-6 py-3 text-end text-xs font-medium text-gray-500">
+												<p>Status History</p>
+											</th>
+											<th className="px-6 py-3 text-end text-xs font-medium text-gray-500">
+												<p>Suggested Departments</p>
+											</th>
+										</>
+									)}
+								</>
+							}
+							data={tickets}
+							dataName="tickets"
+							rowDefinition={(ticket) => (
+								<tr
+									key={ticket.id}
+									className="hover:bg-gray-100 cursor-pointer"
+								>
+									{/* Ticket Information */}
+									{['subject', 'status', 'priority'].map((key) => (
+										<td
+											key={key}
+											className="px-6 py-4 whitespace-nowrap text-sm text-gray-800"
+											onClick={() => {
+												setSelectedTicket(ticket);
+												openPopup('viewTicket');
+											}}
+										>
+											{ticket[key] || (key === 'priority' ? 'Not Set' : '')}
 										</td>
+									))}
+
+									{/* Chat Button */}
+									<td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium flex gap-1.5">
+										<GenericButton
+											className="flex items-center justify-items-center px-2 py-1 gap-1 text-white hover:bg-customOrange-light transition-colors duration-500 bg-customOrange-dark rounded-md"
+											onClick={(e) => {
+												e.stopPropagation();
+												setSelectedTicket(ticket);
+												setIsChatOpen(true);
+											}}
+										>
+											<MessageSquareMore className="size-4" />
+											Chat
+										</GenericButton>
 										{user.is_staff && (
+											<>
+												<GenericButton
+													className="flex items-center justify-items-center px-2 py-1 gap-1 text-white hover:bg-customOrange-light transition-colors duration-500 bg-customOrange-dark rounded-md"
+													onClick={() => toggleChange('status', ticket.id)}
+												>
+													<RefreshCw className="size-4" />
+													Status
+												</GenericButton>
+												<GenericButton
+													className="flex items-center justify-items-center px-2 py-1 gap-1 text-white hover:bg-customOrange-light transition-colors duration-500 bg-customOrange-dark rounded-md"
+													onClick={() => toggleChange('priority', ticket.id)}
+												>
+													<RefreshCw className="size-4" />
+													Priority
+												</GenericButton>
+											</>
+										)}
+									</td>
+
+									{/* Staff-Specific Actions */}
+									{user.is_staff && (
+										<>
+											{/* Redirect */}
 											<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
 												<div className="flex items-center gap-2">
-													<OfficersDropdown
-														officers={officers}
-														setSelectedOfficer={setSelectedOfficer}
-													/>
+													{user.is_superuser ? (
+														<DepartmentsDropdown
+															setSelectedDepartment={setSelectedDepartment}
+														/>
+													) : (
+														<OfficersDropdown
+															officers={officers}
+															admin={admin}
+															setSelectedOfficer={setSelectedOfficer}
+														/>
+													)}
 													<RedirectButton
 														ticketid={ticket.id}
 														selectedOfficer={selectedOfficer}
+														departmentId={
+															user.is_superuser ? selectedDepartment?.id : null
+														}
 													/>
 												</div>
 											</td>
-										)}
-									</tr>
-								)}
-							/>
-						</div>
+
+											{/* Change Due Date */}
+											<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+												<GenericButton
+													className="px-3 py-1 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700"
+													onClick={(e) => {
+														e.stopPropagation();
+														setSelectedTicket(ticket);
+														toggleChangeDate();
+													}}
+												>
+													Select Date
+												</GenericButton>
+											</td>
+										</>
+									)}
+
+									{/* Superuser-Specific Actions */}
+									{user.is_superuser && (
+										<>
+											{/* Status History Column */}
+											<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+												<GenericButton
+													className="px-3 py-1 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700"
+													onClick={(e) => {
+														e.stopPropagation();
+														setSelectedTicket(ticket);
+														setIsHistoryOpen(true);
+													}}
+												>
+													Status History
+												</GenericButton>
+											</td>
+
+											{/* Suggested Departments & Accept Button Column */}
+											<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+												<div className="flex item-center gap-2">
+													{suggestedDepartments[ticket.id]?.name ||
+														'No suggestion'}
+													<AcceptButton
+														ticketId={ticket.id}
+														selectedOfficer={selectedOfficer}
+														departmentId={suggestedDepartments[ticket.id]?.id}
+													/>
+												</div>
+											</td>
+										</>
+									)}
+								</tr>
+							)}
+						/>
 					</div>
 				</div>
 			</div>

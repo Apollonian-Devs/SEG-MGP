@@ -1,13 +1,13 @@
 from django.contrib.auth.models import User
 from rest_framework import generics, views
 from rest_framework.response import Response
-from .serializers import UserSerializer, TicketSerializer, TicketMessageSerializer, TicketRedirectSerializer, OfficerSerializer, NotificationSerializer
+from .serializers import UserSerializer, TicketSerializer, TicketMessageSerializer, TicketRedirectSerializer, OfficerSerializer, NotificationSerializer, DepartmentSerializer, ChangeTicketDateSerializer, TicketStatusHistorySerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Ticket
 from django.core.exceptions import ObjectDoesNotExist
+from .models import *
 
 from .helpers import *
-
 
 
 
@@ -29,7 +29,7 @@ class TicketListCreate(generics.ListCreateAPIView):
             attachments=data.get("attachments")
         )
 
-        return new_ticket
+        serializer.instance = new_ticket
 
 class TicketChangeStatus(views.APIView):
     permission_classes = [IsAuthenticated]
@@ -94,24 +94,37 @@ class UserTicketsView(views.APIView):
         return Response({"tickets": tickets})
 
 
-#sender_user, ticket, message_body, is_internal=False
 class TicketSendResponseView(views.APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, ticket_id):
+        data = {
+            "sender_profile": request.user.id,
+            "ticket": ticket_id,
+            "message_body": request.data.get("message_body"),
+            "attachments": request.data.get("attachments", [])  
+        }
 
-        serializer = TicketMessageSerializer(data=request.data)
+        print("Processed data before validation:", data)  # Debugging output
+
+        serializer = TicketMessageSerializer(data=data)
         if serializer.is_valid():
-        
             try:
-
                 comment = send_response(
-                    sender_profile=serializer.validated_data['sender_profile'],
-                    ticket=serializer.validated_data['ticket'],
-                    message_body=serializer.validated_data['message_body'],
+                    sender_profile=serializer.validated_data["sender_profile"],
+                    ticket=serializer.validated_data["ticket"],
+                    message_body=serializer.validated_data["message_body"],
                 )
-                
-            
+
+                for attachment in data["attachments"]:
+
+                        TicketAttachment.objects.create(
+                            message=comment,
+                            file_name=attachment["file_name"],
+                            file_path=attachment["file_path"],
+                            mime_type=attachment["mime_type"]
+                        )
+
                 serializer = TicketMessageSerializer(comment)
                 return Response(serializer.data, status=201)
 
@@ -120,8 +133,12 @@ class TicketSendResponseView(views.APIView):
             except ValueError as e:
                 return Response({"error": str(e)}, status=400)
         else:
-            print(serializer.errors)
-            return Response(serializer.errors)
+            print(" Serializer errors:", serializer.errors)
+            return Response(serializer.errors, status=400)
+
+
+
+
 
 
 class TicketMessageHistory(views.APIView):
@@ -129,18 +146,19 @@ class TicketMessageHistory(views.APIView):
 
     def get(self, request, ticket_id):
         try:
-         
             ticket = Ticket.objects.get(id=ticket_id)
-            
-   
             messages = get_message_history(ticket)
-            
+
+            for msg in messages:
+                ticket_message_obj = TicketMessage.objects.get(id=msg["message_id"])
+                msg["attachments"] = TicketMessageSerializer(ticket_message_obj).data.get("attachments", [])
 
             return Response({"messages": messages}, status=200)
         except ObjectDoesNotExist:
             return Response({"error": "Ticket not found"}, status=404)
         except Exception as e:
             return Response({"error": str(e)}, status=500)
+
         
 
 class AllOfficersView(views.APIView):
@@ -152,8 +170,23 @@ class AllOfficersView(views.APIView):
     def get(self, request):
         user = request.user
         officers = get_officers_same_department(user)
-        serializer = OfficerSerializer(officers, many=True)
-        return Response(serializer.data)
+
+        officer_serializer = OfficerSerializer(officers, many=True)
+
+        admin = None
+        if is_chief_officer(user):
+            admin = get_default_superuser()
+            admin_serializer = UserSerializer(admin)
+            admin_data = admin_serializer.data
+        else:
+            admin_data = None
+
+        response_data = {
+            "officers": officer_serializer.data,
+            "admin": admin_data
+        }
+
+        return Response(response_data)
 
 class UserNotificationsView(views.APIView):
     """
@@ -176,6 +209,16 @@ class TicketRedirectView(views.APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request):
         request.data['from_profile'] = request.user.id
+
+        department_id = request.data.get('department_id')
+        if department_id and request.user.is_superuser:
+            department_head = get_department_head(department_id)
+            if department_head:
+                request.data['to_profile'] = department_head.id
+            else:
+                return Response({"error": "No department head found for this department"}, status=400)
+
+
 
         serializer = TicketRedirectSerializer(data=request.data)
         
@@ -201,4 +244,73 @@ class TicketRedirectView(views.APIView):
                 return Response({"error": "an error has occured"})
         else:
             return Response(serializer.errors)
+        
+class TicketStatusHistoryView(views.APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, ticket_id):
+        user = request.user
+        ticket = Ticket.objects.get(id=ticket_id)
+        status_history = get_ticket_history(user,ticket)
+        serializer = TicketStatusHistorySerializer(status_history, many=True)
+        return Response({"status_history": serializer.data})
 
+
+
+class OverdueTicketsView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        overdue_tickets = get_overdue_tickets(user) 
+        serializer = TicketSerializer(overdue_tickets, many=True)  
+        return Response({"tickets": serializer.data})  
+
+    
+
+class ChangeTicketDateView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        
+        user = request.user
+        serializer = ChangeTicketDateSerializer(data=request.data)
+
+        if serializer.is_valid():
+            try:
+                ticket_id = serializer.validated_data['id']
+                ticket = Ticket.objects.get(id=ticket_id)
+                new_due_date = serializer.validated_data['due_date']
+            
+                updated_ticket = changeTicketDueDate(ticket, user, new_due_date)
+                
+                serializer = TicketSerializer(updated_ticket)
+
+                return Response({"ticket": serializer.data}, status=201)
+            
+            except Ticket.DoesNotExist:
+                return Response({"error": "Ticket not found"}, status=404)
+            except ValueError as e:
+                print("The error", str(e))
+                return Response({"error": str(e)}, status=400)
+        else:
+            print("Serializer errors: ", serializer.errors)
+            return Response(serializer.errors)
+
+class DepartmentsListView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        departments = Department.objects.all()
+        return Response([{
+            "id": dept.id,
+            "name": dept.name,
+            "description": dept.description
+        } for dept in departments])
+        
+class RandomDepartmentView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        department = get_random_department()
+        serializer = DepartmentSerializer(department)
+        return Response(serializer.data)

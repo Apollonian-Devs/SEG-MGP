@@ -26,13 +26,6 @@ def get_default_superuser():
     except ObjectDoesNotExist:
         return None
 
-def is_chief_officer(user):
-    """
-    Checks if a user is a Chief Officer (department head).
-    """
-    return Officer.objects.filter(user=user, is_department_head=True).exists()
-
-
 class Department(models.Model):
     name = models.CharField(max_length=50, unique=True)
     description = models.CharField(max_length=255, null=True, blank=True)
@@ -177,6 +170,7 @@ class AIResponse(models.Model):
     
      def __str__(self):
         return f"AI Response #{self.id} for Ticket #{self.ticket.id}"
+    
     
 class Notification(models.Model):
      user_profile = models.ForeignKey(User, on_delete=models.CASCADE)

@@ -1,9 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-
-from .models import Ticket, Department, Officer, TicketMessage, Notification, TicketRedirect
-
-
+from django.utils import timezone
+from .models import Ticket, Department, Officer, TicketMessage, Notification, TicketRedirect, TicketStatusHistory, TicketAttachment
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -35,29 +33,32 @@ class DepartmentSerializer(serializers.ModelSerializer):
         fields = ["id", "name"]
 
 class OfficerSerializer(serializers.ModelSerializer):
+    #user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())  # Use ID instead of nested serializer
     user = UserSerializer()
-    department = serializers.PrimaryKeyRelatedField(queryset=Department.objects.all())  
+    department = serializers.PrimaryKeyRelatedField(queryset=Department.objects.all())
+    is_department_head = serializers.BooleanField(default=False, required=False)
 
     class Meta:
         model = Officer
-        fields = ["id", "user", "department"]
+        fields = ["id", "user", "department", "is_department_head"]
 
-class TicketMessageSerializer(serializers.ModelSerializer):
+    def create(self, validated_data):
+        user = validated_data.pop('user')  # This will now be an actual User instance
+        officer = Officer.objects.create(user=user, **validated_data)
+        return officer
+
+
+
+
+class TicketAttachmentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = TicketMessage
-        '''
-        ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
-        sender_profile = models.ForeignKey(User, on_delete=models.CASCADE)
-        message_body = models.TextField()
-        created_at = models.DateTimeField(auto_now_add=True)
-        is_internal = models.BooleanField(default=False)
-        '''
-        fields = ["message_body"]
+        model = TicketAttachment
+        fields = ["file_name", "file_path", "mime_type"]
 
 
 class TicketSerializer(serializers.ModelSerializer):
     message = serializers.CharField(required=False, write_only=True)
-    attachments = serializers.ListField(child=serializers.DictField(), required=False, write_only=True)
+    attachments = serializers.SerializerMethodField()
     
     class Meta:
         model = Ticket
@@ -70,6 +71,11 @@ class TicketSerializer(serializers.ModelSerializer):
             "subject": {"required": True},
             "description": {"required": True},
         }
+    def get_attachments(self, obj):
+        """ Fetch all attachments related to this ticket through its messages. """
+        ticket_messages = TicketMessage.objects.filter(ticket=obj) 
+        attachments = TicketAttachment.objects.filter(message__in=ticket_messages)
+        return TicketAttachmentSerializer(attachments, many=True).data 
 
         
 class TicketRedirectSerializer(serializers.ModelSerializer):
@@ -83,20 +89,14 @@ class TicketRedirectSerializer(serializers.ModelSerializer):
         fields = ["ticket", "from_profile", "to_profile"]
 
 
-
 class TicketMessageSerializer(serializers.ModelSerializer):
     sender_profile = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     ticket = serializers.PrimaryKeyRelatedField(queryset=Ticket.objects.all())
+    attachments = TicketAttachmentSerializer(source="ticketattachment_set", many=True, read_only=True)
+
     class Meta:
         model = TicketMessage
-        '''
-        ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
-        sender_profile = models.ForeignKey(User, on_delete=models.CASCADE)
-        message_body = models.TextField()
-        created_at = models.DateTimeField(auto_now_add=True)
-        is_internal = models.BooleanField(default=False)
-        '''
-        fields = ["sender_profile", "ticket", "message_body"]
+        fields = ["sender_profile", "ticket", "message_body", "created_at", "attachments"]
 
 
 class NotificationSerializer(serializers.ModelSerializer):
@@ -107,3 +107,19 @@ class NotificationSerializer(serializers.ModelSerializer):
         fields = ["id","user_profile", "ticket_subject" ,"message", "created_at", "read_status"]
         extra_kwargs = {"student": {"read_only": True}}
 
+
+class ChangeTicketDateSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    due_date = serializers.DateTimeField()
+
+    def create(self, validated_data):
+        return validated_data
+
+class TicketStatusHistorySerializer(serializers.ModelSerializer):
+    profile_username = serializers.CharField(source="changed_by_profile.username", read_only=True)
+    class Meta:
+        model = TicketStatusHistory
+        fields = ["old_status", "new_status", "profile_username","changed_at","notes"]
+        extra_kwargs = {"ticket": {"read_only": True}}
+
+        

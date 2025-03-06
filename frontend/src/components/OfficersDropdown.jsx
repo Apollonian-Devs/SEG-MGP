@@ -2,20 +2,26 @@ import React, { useState } from "react";
 import GenericDropdown from "./GenericDropdown";
 import GenericButton from "./GenericButton";
 
-const OfficersDropdown = ({ officers, setSelectedOfficer }) => {
+const OfficersDropdown = ({ officers, admin, setSelectedOfficer }) => {
   console.log("Officers in Dropdown", officers)
   const [selectedOfficer, setSelectedOfficerState] = useState(null);
 
-  const handleSelect = (officer) => {
-    setSelectedOfficer(officer);
-    setSelectedOfficerState(officer);
+  const handleSelect = (user) => {
+    setSelectedOfficer(user);
+    setSelectedOfficerState(user);
   };
 
   return (
     <div className="flex items-center gap-2">
       <GenericDropdown
         buttonName={
-          <h5 className="text-sm">{selectedOfficer ? selectedOfficer.user.username : "Select an officer"}</h5>
+          <h5 className="text-sm">
+            {selectedOfficer 
+              ? selectedOfficer.is_superuser 
+                ? selectedOfficer.username // If the selected officer is an admin, display their username
+                : selectedOfficer.user.username // Otherwise, display the username from the officer's user object
+              : "Select an officer"}
+        </h5>
         }
         className="flex justify-center items-center gap-x-1.5 rounded-md bg-white px-2 py-1 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50"
       >
@@ -23,12 +29,28 @@ const OfficersDropdown = ({ officers, setSelectedOfficer }) => {
           {officers.map((officer) => (
             <GenericButton
               key={officer.user.id}
-              onClick={() => handleSelect(officer)}
+              onClick={(e) => { 
+                e.stopPropagation();
+                handleSelect(officer);
+              }}
               className="block w-full text-left px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
             >
               {officer.user.username}
             </GenericButton>
           ))}
+
+
+      {admin && (
+          <GenericButton
+            onClick={(e) => { 
+              e.stopPropagation();
+              handleSelect(admin); 
+            }}
+            className="block w-full text-left px-3 py-1 text-sm text-gray-700 hover:bg-gray-100 mt-2"
+          >
+            Admin: {admin.username}
+          </GenericButton>
+        )}
         </div>
       </GenericDropdown>
     </div>

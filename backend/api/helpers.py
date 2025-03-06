@@ -9,7 +9,6 @@ import random
 
 
 
-
 def send_query(student_user, subject, description, message_body, attachments=None):
     """
     Creates a new ticket for 'student' user.
@@ -126,8 +125,6 @@ def send_response(sender_profile, ticket, message_body, is_internal=False, attac
 def validate_redirection(from_user, to_user):
     if not from_user.is_staff:
         raise PermissionDenied("Only officers or admins can redirect tickets.")
-    if not from_user.is_superuser and from_user.officer.department != to_user.officer.department:
-        raise ValidationError("Officers can only redirect tickets within their department.")
     if from_user == to_user:
         raise ValidationError("Redirection failed: Cannot redirect the ticket to the same user.")
 
@@ -171,6 +168,7 @@ def redirect_query(ticket, from_user, to_user, reason=None, new_status=None, new
         to_profile=to_user,
     )
 
+
     Notification.objects.create(
         user_profile=to_user,
         ticket=ticket,
@@ -203,6 +201,8 @@ def view_ticket_details(ticket):
         "due_date": ticket.due_date,
         "is_overdue": ticket.is_overdue,
     }
+
+    print(details)
     return details
 #---------------------------------------------------------
 
@@ -244,19 +244,9 @@ def get_ticket_history(admin_user, ticket):
 
     history = TicketStatusHistory.objects.filter(ticket=ticket).order_by("-changed_at")
 
-    #---------------------------------------------------------
-    #helped by gpt
-    hist_list = []
-    for h in history:
-        hist_list.append({
-            "old_status": h.old_status,
-            "new_status": h.new_status,
-            "changed_by": h.changed_by_profile.username,
-            "changed_at": h.changed_at,
-            "notes": h.notes,
-        })
-    return hist_list
-    #---------------------------------------------------------
+
+    return history
+
     
 
 def get_notifications(user, limit=10):
@@ -297,12 +287,15 @@ def get_tickets_for_user(user):
     If the user is an officer, return tickets assigned to them.
     If the user is an admin, return all tickets.
     """
-    if user.is_superuser:
-        tickets = Ticket.objects.all()  # Admin gets all tickets
-    elif user.is_staff:
-        tickets = Ticket.objects.filter(assigned_to=user)  # Officers get assigned tickets
+
+
+     # Both Admin and Officers get only their assigned tickets
+    if user.is_superuser or user.is_staff:
+        tickets = Ticket.objects.filter(assigned_to=user)
     else:
         tickets = Ticket.objects.filter(created_by=user)  # Students get their own tickets
+
+
 
     return [
         {
@@ -313,6 +306,7 @@ def get_tickets_for_user(user):
             "priority": ticket.priority,
             "created_at": ticket.created_at,
             "updated_at": ticket.updated_at,
+            "due_date": ticket.due_date,
             "is_overdue": ticket.is_overdue,
             "assigned_to": ticket.assigned_to.username if ticket.assigned_to else None
         }
@@ -321,8 +315,11 @@ def get_tickets_for_user(user):
 
 
 def get_officers_same_department(user):
-    officer = Officer.objects.get(user=user)
-    return Officer.objects.filter(department=officer.department).exclude(user=user)
+    try:
+        officer = Officer.objects.get(user=user)
+        return Officer.objects.filter(department=officer.department).exclude(user=user)
+    except Officer.DoesNotExist:
+        return Officer.objects.none()
 
 
 
@@ -352,7 +349,7 @@ def changeTicketPriority(ticket, user):
             changed_by_profile=user,
             notes=f"Priority changed from {old_priority} to {ticket.priority}"
         )
-        
+
     else:
         raise PermissionDenied("Only officers or admins can change ticket priority.")
     
@@ -389,34 +386,15 @@ def changeTicketStatus(ticket, user):
     
 
 def get_overdue_tickets(user):
-    """
-    Return a list of all overdue tickets visible to the given user:
-      - If the user is superuser (admin), return all overdue tickets.
-      - If the user is staff (officer), return overdue tickets assigned to them.
-      - If the user is a student, return their own overdue tickets.
-    """
-    if user.is_superuser:
-        queryset = Ticket.objects.filter(is_overdue=True)
-    elif user.is_staff:
-        queryset = Ticket.objects.filter(assigned_to=user, is_overdue=True)
-    else:
-        # Student sees only their own tickets
-        queryset = Ticket.objects.filter(created_by=user, is_overdue=True)
+    """Returns queryset of overdue tickets based on user role."""
+    
+    queryset = Ticket.objects.filter(due_date__lt=timezone.now()) 
 
-    # Return a list/dict format that your frontend can easily consume
-    return [
-        {
-            "id": ticket.id,
-            "subject": ticket.subject,
-            "status": ticket.status,
-            "priority": ticket.priority,
-            "due_date": ticket.due_date,
-            "is_overdue": ticket.is_overdue,
-            "created_by": ticket.created_by.username,
-            "assigned_to": ticket.assigned_to.username if ticket.assigned_to else None,
-        }
-        for ticket in queryset
-    ]
+    if user.is_superuser or user.is_staff:
+        return queryset.filter(assigned_to=user) 
+    else:
+        return queryset.filter(created_by=user) 
+  
 
 
 
@@ -427,6 +405,8 @@ def changeTicketDueDate(ticket, user, new_due_date):
     Also notify the ticket owner (student) that a new due date is set.
     """
     if user.is_staff:
+        if new_due_date < timezone.now():
+            raise ValueError("You cannot change the due date to be in the past.") 
         ticket.due_date = new_due_date
         ticket.save()
 
@@ -439,6 +419,20 @@ def changeTicketDueDate(ticket, user, new_due_date):
                 f"by {user.username}."
             ),
         )
+
+
+        TicketStatusHistory.objects.create(
+            ticket=ticket,
+            old_status=ticket.status,
+            new_status=ticket.status,
+            changed_by_profile=user,
+            notes=f"Due date changed to {new_due_date}"
+        )
+
+
+        return ticket
+    
+
     else:
         raise PermissionDenied("Only officers or admins can change ticket due date.")
 
@@ -452,7 +446,18 @@ def get_random_department():
     department = random.choice(department_heads).department
     return department
 
+def get_department_head(department_id):
+    try:
+        officer = Officer.objects.filter(department_id=department_id, is_department_head=True).first()
+        return officer.user if officer else None
+    except Officer.DoesNotExist:
+        return None
 
+def is_chief_officer(user):
+    """
+    Checks if a user is a Chief Officer (department head).
+    """
+    return Officer.objects.filter(user=user, is_department_head=True).exists()
 
 
 

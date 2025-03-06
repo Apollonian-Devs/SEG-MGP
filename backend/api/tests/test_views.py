@@ -2,6 +2,9 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from api.models import Ticket, Department
 from rest_framework.test import APIClient
+from django.urls import reverse
+from datetime import datetime
+from rest_framework import status
 
 class TicketTests(TestCase):
     def setUp(self):
@@ -40,3 +43,50 @@ class TicketTests(TestCase):
         """Test that the ticket list API returns a 200 response"""
         response = self.client.get("/api/tickets/")
         self.assertEqual(response.status_code, 200)
+
+
+
+class TestChangeTicketDateView(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.officer_user = User.objects.create_user(username="testOfficer", password="testpass", is_staff=True)
+        self.student_user = User.objects.create_user(username="testStudent", password="testpass")
+        self.ticket = Ticket.objects.create(
+            subject="Test ticket",
+            description="This is a test ticket",
+            created_by=self.student_user
+        )
+
+    def authorize_user(self):
+        test_user = {
+            "username": "@testUser",
+            "email": "test@email.com",
+            "password": "testpass",
+            "first_name": "first",
+            "last_name": "last",
+            "is_staff": "true"
+                    }
+        
+        self.client.post(reverse("register"), test_user)
+
+        response = self.client.post(reverse("get_token"), 
+                                    {"username": "@testUser", 
+                                     "password": "testpass"})
+
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {response.json()["access"]}')
+
+    def test_post_request_fails_when_user_is_not_authenticated(self):
+        sample_post = {'id': 1, 'due_date': datetime(2025, 12, 31, 0, 0, 0)}
+        response = self.client.post(reverse('change-ticket-date'), sample_post)
+        
+        self.assertEqual(response.status_code, 401) # not yet authenticated so the request will fail
+        
+
+    def test_post_request_succeeds_when_user_is_authenticated(self):
+        self.authorize_user()
+
+        sample_post = {'id': 1, 'due_date': datetime(2025, 12, 31, 0, 0, 0)}
+        response = self.client.post(reverse('change-ticket-date'), sample_post)
+        
+        self.assertEqual(response.status_code, 201) # user is authenticated so should get a 201 created response
+        

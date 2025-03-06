@@ -12,43 +12,57 @@ from api.models import (
     Notification,
 )
 
+
 class Command(BaseCommand):
-    """Build automation command to unseed the database."""
+    """Command to unseed the database by removing all seeded data."""
 
     help = "Unseeds the database by removing seeded data."
 
     def handle(self, *args, **options):
-        """Unseed the database."""
+        """Unseed the database correctly in the right order."""
         self.stdout.write(self.style.NOTICE("Unseeding the database..."))
-        self.unseed_tickets()
-        self.unseed_users()
-        self.unseed_departments()
+
+        self.unseed_tickets()  
+        self.unseed_notifications() 
+        self.unseed_officers() 
+        self.unseed_users() 
+        self.unseed_departments()  
 
         self.stdout.write(self.style.SUCCESS("Database unseeding complete!"))
 
-
     def unseed_tickets(self):
-        """Delete all tickets."""
-        self.stdout.write("Removing tickets...")
-        count, _ = Ticket.objects.all().delete()
-        self.stdout.write(f"Deleted {count} tickets.")
+        """Delete all tickets and related data in correct order."""
+        self.stdout.write("Removing tickets and related records...")
 
-    
-    def unseed_users(self):
-        """Delete all seeded users including superusers and staff."""
-        self.stdout.write("Removing users...")
-        
-        user_count = User.objects.count()  # Count all users
-        User.objects.all().delete()  # Delete all users
-        
-        officer_count = Officer.objects.count()
+        TicketMessage.objects.all().delete()
+        TicketStatusHistory.objects.all().delete()
+        TicketRedirect.objects.all().delete()
+        TicketAttachment.objects.all().delete()
+        AIResponse.objects.all().delete()
+        Ticket.objects.all().delete()
+
+        self.stdout.write(self.style.SUCCESS("All tickets and related data deleted."))
+
+    def unseed_notifications(self):
+        """Delete all notifications."""
+        self.stdout.write("Removing notifications...")
+        Notification.objects.all().delete()
+        self.stdout.write(self.style.SUCCESS("All notifications deleted."))
+
+    def unseed_officers(self):
+        """Delete all officers separately before removing users."""
+        self.stdout.write("Removing officers...")
         Officer.objects.all().delete()
+        self.stdout.write(self.style.SUCCESS("All officers deleted."))
 
-        self.stdout.write(f"Deleted {user_count} users and {officer_count} officers.")
-
+    def unseed_users(self):
+        """Delete all users (students, officers, admins)."""
+        self.stdout.write("Removing users...")
+        User.objects.all().delete()
+        self.stdout.write(self.style.SUCCESS("All users deleted."))
 
     def unseed_departments(self):
-        """Delete all departments."""
+        """Delete all departments after users are removed."""
         self.stdout.write("Removing departments...")
-        count, _ = Department.objects.all().delete()
-        self.stdout.write(f"Deleted {count} departments.")
+        Department.objects.all().delete()
+        self.stdout.write(self.style.SUCCESS("All departments deleted."))

@@ -11,7 +11,9 @@ import Popup from '../components/Popup';
 const Dashboard = () => {
 	const [current_user, setCurrent_user] = useState(null);
 	const [officers, setOfficers] = useState([]);
+	const [admin, setAdmin] = useState(null);
 	const [popupType, setPopupType] = useState(null);
+	const [tickets, setTickets] = useState([]);
 	const [selectedTicket, setSelectedTicket] = useState(null);
 	const [isPopupOpen, setPopupOpen] = useState(false);
 
@@ -42,7 +44,8 @@ const Dashboard = () => {
 				},
 			});
 			console.log('All Officers', response.data);
-			setOfficers(response.data); // No need to manually restructure the object
+			setOfficers(response.data.officers); // No need to manually restructure the object
+			setAdmin(response.data.admin);
 		} catch (error) {
 			console.error(
 				'Error fetching officers',
@@ -51,9 +54,25 @@ const Dashboard = () => {
 		}
 	};
 
+	const fetchTickets = async () => {
+		try {
+			const access = localStorage.getItem(ACCESS_TOKEN);
+			const response = await api.get('/api/user-tickets/', {
+				headers: { Authorization: `Bearer ${access}` },
+			});
+			setTickets(response.data.tickets);
+			console.log('Tickets:', response.data.tickets);
+		} catch (error) {
+			console.error(
+				'Error fetching tickets:',
+				error.response?.data || error.message
+			);
+		}
+	};
+
 	const openPopup = (type, ticket = null) => {
 		setPopupType(type);
-		setSelectedTicket(ticket);
+		// setSelectedTicket(ticket);
 		setPopupOpen(true);
 	};
 
@@ -65,16 +84,19 @@ const Dashboard = () => {
 
 	useEffect(() => {
 		fetchCurrentUser();
+		fetchTickets();
+	}, []);
+
+	useEffect(() => {
 		if (current_user && current_user.is_staff) {
 			fetchOfficers();
 		}
-	}, []);
+	}, [current_user]);
 
 	// Ensure current_user is available before rendering
 	if (!current_user) {
 		return <p>Loading user details...</p>;
 	}
-
 	return (
 		<div data-testid="dashboard-container">
 			<div className="flex justify-space-around items-center gap-x-5">
@@ -111,8 +133,16 @@ const Dashboard = () => {
 			</div>
 			<TicketsCard
 				user={current_user}
-				officers={current_user.is_staff ? officers : undefined}
+				officers={
+					current_user.is_staff && !current_user.is_superuser ? officers : []
+				}
+				admin={admin}
 				openPopup={openPopup}
+				tickets={tickets}
+				setTickets={setTickets}
+				selectedTicket={selectedTicket}
+				setSelectedTicket={setSelectedTicket}
+				fetchTickets={fetchTickets}
 			/>
 
 			<Popup isOpen={isPopupOpen} onClose={closePopup}>

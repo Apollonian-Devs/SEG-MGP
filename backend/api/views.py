@@ -294,7 +294,7 @@ class ChangeTicketDateView(views.APIView):
                 return Response({"error": str(e)}, status=400)
         else:
             print("Serializer errors: ", serializer.errors)
-            return Response(serializer.errors)
+            return Response(serializer.errors, status=400)
 
 class DepartmentsListView(views.APIView):
     permission_classes = [IsAuthenticated]

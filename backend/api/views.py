@@ -241,19 +241,24 @@ class TicketRedirectView(views.APIView):
                 )
             except Exception as e:
                 print(f"error occured: {e}")
-                return Response({"error": "an error has occured"})
+                return Response({"error": "an error has occured"}, status=400)
         else:
-            return Response(serializer.errors)
+            print(f"Serializer errors: ", serializer.errors)
+            return Response(serializer.errors, status=400)
         
 class TicketStatusHistoryView(views.APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request, ticket_id):
-        user = request.user
-        ticket = Ticket.objects.get(id=ticket_id)
-        status_history = get_ticket_history(user,ticket)
-        serializer = TicketStatusHistorySerializer(status_history, many=True)
-        return Response({"status_history": serializer.data})
-
+        try:
+            user = request.user
+            ticket = Ticket.objects.get(id=ticket_id)
+            status_history = get_ticket_history(user,ticket)
+            serializer = TicketStatusHistorySerializer(status_history, many=True)
+            return Response({"status_history": serializer.data})
+        except PermissionDenied:
+            return Response({"error": "Permission denied"}, status=403)
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)
 
 
 class OverdueTicketsView(views.APIView):
@@ -293,7 +298,6 @@ class ChangeTicketDateView(views.APIView):
                 print("The error", str(e))
                 return Response({"error": str(e)}, status=400)
         else:
-            print("Serializer errors: ", serializer.errors)
             return Response(serializer.errors, status=400)
 
 class DepartmentsListView(views.APIView):

@@ -109,18 +109,6 @@ const Dashboard = () => {
 						className="flex justify-center items-center gap-x-1.5 mb-5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50"
 					>
 						<a
-							href="#"
-							className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-						>
-							Settings
-						</a>
-						<a
-							href="#"
-							className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-						>
-							Support
-						</a>
-						<a
 							href="/logout"
 							className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
 						>

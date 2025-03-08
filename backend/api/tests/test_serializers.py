@@ -1,9 +1,9 @@
 from django.test import TestCase
+from unittest.mock import patch
 from django.contrib.auth.models import User
 from api.models import Ticket, User, Department, Officer, TicketRedirect, TicketMessage, Notification
-from api.serializers import TicketSerializer, UserSerializer, DepartmentSerializer, OfficerSerializer, TicketRedirectSerializer, TicketMessageSerializer, NotificationSerializer
-from datetime import datetime
-
+from api.serializers import TicketSerializer, UserSerializer, DepartmentSerializer, OfficerSerializer, TicketRedirectSerializer, TicketMessageSerializer, NotificationSerializer, ChangeTicketDateSerializer
+from django.utils import timezone
 
 class UserSerializerTestCase(TestCase):
 
@@ -25,6 +25,30 @@ class UserSerializerTestCase(TestCase):
         self.assertEqual(serialized_data['last_name'], user.last_name)
         self.assertEqual(serialized_data['email'], user.email)
         self.assertNotIn('password', serialized_data)  # password should not be serialized
+        
+        
+    @patch("django.contrib.auth.models.User.objects.create_user")
+    def test_create_user_exception(self, mock_create_user):
+        """Test that an exception in create() is handled gracefully"""
+
+        # Force create_user to raise an exception
+        mock_create_user.side_effect = Exception("Database error")
+
+        valid_data = {
+            "username": "UniqueUser",  # Must be unique to pass serializer validation
+            "first_name": "First",
+            "last_name": "Last",
+            "email": "unique@example.com",
+            "password": "TestPassword123",
+            "is_staff": False,
+            "is_superuser": False,
+        }
+
+        serializer = UserSerializer(data=valid_data)
+        self.assertTrue(serializer.is_valid(), msg=f"Serializer validation failed: {serializer.errors}")
+        user = serializer.create(serializer.validated_data)  # Bypass .save() 
+        self.assertIsNone(user, "[ERROR] Exception handling in create() did not return None")
+
 
     def test_deserialization_valid_data(self):
 
@@ -476,3 +500,19 @@ class NotificationSerializerTestCase(TestCase):
         serializer = NotificationSerializer(data=invalid_data)
         self.assertFalse(serializer.is_valid())
         self.assertIn('message', serializer.errors)
+        
+class ChangeTicketDateSerializerTestCase(TestCase):
+    def test_create_method(self):
+        """Test that create() method correctly returns validated data"""
+
+        valid_data = {
+            "id": 1,
+            "due_date": timezone.now()
+        }
+
+        serializer = ChangeTicketDateSerializer(data=valid_data)
+        self.assertTrue(serializer.is_valid(), msg=f"Serializer validation failed: {serializer.errors}")
+
+        created_data = serializer.create(serializer.validated_data)
+
+        self.assertEqual(created_data, valid_data, "[ERROR] create() did not return expected validated data")

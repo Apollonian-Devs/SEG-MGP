@@ -58,11 +58,6 @@ const LoginForm = () => {
             placeholder="Enter your username"
           ></GenericInput>
           
-          <a href='#' className='text-xs text-customOrange-dark hover:text-customOrange-light'>
-              Forgot password?
-          </a>
-          
-        
         {error && <p className='text-red-500'>{error}</p>}
         
       </GenericForm>

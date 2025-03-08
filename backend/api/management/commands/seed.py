@@ -447,7 +447,7 @@ class Command(BaseCommand):
                 description=ticket_template["description"],
                 created_by=created_by,
                 assigned_to=assigned_to,
-                status="Open",
+                status="In Progress",
                 priority=ticket_template["priority"],
                 due_date=due_date,
                 is_overdue=is_overdue
@@ -469,7 +469,7 @@ class Command(BaseCommand):
                 TicketStatusHistory.objects.create(
                     ticket=ticket,
                     old_status="Open",
-                    new_status="Open",
+                    new_status="In Progress",
                     changed_by_profile=admin,
                     notes=f"Ticket assigned to {assigned_to.username}."
                 )

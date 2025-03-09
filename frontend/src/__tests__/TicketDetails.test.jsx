@@ -15,7 +15,8 @@ describe("TicketDetails Component", () => {
 
     test("renders ticket details correctly", () => {
       render(<TicketDetails ticket={mockTicket} />);
-      const formattedDate = format(parseISO(mockTicket.created_at), "dd/MM/yyyy, HH:mm:ss");
+      const formattedDate = format(mockTicket.created_at, "M/d/yyyy, h:mm:ss a");
+
 
       expect(screen.getByText(mockTicket.subject)).toBeInTheDocument();
       expect(screen.getByText(`"${mockTicket.description}"`)).toBeInTheDocument();

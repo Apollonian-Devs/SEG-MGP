@@ -1,0 +1,91 @@
+*   [33m9013154[m[33m ([m[1;31morigin/feature/group-button[m[33m)[m Merge remote-tracking branch 'origin' into feature/group-button
+[31m|[m[32m\[m  
+[31m|[m * [33m08efdb4[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Fix failing test in TicketsDetails
+* [32m|[m [33m495ac69[m Merge remote-tracking branch 'origin' into feature/group-button
+[33m|[m[32m\[m[32m|[m 
+[33m|[m *   [33m4bfdd56[m Merge pull request #8 from Lluc4s/feature/show-unanswered-tickets
+[33m|[m [35m|[m[36m\[m  
+[33m|[m [35m|[m * [33m8dc57e7[m[33m ([m[1;31morigin/feature/show-unanswered-tickets[m[33m, [m[1;32mfeature/show-unanswered-tickets[m[33m)[m Fixed test dependency issue with date-fns, changed button for Officers and students
+* [35m|[m [36m|[m [33m32805ca[m Add random number generation for suggested grouping
+* [35m|[m [36m|[m [33mc4f62b3[m Merge with main
+[1;31m|[m[35m\[m[35m|[m [36m|[m 
+[1;31m|[m * [36m|[m [33md051411[m Merge pull request #7 from Lluc4s/feature/show-unanswered-tickets
+[1;31m|[m [1;33m|[m[36m\[m[36m|[m 
+[1;31m|[m [1;33m|[m * [33mcdd890f[m Implemented feature to show unanswered tickets, adjusted seed.py
+[1;31m|[m * [1;34m|[m   [33m8b22fb1[m Merge pull request #6 from Lluc4s/adam-testing
+[1;31m|[m [1;35m|[m[1;36m\[m [1;34m\[m  
+* [1;35m|[m [1;36m|[m [1;34m|[m [33m4699bbf[m Begin group button
+[1;36m|[m [1;35m|[m[1;36m/[m [1;34m/[m  
+[1;36m|[m[1;36m/[m[1;35m|[m [1;34m|[m   
+* [1;35m|[m [1;34m|[m [33m44c626b[m[33m ([m[1;31morigin/adam-testing[m[33m)[m Add testing for various views
+* [1;35m|[m [1;34m|[m [33md0cee93[m Merge remote-tracking branch 'origin' into adam-testing
+[31m|[m[1;35m\[m[1;35m|[m [1;34m|[m 
+[31m|[m * [1;34m|[m [33m7ae4af2[m Merge pull request #5 from Lluc4s/ui-cleanup-remove-sections
+[31m|[m [33m|[m[1;34m\[m[1;34m|[m 
+[31m|[m [33m|[m * [33m6151bc0[m[33m ([m[1;31morigin/ui-cleanup-remove-sections[m[33m, [m[1;32mui-cleanup-remove-sections[m[33m)[m Removed support, forget password, and settings; fixed test issues
+[31m|[m [33m|[m[33m/[m  
+[31m|[m * [33m09ab389[m[33m ([m[1;31morigin/test/serialiser[m[33m)[m Increase test coverage
+* [34m|[m [33m5631506[m Add testing for ChangeTicketDateView
+[34m|[m[34m/[m  
+* [33mc6c4306[m Fix backend tests
+* [33mbc26c63[m Fix failing frontend tests
+*   [33macbf5cf[m Merge branch 'main' of https://github.com/Lluc4s/SEG-MGP
+[35m|[m[36m\[m  
+[35m|[m *   [33mdf73e3b[m merge redirect-to-admin
+[35m|[m [1;31m|[m[1;32m\[m  
+[35m|[m [1;31m|[m * [33mf29f9d1[m[33m ([m[1;31morigin/redirect-to-admin[m[33m)[m Chief officers can redirect to admins
+[35m|[m [1;31m|[m * [33mae932b0[m admin now visible in redirect dropdown for department heads
+[35m|[m * [1;32m|[m [33m1e1c9e6[m Fix incorrect prop name
+[35m|[m * [1;32m|[m [33m9ab6d6c[m Fix incorrect prop name
+[35m|[m * [1;32m|[m   [33ma2de6bc[m Merge branch 'department-suggestion-v2'
+[35m|[m [1;33m|[m[1;34m\[m [1;32m\[m  
+[35m|[m [1;33m|[m * [1;32m|[m [33mbc62311[m[33m ([m[1;31morigin/department-suggestion-v2[m[33m)[m Wrote tests for AcceptButton.jsx
+[35m|[m [1;33m|[m * [1;32m|[m [33me495418[m Improve test coverage
+[35m|[m [1;33m|[m * [1;32m|[m [33m96e2a9c[m Initial testing for SuggestDepartmentButton.jsx
+[35m|[m [1;33m|[m * [1;32m|[m [33m429b567[m Align buttons
+[35m|[m [1;33m|[m * [1;32m|[m [33m45d3a1f[m Render "Suggested Departments" dynamically
+[35m|[m [1;33m|[m * [1;32m|[m [33m4494fbf[m Add disabled button feature
+[35m|[m [1;33m|[m * [1;32m|[m [33mdcd3e21[m Add suggestion column
+[35m|[m [1;33m|[m * [1;32m|[m [33m7c8a5de[m Create initial GetDepartmentButton.jsx
+[35m|[m [1;33m|[m * [1;32m|[m [33mfe41da4[m Add API endpoint for /random-department in urls.py and views.py
+[35m|[m [1;33m|[m * [1;32m|[m [33mbca8f8c[m Add seeding for chief officers
+[35m|[m * [1;34m|[m [1;32m|[m [33m8e8e080[m officer serialiser fixed so all officers within same deparmtnet are displayed
+[35m|[m * [1;34m|[m [1;32m|[m   [33m72761fb[m Merge pull request #4 from Lluc4s/my-backup-branch-Sid
+[35m|[m [1;35m|[m[1;36m\[m [1;34m\[m [1;32m\[m  
+[35m|[m [1;35m|[m * [1;34m\[m [1;32m\[m   [33m89e43f4[m[33m ([m[1;31morigin/my-backup-branch-Sid[m[33m)[m Merged codebase with redirection to chief officer from admin
+[35m|[m [1;35m|[m [31m|[m[1;32m\[m [1;34m\[m [1;32m\[m  
+[35m|[m [1;35m|[m [31m|[m [1;32m|[m [1;34m|[m[1;32m/[m  
+[35m|[m [1;35m|[m [31m|[m [1;32m|[m[1;32m/[m[1;34m|[m   
+[35m|[m [1;35m|[m [31m|[m * [1;34m|[m [33me9da6c3[m[33m ([m[1;31morigin/rahat-tests[m[33m)[m Admin Department redirects to Chief officer not yet 100% coverage
+[35m|[m [1;35m|[m [31m|[m [1;34m|[m[1;34m/[m  
+[35m|[m [1;35m|[m [31m|[m * [33m5bdc23d[m Department dropdown with redirect
+[35m|[m [1;35m|[m [31m|[m *   [33mbb61a17[m Merge branch 'main' into rahat-tests
+[35m|[m [1;35m|[m [31m|[m [33m|[m[34m\[m  
+[35m|[m [1;35m|[m [31m|[m * [34m|[m [33m291bc3b[m Integration with features on main branch
+[35m|[m [1;35m|[m * [34m|[m [34m|[m [33m1e53f74[m StatusHistory only available on Admin
+[35m|[m [1;35m|[m * [34m|[m [34m|[m   [33m9909aeb[m Merged with main
+[35m|[m [1;35m|[m [35m|[m[1;35m\[m [34m\[m [34m\[m  
+[35m|[m [1;35m|[m [35m|[m[1;35m/[m [34m/[m [34m/[m  
+[35m|[m [1;35m|[m[1;35m/[m[35m|[m [34m|[m [34m|[m   
+[35m|[m * [35m|[m [34m|[m [34m|[m   [33m0da4f28[m Merge pull request #3 from Lluc4s/feature/chat-attachments
+[35m|[m [1;31m|[m[1;32m\[m [35m\[m [34m\[m [34m\[m  
+[35m|[m [1;31m|[m * [35m|[m [34m|[m [34m|[m [33mabe2acd[m[33m ([m[1;31morigin/feature/chat-attachments[m[33m, [m[1;32mfeature/chat-attachments[m[33m)[m Made chat attachments, fixed message saving
+[35m|[m [1;31m|[m[1;31m/[m [35m/[m [34m/[m [34m/[m  
+[35m|[m * [35m|[m [34m|[m [34m|[m   [33m4c57ebc[m Merge pull request #2 from Lluc4s/seeder
+[35m|[m [1;33m|[m[1;34m\[m [35m\[m [34m\[m [34m\[m  
+[35m|[m [1;33m|[m * [35m|[m [34m|[m [34m|[m [33m24475cc[m[33m ([m[1;31morigin/seeder[m[33m)[m Finished seeder
+[35m|[m [1;33m|[m * [35m|[m [34m|[m [34m|[m   [33ma9bba16[m Merge branch 'main' of https://github.com/Lluc4s/SEG-MGP into seeder
+[35m|[m [1;33m|[m [1;35m|[m[1;33m\[m [35m\[m [34m\[m [34m\[m  
+[35m|[m [1;33m|[m [1;35m|[m[1;33m/[m [35m/[m [34m/[m [34m/[m  
+[35m|[m [1;33m|[m[1;33m/[m[1;35m|[m [35m|[m [34m|[m [34m|[m   
+[35m|[m [1;33m|[m * [35m|[m [34m|[m [34m|[m [33m8979d14[m Completing seeder
+[35m|[m [1;33m|[m * [35m|[m [34m|[m [34m|[m   [33mbe5bd21[m Merge branch 'main' into seeder Merged main into seeder to update the seeder# the commit.
+[35m|[m [1;33m|[m [31m|[m[32m\[m [35m\[m [34m\[m [34m\[m  
+[35m|[m [1;33m|[m [31m|[m * [35m|[m [34m|[m [34m|[m [33m0c6102b[m Updated seeder function and models
+[35m|[m [1;33m|[m * [32m|[m [35m|[m [34m|[m [34m|[m [33m267d940[m Your commit message here
+[35m|[m [1;33m|[m [32m|[m [32m|[m * [34m|[m [34m|[m [33m1f79540[m All tests fixed 100% pass with ShowOverdueButton, ChangeDueDate, and TicketStatusHistory
+[35m|[m [1;33m|[m [32m|[m [32m|[m * [34m|[m [34m|[m   [33m5ff7435[m SHowOverdue, TicketStatusHistory, ChangeDueDate Merged
+[35m|[m [1;33m|[m [32m|[m [32m|[m [33m|[m[34m\[m [34m\[m [34m\[m  
+[35m|[m [1;33m|[m [32m|[m [32m|[m [33m|[m * [34m|[m [34m|[m [33m23303d7[m[33m ([m[1;31morigin/feature/status-history[m[33m)[m full tests for ticketscard and statshistorybutton
+[35m|[m [1;33m|[m [32m|[m [32m|[m [33m|[m * [34m|[m [34m|[m   [33ma598ba5[m Merge remote-tracking branch 'origin' into feature/status-history
+[35m|[m [1;33m|[m [32m|[m [32m|[m [33m|

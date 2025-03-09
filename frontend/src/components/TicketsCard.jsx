@@ -14,6 +14,7 @@ import StatusHistoryButton from './StatusHistoryButton';
 import SuggestTicketGroupingButton from './SuggestTicketGroupingButton';
 
 import ShowOverdueButton from './ShowOverdueButton';
+import ShowUnansweredButton from './ShowUnansweredButton';
 import ChangeDate from './ChangeDate';
 import { MessageSquareMore, RefreshCw } from 'lucide-react';
 
@@ -158,9 +159,17 @@ const TicketsCard = ({
 							</div>
 						)}
 
-						{/* Show Overdue Button */}
-						<div className="flex justify-end p-4">
-							<ShowOverdueButton setTickets={setTickets} allTickets={tickets} />
+						
+						<div className="flex justify-end p-4 gap-4">
+							{/* Show Overdue Button */}
+							<div className="flex justify-end p-4">
+								<ShowOverdueButton setTickets={setTickets} allTickets={tickets} />
+							</div>
+
+							{/* Show Unanswered Button */}
+							<div className="flex justify-end p-4">
+								<ShowUnansweredButton setTickets={setTickets} allTickets={tickets} />
+						</div>
 						</div>
 
 						{/* Single Table Rendering */}

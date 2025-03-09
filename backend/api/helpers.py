@@ -395,7 +395,15 @@ def get_overdue_tickets(user):
     else:
         return queryset.filter(created_by=user) 
   
+def get_unanswered_tickets(user):
+    """Returns queryset of tickets which haven't been replied to yet based on user role."""
+    
+    queryset = Ticket.objects.filter(status = "Open") 
 
+    if user.is_superuser or user.is_staff:
+        return queryset.filter(assigned_to=user) 
+    else:
+        return queryset.filter(created_by=user) 
 
 
 def changeTicketDueDate(ticket, user, new_due_date):

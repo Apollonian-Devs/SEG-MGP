@@ -149,8 +149,8 @@ const TicketsCard = ({
 							</div>
 						)}
 
-						{/* Group Tickets Button (Only for Superuser Staff) */}
-						{user.is_staff && user.is_superuser && (
+						{/* Group Tickets Button (For department heads and admins (superusers) ) */}
+						{user.is_staff && (user.is_department_head || user.is_superuser) && (
 							<div className="mb-3 flex justify-end"> 
 								<SuggestTicketGroupingButton 
 									setSuggestedGrouping={setSuggestedGrouping}
@@ -218,6 +218,11 @@ const TicketsCard = ({
 											<th className="px-6 py-3 text-end text-xs font-medium text-gray-500">
 												<p>Suggested Departments</p>
 											</th>
+											
+										</>
+									)}
+									{(user.is_superuser || user.is_department_head) && (
+										<>
 											<th className="px-6 py-3 text-end text-xs font-medium text-gray-500">
 												<p>Suggested Ticket Grouping</p>
 											</th>
@@ -351,14 +356,18 @@ const TicketsCard = ({
 													/>
 												</div>
 											</td>
+										</>
+									)}
 
-											{/* Suggested Grouping & Accept the grouping Column */}
-											<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-												<div className="flex item-center gap-2">
-													{suggestedGrouping[ticket.id] || 'No suggestion'}
-														
-												</div>
-											</td>
+									{(user.is_superuser || user.is_department_head) && (
+										<>
+										{/* Suggested Grouping & Accept the grouping Column */}
+										<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+											<div className="flex item-center gap-2">
+												{suggestedGrouping[ticket.id] || 'No suggestion'}
+													
+											</div>
+										</td>
 										</>
 									)}
 								</tr>

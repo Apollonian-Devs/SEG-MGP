@@ -9,7 +9,7 @@ const SuggestTicketGroupingButton = ({ setSuggestedGrouping, tickets }) => {
     const assignRandomGrouping = async () => {
         const groupedTickets = {};
         for (const ticket of tickets) {
-            const randomNumber = Math.floor(Math.random() * (10 - 0 + 1)) + 0;
+            const randomNumber = Math.floor(Math.random() * (10 - 1 + 1)) + 1;
             groupedTickets[ticket.id] = randomNumber;
         }
         setSuggestedGrouping(groupedTickets);

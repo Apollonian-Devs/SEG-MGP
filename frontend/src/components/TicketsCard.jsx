@@ -355,7 +355,7 @@ const TicketsCard = ({
 											{/* Suggested Grouping & Accept the grouping Column */}
 											<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
 												<div className="flex item-center gap-2">
-													HEY GIRL
+													{suggestedGrouping[ticket.id] || 'No suggestion'}
 														
 												</div>
 											</td>

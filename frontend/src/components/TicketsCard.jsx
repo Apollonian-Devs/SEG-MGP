@@ -11,6 +11,7 @@ import RedirectButton from './RedirectButton';
 import SuggestDepartmentButton from './SuggestDepartmentButton';
 import AcceptButton from './AcceptButton';
 import StatusHistoryButton from './StatusHistoryButton';
+import SuggestTicketGroupingButton from './SuggestTicketGroupingButton';
 
 import ShowOverdueButton from './ShowOverdueButton';
 import ChangeDate from './ChangeDate';
@@ -33,6 +34,7 @@ const TicketsCard = ({
 	const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 	const [selectedDepartment, setSelectedDepartment] = useState(null);
 	const [suggestedDepartments, setSuggestedDepartments] = useState({});
+	const [suggestedGrouping, setSuggestedGrouping] = useState({});
 
 	// Sorting State
 	const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
@@ -146,6 +148,16 @@ const TicketsCard = ({
 							</div>
 						)}
 
+						{/* Group Tickets Button (Only for Superuser Staff) */}
+						{user.is_staff && user.is_superuser && (
+							<div className="mb-3 flex justify-end"> 
+								<SuggestTicketGroupingButton 
+									setSuggestedGrouping={setSuggestedGrouping}
+									tickets={tickets}
+								/>
+							</div>
+						)}
+
 						{/* Show Overdue Button */}
 						<div className="flex justify-end p-4">
 							<ShowOverdueButton setTickets={setTickets} allTickets={tickets} />
@@ -196,6 +208,9 @@ const TicketsCard = ({
 											</th>
 											<th className="px-6 py-3 text-end text-xs font-medium text-gray-500">
 												<p>Suggested Departments</p>
+											</th>
+											<th className="px-6 py-3 text-end text-xs font-medium text-gray-500">
+												<p>Suggested Ticket Grouping</p>
 											</th>
 										</>
 									)}
@@ -325,6 +340,14 @@ const TicketsCard = ({
 														selectedOfficer={selectedOfficer}
 														departmentId={suggestedDepartments[ticket.id]?.id}
 													/>
+												</div>
+											</td>
+
+											{/* Suggested Grouping & Accept the grouping Column */}
+											<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+												<div className="flex item-center gap-2">
+													HEY GIRL
+														
 												</div>
 											</td>
 										</>

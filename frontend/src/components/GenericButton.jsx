@@ -1,13 +1,13 @@
 import React from "react";
 
-const GenericButton = ({ children, onClick, className, type = "button", style }) => {
+const GenericButton = ({ children, onClick, className, type = "button", style, dataTestId = "generic-button" }) => {
   return (
     <button 
       type={type}
       className={className}
       style={style} 
       onClick={onClick}
-      data-testid = "generic-button"
+      data-testid = {dataTestId}
     >
       {children}
     </button>

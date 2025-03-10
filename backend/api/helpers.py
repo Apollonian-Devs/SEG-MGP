@@ -6,6 +6,7 @@ from api.models import (
     TicketAttachment, Notification, Officer, STATUS_CHOICES, PRIORITY_CHOICES
 )
 import random
+import yagmail
 
 
 
@@ -110,6 +111,7 @@ def send_response(sender_profile, ticket, message_body, is_internal=False, attac
             ticket=ticket,
             message=f"Staff responded to Ticket #{ticket.id}"
         )
+        send_email(ticket.created_by, "Message Recieved", f"Staff replied on Ticket #{ticket.id}")
     else:
         if ticket.assigned_to is not None:
             Notification.objects.create(
@@ -117,6 +119,7 @@ def send_response(sender_profile, ticket, message_body, is_internal=False, attac
                 ticket=ticket,
                 message=f"Student replied on Ticket #{ticket.id}"
             )
+            send_email(ticket.assigned_to, "Message Recieved", f"Student replied on Ticket #{ticket.id}")
 
     return new_msg
 
@@ -174,6 +177,8 @@ def redirect_query(ticket, from_user, to_user, reason=None, new_status=None, new
         ticket=ticket,
         message=f"Ticket #{ticket.id} has been redirected to you by {from_user.username}.",
     )
+
+    send_email(to_user, 'Testing Redirection', 'Body message test')
 
 
     return ticket
@@ -428,6 +433,11 @@ def changeTicketDueDate(ticket, user, new_due_date):
             ),
         )
 
+        send_email(ticket.created_by, 'Test change due date', (
+                f"Due date has been set/updated to {new_due_date.strftime('%Y-%m-%d %H:%M:%S')} "
+                f"by {user.username}."
+            ),)
+
 
         TicketStatusHistory.objects.create(
             ticket=ticket,
@@ -467,8 +477,21 @@ def is_chief_officer(user):
     """
     return Officer.objects.filter(user=user, is_department_head=True).exists()
 
+def send_email(recepient_user, subject, body):
 
+    try:
+        yag = yagmail.SMTP('no.reply.testTicketApp@gmail.com', 'jvls lbft kkpr uazn')
 
+        # Send the email
+        yag.send(
+            to=recepient_user.email,
+            subject=subject,
+            contents=body
+        )
+
+        print("Email sent successfully!")
+    except:
+        print("email not sent")
 
 
 

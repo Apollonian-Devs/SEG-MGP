@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import generics, views
 from rest_framework.response import Response
-from .serializers import UserSerializer, TicketSerializer, TicketMessageSerializer, TicketRedirectSerializer, OfficerSerializer, NotificationSerializer, DepartmentSerializer, ChangeTicketDateSerializer, TicketStatusHistorySerializer
+from .serializers import UserSerializer, TicketSerializer, TicketMessageSerializer, TicketRedirectSerializer, OfficerSerializer, NotificationSerializer, DepartmentSerializer, ChangeTicketDateSerializer, TicketStatusHistorySerializer, TicketPathSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Ticket
 from django.core.exceptions import ObjectDoesNotExist
@@ -255,6 +255,20 @@ class TicketStatusHistoryView(views.APIView):
             status_history = get_ticket_history(user,ticket)
             serializer = TicketStatusHistorySerializer(status_history, many=True)
             return Response({"status_history": serializer.data})
+        except PermissionDenied:
+            return Response({"error": "Permission denied"}, status=403)
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)
+        
+class TicketPathView(views.APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, ticket_id):
+        try:
+            user = request.user
+            ticket = Ticket.objects.get(id=ticket_id)
+            ticket_path = get_ticket_path(user,ticket)
+            serializer = TicketPathSerializer(ticket_path, many=True)
+            return Response({"ticket_path": serializer.data})
         except PermissionDenied:
             return Response({"error": "Permission denied"}, status=403)
         except Exception as e:

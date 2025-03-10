@@ -12,7 +12,7 @@ import SuggestDepartmentButton from './SuggestDepartmentButton';
 import AcceptButton from './AcceptButton';
 import StatusHistoryButton from './StatusHistoryButton';
 import SuggestTicketGroupingButton from './SuggestTicketGroupingButton';
-
+import TicketPathButton from './TicketPathButton';
 import ShowOverdueButton from './ShowOverdueButton';
 import ShowUnansweredButton from './ShowUnansweredButton';
 import ChangeDate from './ChangeDate';
@@ -33,6 +33,7 @@ const TicketsCard = ({
 	const [selectedOfficer, setSelectedOfficer] = useState(null);
 	const [isChangeDateOpen, setChangeDateOpen] = useState(null);
 	const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+	const [isPathOpen, setIsPathOpen] = useState(false);
 	const [selectedDepartment, setSelectedDepartment] = useState(null);
 	const [suggestedDepartments, setSuggestedDepartments] = useState({});
 	const [suggestedGrouping, setSuggestedGrouping] = useState({});
@@ -129,6 +130,19 @@ const TicketsCard = ({
 						>
 							<StatusHistoryButton ticketId={selectedTicket.id} />
 						</PopUp>
+
+						{/* Ticket Path Pop-up */}
+						<PopUp
+							isOpen={isPathOpen}
+							onClose={() => {
+								setSelectedTicket(null);
+								setIsPathOpen(false);
+							}}
+							width="w-[80%]"
+							height="h-[80%]"
+						>
+							<TicketPathButton ticketId={selectedTicket.id} />
+						</PopUp>
 					</>
 				)}
 			</div>
@@ -214,6 +228,9 @@ const TicketsCard = ({
 										<>
 											<th className="px-6 py-3 text-end text-xs font-medium text-gray-500">
 												<p>Status History</p>
+											</th>
+											<th className="px-6 py-3 text-end text-xs font-medium text-gray-500">
+												<p>Ticket Path</p>
 											</th>
 											<th className="px-6 py-3 text-end text-xs font-medium text-gray-500">
 												<p>Suggested Departments</p>
@@ -341,6 +358,20 @@ const TicketsCard = ({
 													}}
 												>
 													Status History
+												</GenericButton>
+											</td>
+
+											{/* Ticket Path Column */}
+											<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+												<GenericButton
+													className="px-3 py-1 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700"
+													onClick={(e) => {
+														e.stopPropagation();
+														setSelectedTicket(ticket);
+														setIsPathOpen(true);
+													}}
+												>
+													Ticket Path
 												</GenericButton>
 											</td>
 

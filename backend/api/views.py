@@ -4,8 +4,16 @@ from rest_framework.response import Response
 from .serializers import UserSerializer, TicketSerializer, TicketMessageSerializer, TicketRedirectSerializer, OfficerSerializer, NotificationSerializer, DepartmentSerializer, ChangeTicketDateSerializer, TicketStatusHistorySerializer, TicketPathSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Ticket
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from .models import *
+from sklearn.feature_extraction.text import TfidfVectorizer
+import hdbscan
+import numpy as np
+from rest_framework.views import APIView
+from django.conf import settings
+import json
+import os
+
 
 from .helpers import *
 
@@ -381,3 +389,67 @@ class RandomDepartmentView(views.APIView):
             return Response(serializer.data)
         except Exception:
             return Response({"error": "An error has occurred"}, status=500)
+        
+    
+class SuggestDepartmentView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        if not request.user.is_staff and not request.user.is_superuser:
+            raise PermissionDenied("Only officers and admins can suggest departments.")
+
+        ticket_description = request.data.get('description', '')
+        department_names = request.data.get('departments', [])
+
+        if not ticket_description or not department_names:
+            return Response({"error": "Description and departments are required."}, status=400)
+
+        training_data_path = os.path.join(settings.BASE_DIR, 'training_data.json')
+        try:
+            with open(training_data_path, 'r') as f:
+                training_data = json.load(f)
+        except FileNotFoundError:
+            return Response({"error": "Training data file not found."}, status=500)
+
+        training_descriptions = [item['description'] for item in training_data]
+        training_departments = [item['department'] for item in training_data]
+
+        vectorizer = TfidfVectorizer()
+        all_descriptions = training_descriptions + [ticket_description]
+        X = vectorizer.fit_transform(all_descriptions)
+
+        clusterer = hdbscan.HDBSCAN(min_cluster_size=2, metric='euclidean')
+        cluster_labels = clusterer.fit_predict(X.toarray())
+
+        cluster_to_department = {}
+        for i, label in enumerate(cluster_labels[:-1]):
+            if label != -1:
+                cluster_to_department[label] = training_departments[i]
+
+        new_ticket_cluster = cluster_labels[-1]
+
+        if new_ticket_cluster == -1:
+            suggested_department = "Unknown"
+            confidence_score = 0.0
+        else:
+            suggested_department = cluster_to_department.get(new_ticket_cluster, "Unknown")
+            confidence_score = clusterer.probabilities_[-1]
+
+        try:
+            department = Department.objects.get(name=suggested_department)
+        except Department.DoesNotExist:
+            return Response({"error": "Predicted department does not exist."}, status=400)
+
+        ai_response = AIResponse(
+            ticket=None,
+            prompt_text=ticket_description,
+            response_text=suggested_department,
+            confidence=confidence_score * 100,
+            verification_status="Pending"
+        )
+        ai_response.save()
+
+        return Response({
+            "suggested_department": DepartmentSerializer(department).data,
+            "confidence_score": confidence_score
+        })

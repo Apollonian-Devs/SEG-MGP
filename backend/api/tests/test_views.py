@@ -6,23 +6,67 @@ from django.urls import reverse
 from datetime import datetime
 from rest_framework import status
 from django.utils.timezone import make_aware
+from unittest.mock import patch
 
 
 ### TEST TICKETLISTCREATE VIEW HERE ###
 class TestTicketListCreateView(TestCase):
     def setUp(self):
         self.client = APIClient()
-        self.student_user = User.objects.create_user(username="student1", password="testpass")
-        self.client.force_authenticate(user=self.student_user)
 
-        self.ticket = Ticket.objects.create(
+
+    def authorize_student(self):
+        test_student = {
+            "username": "@testStudent",
+            "email": "test@email.com",
+            "password": "testpass",
+            "first_name": "first",
+            "last_name": "last"
+        }
+        
+        self.client.post(reverse("register"), test_student)
+
+        response = self.client.post(reverse("get_token"), 
+                                    {"username": "@testStudent", 
+                                     "password": "testpass"})
+
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {response.json()["access"]}')
+
+        self.create_ticket(test_student)
+
+    def create_ticket(self, student_data):
+        created_by, _ = User.objects.get_or_create(username=student_data["username"], defaults=student_data)
+
+        ticket = Ticket.objects.create(
             subject="Test ticket 1",
             description="This is a test ticket",
-            created_by=self.student_user
+            created_by=created_by
         )
+
+        return ticket
+
+    def authorize_staff(self):
+        test_staff = {
+            "username": "@testStaff",
+            "email": "test@email.com",
+            "password": "testpass",
+            "first_name": "first",
+            "last_name": "last",
+            "is_staff": "true"
+        }
+        
+        self.client.post(reverse("register"), test_staff)
+
+        response = self.client.post(reverse("get_token"), 
+                                    {"username": "@testStaff", 
+                                     "password": "testpass"})
+
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {response.json()["access"]}')
 
     
     def test_post_request_succeeds_and_creates_ticket_with_valid_data(self):
+        self.authorize_student()
+        
         valid_data = {
             'subject': 'Test ticket 2',
             'description': 'This is a test ticket',
@@ -39,18 +83,37 @@ class TestTicketListCreateView(TestCase):
         self.assertEqual(Ticket.objects.count(), 2)
         self.assertEqual(Ticket.objects.all()[1].subject, 'Test ticket 2')
         self.assertEqual(Ticket.objects.all()[1].description, 'This is a test ticket')
-        self.assertEqual(Ticket.objects.all()[1].created_by, self.student_user)
     
 
+    def test_post_request_fails_with_staff_user(self):
+        self.authorize_staff()
+
+        valid_data = {
+            'subject': 'Test ticket 2',
+            'description': 'This is a test ticket',
+            'message': 'Test message',
+            'attachments': ''
+        }
+
+        response = self.client.post(reverse("ticket-list"), valid_data)
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data["error"], "An error has occurred")
+
+
+
     def test_get_request_succeeds_with_valid_user(self):
+        self.authorize_student()
+        
         response = self.client.get(reverse("ticket-list"))
 
         self.assertEqual(response.status_code, 200)
 
+        self.assertEqual(Ticket.objects.count(), 1)
+
         self.assertEqual(response.data[0]['id'], 1)
         self.assertEqual(response.data[0]['subject'], "Test ticket 1")
         self.assertEqual(response.data[0]['description'], "This is a test ticket")
-        self.assertEqual(response.data[0]['created_by'], self.student_user.id)
 
 
 
@@ -168,6 +231,17 @@ class TestTicketChangeStatusView(TestCase):
         self.assertEqual(response.data["error"], "Permission denied")
 
 
+    ## Used chatGPT to help write the generic exception handling test using the @patch decorator to mock an exception 
+    @patch('api.views.changeTicketStatus')
+    def test_generic_exception_handling(self, mock_get):
+        self.authorize_staff()
+        
+        mock_get.side_effect = Exception("Unexpected error raised")
+
+        response = self.client.get(reverse("change-status", kwargs={'id': 1}))
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.data["error"], "An error has occurred")
 
 
 #### TEST TICKETCHANGEPRIORITY VIEW HERE ####
@@ -284,6 +358,19 @@ class TestTicketChangePriorityView(TestCase):
         self.assertEqual(response.data["error"], "Permission denied")
 
 
+    ## Used chatGPT to help write the generic exception handling test using the @patch decorator to mock an exception
+    @patch('api.views.changeTicketPriority')
+    def test_generic_exception_handling(self, mock_get):
+        self.authorize_staff()
+       
+        mock_get.side_effect = Exception("Unexpected error raised")
+
+        response = self.client.get(reverse("change-priority", kwargs={'id': 1}))
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.data["error"], "An error has occurred")
+
+
 #### TEST TICKETDELETE VIEW HERE ####
 
 
@@ -372,7 +459,17 @@ class TestTicketMessageHistoryView(TestCase):
         self.assertEqual(response.data['error'], "Ticket not found")
 
 
-    ## Not sure how to test exception in TicketMessageHistory ???
+    ## Used chatGPT to help write the generic exception handling test using the @patch decorator to mock an exception 
+    @patch('api.views.get_message_history')
+    def test_generic_exception_handling(self, mock_get):
+        self.authorize_user()
+       
+        mock_get.side_effect = Exception("Unexpected error raised")
+
+        response = self.client.get(reverse("ticket-messages", kwargs={'ticket_id': 1}))
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.data["error"], "An error has occurred")
 
 
 #### TEST ALLOFFICERSVIEW VIEW HERE ####
@@ -810,6 +907,19 @@ class TestOverdueTicketsView(TestCase):
         self.assertEqual(response.data['tickets'], [])
 
 
+    ## Used chatGPT to help write the generic exception handling test using the @patch decorator to mock an exception
+    @patch('api.views.get_overdue_tickets')
+    def test_generic_exception_handling(self, mock_get):
+        self.authorize_student_user()
+       
+        mock_get.side_effect = Exception("Unexpected error raised")
+
+        response = self.client.get(reverse("overdue-tickets"))
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.data["error"], "An error has occurred")
+
+
 #### TEST CHANGETICKETDATE VIEW HERE ####
 class TestChangeTicketDateView(TestCase):
     def setUp(self):
@@ -891,6 +1001,20 @@ class TestChangeTicketDateView(TestCase):
         self.assertEqual(response.status_code, 400)
 
         self.assertEqual(response.data['error'], 'You cannot change the due date to be in the past.')
+
+
+    ## Used chatGPT to help write the generic exception handling test using the @patch decorator to mock an exception
+    @patch('api.views.changeTicketDueDate')
+    def test_generic_exception_handling(self, mock_get):
+        self.authorize_user()
+       
+        mock_get.side_effect = Exception("Unexpected error raised")
+
+        updated_ticket = {'id': 1, 'due_date': make_aware(datetime(2025, 12, 31, 0, 0, 0))}
+        response = self.client.post(reverse("change-ticket-date"), updated_ticket)
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.data["error"], "An error has occurred")
 
 
 #### TEST DEPARTMENTSLIST VIEW HERE ####

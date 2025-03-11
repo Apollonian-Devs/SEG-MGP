@@ -3,9 +3,10 @@ from django.core.exceptions import ValidationError, PermissionDenied
 from django.db.models import Count
 from api.models import (
     Ticket, TicketMessage, TicketStatusHistory, TicketRedirect, 
-    TicketAttachment, Notification, Officer, STATUS_CHOICES, PRIORITY_CHOICES
+    TicketAttachment, Notification, Officer, STATUS_CHOICES, PRIORITY_CHOICES, AIResponse
 )
 import random
+from MessagesGroupingAI import *
 
 """
 STATUS_CHOICES = [
@@ -524,6 +525,60 @@ def is_chief_officer(user):
     Checks if a user is a Chief Officer (department head).
     """
     return Officer.objects.filter(user=user, is_department_head=True).exists()
+
+
+'''
+class AIResponse(models.Model):
+     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
+     prompt_text = models.TextField(null=True, blank=True)
+     response_text = models.TextField(null=True, blank=True)
+     confidence = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+     created_at = models.DateTimeField(auto_now_add=True)
+
+     verified_by_profile = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+     verification_status = models.CharField(max_length=50, null=True, blank=True)
+
+     class Meta:
+         constraints = [
+             models.CheckConstraint(
+                 check=(
+                     Q(confidence__isnull=True)
+                     | (Q(confidence__gte=0) & Q(confidence__lte=100))
+                 ),
+                 name='ai_confidence_range_0_100'
+             )
+         ]
+    
+     def __str__(self):
+        return f"AI Response #{self.id} for Ticket #{self.ticket.id}"
+'''
+
+
+def get_tags(user):
+    if not user.is_superuser:
+        raise PermissionDenied("Only Admins can get tickets clustering suggestion")
+
+    tickets = Ticket.objects.filter(assigned_to=user)
+    lst = [f"Title: {ticket.subject}, description: {ticket.description}" for ticket in tickets]
+
+    clusters, probabilities = MessageGroupAI(lst)  # Get clustered ticket groups
+
+    for index, ticket in enumerate(tickets):
+        AIResponse.objects.create(
+            ticket=ticket,
+            response_text=str(clusters[index]),  # Store cluster ID
+            confidence=str(probabilities[index]),  # Store confidence score
+            verified_by_profile=user,
+            verification_status="Verified"
+        )
+
+    return clusters, probabilities
+
+    
+
+
+
+
 
 
 

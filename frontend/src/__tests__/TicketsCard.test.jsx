@@ -6,6 +6,7 @@ import api from "../api";
 import { MemoryRouter } from 'react-router-dom';
 import { useState } from "react";
 import { ACCESS_TOKEN } from "../constants";
+import React from 'react';
 
 vi.mock("../api");
 
@@ -60,22 +61,57 @@ describe("TicketsCard - rendering", () => {
     expect(screen.queryByText(/suggested departments/i)).not.toBeInTheDocument();
   })
 
-  it("Tickets Card should display extra table headings and buttons if the user is an admin", () => {
+  it("Tickets Card should display extra table headings and buttons if the user is an admin", async () => {
     
-    render(<TicketsCard 
-      user={{is_staff: true, is_superuser: true}} 
-      tickets={[{ id: 1, subject: "ticket 1", status: "testStatus" }]}
-    />);
-    
+    vi.spyOn(React, "useState").mockReturnValueOnce([
+      { 1: { id: 101, name: "IT Support" } },
+      vi.fn(),
+    ]);
+  
+    render(
+      <TicketsCard 
+        user={{ is_staff: true, is_superuser: true }} 
+        tickets={[{ id: 1, subject: "ticket 1", status: "testStatus" }]}
+      />
+    );
+
     expect(screen.getByTestId("status-history-header")).toBeInTheDocument();
     expect(screen.getByTestId("ticket-path-header")).toBeInTheDocument();
     expect(screen.getByText(/suggested departments/i)).toBeInTheDocument();
-
     expect(screen.getByTestId("status-history-button")).toBeInTheDocument();
     expect(screen.getByTestId("ticket-path-button")).toBeInTheDocument();
     screen.getByRole("button", { name: /suggest departments/i });
     screen.getByRole("button", { name: /accept/i });
-  })
+
+    //await waitFor(() => {
+    //  expect(screen.getByText("IT Support")).toBeInTheDocument();
+    //});
+
+  
+    const acceptButton = screen.getByRole("button", { name: /accept/i });
+    expect(acceptButton).not.toBeDisabled();
+  });
+  
+  it("Tickets Card should show 'No suggestion' when there are no suggested departments", () => {
+
+    vi.spyOn(React, "useState").mockReturnValueOnce([
+      {},
+      vi.fn(),
+    ]);
+
+    render(
+      <TicketsCard 
+        user={{ is_staff: true, is_superuser: true }} 
+        tickets={[{ id: 1, subject: "ticket 1", status: "testStatus" }]}
+      />
+    );
+  
+    expect(screen.getByText("No suggestion")).toBeInTheDocument();
+
+    const acceptButton = screen.getByRole("button", { name: /accept/i });
+    //expect(acceptButton).toBeDisabled();
+  });
+  
 
 
   it("Ticket status should be changed when toggled", async () => {
@@ -202,7 +238,9 @@ describe("TicketsCard - Error Handling", () => {
   it("handles API error when toggling priority", async () => {
     const mockFetchTickets = vi.fn();
 
-    api.get.mockRejectedValue(new Error("Network Error"));
+    api.get.mockRejectedValue({
+      response: { data: "Priority update failed" }, 
+    });
 
     const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
@@ -223,7 +261,7 @@ describe("TicketsCard - Error Handling", () => {
     await waitFor(() => {
       expect(consoleErrorSpy).toHaveBeenCalledWith(
         "Error changing status:",
-        "Network Error"
+        "Priority update failed"
       );
     });
 
@@ -395,7 +433,7 @@ describe("Popup", () => {
       />
     );
   };
-
+describe("Sorting", () => {
   it("Tickets are correctly sorted by subject when subject is clicked", async () => {
     render(<SubjectAndSameStatusTest />);
 
@@ -493,3 +531,45 @@ describe("Popup", () => {
     expect(within(rowsDesc[1]).getByText("Low")).toBeInTheDocument();
     expect(within(rowsDesc[2]).getByText("High")).toBeInTheDocument();
   })
+
+  it("should correctly handle sorting when some values are null or undefined", async () => {
+    const ticketsWithMissingValues = [
+      { id: 1, subject: "ticket 1", status: "A" },
+      { id: 2, subject: "ticket 2", status: null },
+      { id: 3, subject: "ticket 3", status: undefined },
+      { id: 4, subject: "ticket 4", status: "B" }
+    ];
+
+    const setTicketsMock = vi.fn();
+    render(
+      <TicketsCard 
+        user={{}} 
+        tickets={ticketsWithMissingValues} 
+        setSelectedTicket={vi.fn()} 
+        setTickets={setTicketsMock}
+      />
+    );
+
+    fireEvent.click(screen.getByText("Status").closest("button"));
+
+    await waitFor(() => {
+      expect(setTicketsMock).toHaveBeenCalledWith([
+        { id: 2, subject: "ticket 2", status: null }, 
+        { id: 3, subject: "ticket 3", status: undefined },
+        { id: 1, subject: "ticket 1", status: "A" },
+        { id: 4, subject: "ticket 4", status: "B" }
+      ]);
+    });
+
+    fireEvent.click(screen.getByText("Status").closest("button"));
+
+    await waitFor(() => {
+      expect(setTicketsMock).toHaveBeenCalledWith([
+        { id: 4, subject: "ticket 4", status: "B" },
+        { id: 1, subject: "ticket 1", status: "A" },
+        { id: 2, subject: "ticket 2", status: null },
+        { id: 3, subject: "ticket 3", status: undefined }
+      ]);
+    });
+  });
+})

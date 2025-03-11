@@ -42,7 +42,7 @@ const GenericDropdown = ({ buttonName, className, children }) => {
             size={16}
             className={`transition-transform ${isOpen ? "rotate-180" : "rotate-0"}`}
           />
-        </GenericButton>
+      </GenericButton>
 
 
       {/* Dropdown Menu */}

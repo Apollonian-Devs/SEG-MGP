@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from api.models import Ticket, Department, Officer, TicketMessage, TicketAttachment
+from api.models import Ticket, Department, Officer, TicketMessage, TicketAttachment, TicketRedirect
 from rest_framework.test import APIClient
 from django.urls import reverse
 from datetime import datetime
@@ -612,6 +612,98 @@ class TestTicketStatusHistoryView(TestCase):
 
 
 ### TEST TICKETPATH VIEW HERE ###
+class TestTicketPathView(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.student_user = User.objects.create_user(username="testStudent", password="testpass")
+        self.ticket = Ticket.objects.create(
+            id=1,
+            subject="Test ticket",
+            description="This is a test ticket",
+            created_by=self.student_user,
+        )
+        self.from_user = User.objects.create_user(username="fromUser", password="testpass")
+        self.to_user = User.objects.create_user(username="toUser", password="tesspass")
+
+    
+    def authorize_student(self):
+        test_user = {
+            "username": "@testStudent",
+            "email": "test@email.com",
+            "password": "testpass",
+            "first_name": "first",
+            "last_name": "last"
+        }
+
+        self.client.post(reverse("register"), test_user)
+
+        response = self.client.post(reverse("get_token"), 
+                                    {"username": "@testStudent", 
+                                     "password": "testpass"})
+
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {response.json()["access"]}') 
+
+
+    def authorize_staff_member(self):
+        test_user = {
+            "username": "@testStaff",
+            "email": "test@email.com",
+            "password": "testpass",
+            "first_name": "first",
+            "last_name": "last",
+            "is_staff": "true"
+        }
+
+        self.client.post(reverse("register"), test_user)
+
+        response = self.client.post(reverse("get_token"), 
+                                    {"username": "@testStaff", 
+                                     "password": "testpass"})
+
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {response.json()["access"]}') 
+
+
+    def test_get_succeeds_with_valid_staff_member_and_ticket(self):
+        self.authorize_staff_member()
+
+        response = self.client.get(reverse("ticket-path", kwargs={"ticket_id": 1}))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["ticket_path"], [])
+
+
+    def test_get_succeeds_and_returns_a_path_for_a_valid_staff_member_and_ticket(self):
+        self.authorize_staff_member()
+
+        self.ticket_redirect = TicketRedirect.objects.create(
+            id=1,
+            ticket=self.ticket,
+            from_profile=self.from_user,
+            to_profile=self.to_user
+        )
+
+        response = self.client.get(reverse("ticket-path", kwargs={"ticket_id": 1}))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["ticket_path"], [{"from_username": "fromUser", "to_username": "toUser"}])     
+
+
+    def test_get_fails_with_a_student(self):
+        self.authorize_student()
+
+        response = self.client.get(reverse("ticket-path", kwargs={"ticket_id": 1}))
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data["error"], "Permission denied")
+
+    
+    def test_get_fails_with_an_invalid_ticket(self):
+        self.authorize_staff_member()
+
+        response = self.client.get(reverse("ticket-path", kwargs={"ticket_id": 2}))
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.data["error"], "An error has occurred")
 
 
 #### TEST OVERDUETICKETS VIEW HERE ####

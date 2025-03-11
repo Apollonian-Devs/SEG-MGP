@@ -252,6 +252,18 @@ def get_ticket_history(admin_user, ticket):
 
     return history
 
+def get_ticket_path(admin_user, ticket):
+    """
+    Return list of all path changes for a given ticket.
+    """
+    if not admin_user.is_staff and not admin_user.is_superuser:
+        raise PermissionDenied("Only officers or admins can view ticket path.")
+
+    path = TicketRedirect.objects.filter(ticket=ticket)
+
+
+    return path
+
     
 
 def get_notifications(user, limit=10):

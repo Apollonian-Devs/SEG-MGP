@@ -11,7 +11,8 @@ import RedirectButton from './RedirectButton';
 import SuggestDepartmentButton from './SuggestDepartmentButton';
 import AcceptButton from './AcceptButton';
 import StatusHistoryButton from './StatusHistoryButton';
-
+import SuggestTicketGroupingButton from './SuggestTicketGroupingButton';
+import TicketPathButton from './TicketPathButton';
 import ShowOverdueButton from './ShowOverdueButton';
 import ShowUnansweredButton from './ShowUnansweredButton';
 import ChangeDate from './ChangeDate';
@@ -32,8 +33,10 @@ const TicketsCard = ({
 	const [selectedOfficer, setSelectedOfficer] = useState(null);
 	const [isChangeDateOpen, setChangeDateOpen] = useState(null);
 	const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+	const [isPathOpen, setIsPathOpen] = useState(false);
 	const [selectedDepartment, setSelectedDepartment] = useState(null);
 	const [suggestedDepartments, setSuggestedDepartments] = useState({});
+	const [suggestedGrouping, setSuggestedGrouping] = useState({});
 
 	// Sorting State
 	const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
@@ -127,6 +130,19 @@ const TicketsCard = ({
 						>
 							<StatusHistoryButton ticketId={selectedTicket.id} />
 						</PopUp>
+
+						{/* Ticket Path Pop-up */}
+						<PopUp
+							isOpen={isPathOpen}
+							onClose={() => {
+								setSelectedTicket(null);
+								setIsPathOpen(false);
+							}}
+							width="w-[80%]"
+							height="h-[80%]"
+						>
+							<TicketPathButton ticketId={selectedTicket.id} />
+						</PopUp>
 					</>
 				)}
 			</div>
@@ -147,6 +163,17 @@ const TicketsCard = ({
 							</div>
 						)}
 
+						{/* Group Tickets Button (For department heads and admins (superusers) ) */}
+						{user.is_staff && (user.is_department_head || user.is_superuser) && (
+							<div className="mb-3 flex justify-end"> 
+								<SuggestTicketGroupingButton 
+									setSuggestedGrouping={setSuggestedGrouping}
+									tickets={tickets}
+								/>
+							</div>
+						)}
+
+						
 						<div className="flex justify-end p-4 gap-4">
 							{/* Show Overdue Button */}
 							<div className="flex justify-end p-4">
@@ -203,7 +230,18 @@ const TicketsCard = ({
 												<p>Status History</p>
 											</th>
 											<th className="px-6 py-3 text-end text-xs font-medium text-gray-500">
+												<p>Ticket Path</p>
+											</th>
+											<th className="px-6 py-3 text-end text-xs font-medium text-gray-500">
 												<p>Suggested Departments</p>
+											</th>
+											
+										</>
+									)}
+									{(user.is_superuser || user.is_department_head) && (
+										<>
+											<th className="px-6 py-3 text-end text-xs font-medium text-gray-500">
+												<p>Suggested Ticket Grouping</p>
 											</th>
 										</>
 									)}
@@ -323,6 +361,20 @@ const TicketsCard = ({
 												</GenericButton>
 											</td>
 
+											{/* Ticket Path Column */}
+											<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+												<GenericButton
+													className="px-3 py-1 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700"
+													onClick={(e) => {
+														e.stopPropagation();
+														setSelectedTicket(ticket);
+														setIsPathOpen(true);
+													}}
+												>
+													Ticket Path
+												</GenericButton>
+											</td>
+
 											{/* Suggested Departments & Accept Button Column */}
 											<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
 												<div className="flex item-center gap-2">
@@ -335,6 +387,18 @@ const TicketsCard = ({
 													/>
 												</div>
 											</td>
+										</>
+									)}
+
+									{(user.is_superuser || user.is_department_head) && (
+										<>
+										{/* Suggested Grouping & Accept the grouping Column */}
+										<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+											<div className="flex item-center gap-2">
+												{suggestedGrouping[ticket.id] || 'No suggestion'}
+													
+											</div>
+										</td>
 										</>
 									)}
 								</tr>

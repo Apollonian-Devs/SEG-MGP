@@ -7,7 +7,21 @@ from api.models import (
 )
 import random
 
+"""
+STATUS_CHOICES = [
+        ("Open", "Open"),
+        ("In Progress", "In Progress"),
+        ("Awaiting Student", "Awaiting Student"),
+        ("Closed", "Closed"),
+    ]
+    
+PRIORITY_CHOICES = [
+    ("Low", "Low"),
+    ("Medium", "Medium"),
+    ("High", "High"),
+]
 
+"""
 
 def send_query(student_user, subject, description, message_body, attachments=None):
     """
@@ -103,8 +117,26 @@ def send_response(sender_profile, ticket, message_body, is_internal=False, attac
     ticket.updated_at = timezone.now()
     ticket.save()
 
+    
+    
+
+    let_expected_status = "Awaiting Student" if sender_profile.is_staff else "Open"
+
+    if ticket.status != let_expected_status:
+        old_status = ticket.status
+        ticket.status = let_expected_status
+        ticket.save()
+        TicketStatusHistory.objects.create(
+            ticket=ticket,
+            old_status=old_status,
+            new_status=ticket.status,
+            changed_by_profile=sender_profile,
+            notes="Staff responded to the ticket." if sender_profile.is_staff else "Student responded to the ticket."
+    )
+
     # Create a Notification for the other party.
     if sender_profile.is_staff:
+
         Notification.objects.create(
             user_profile=ticket.created_by,
             ticket=ticket,
@@ -146,21 +178,21 @@ def redirect_query(ticket, from_user, to_user, reason=None, new_status=None, new
     validate_redirection(from_user, to_user)
 
 
-    old_status = ticket.status
+    #old_status = ticket.status
 
     ticket.assigned_to = to_user
-    ticket.status = new_status or old_status
-    ticket.priority = new_priority or ticket.priority
+    #ticket.status = new_status or old_status
+    #ticket.priority = new_priority or ticket.priority
     ticket.updated_at = timezone.now()
     ticket.save()
 
-    TicketStatusHistory.objects.create(
+    '''TicketStatusHistory.objects.create(
         ticket=ticket,
         old_status=old_status,
         new_status=ticket.status,
         changed_by_profile=from_user,
         notes=f"Redirected by {from_user.username}. {reason or ''}",
-    )
+    )'''
 
     TicketRedirect.objects.create(
         ticket=ticket,
@@ -183,7 +215,7 @@ def redirect_query(ticket, from_user, to_user, reason=None, new_status=None, new
 
 #---------------------------------------------------------
 #written by gpt
-def view_ticket_details(ticket):
+'''def view_ticket_details(ticket):
     """
     This returns dictionary containing the key details about ticket.
     """
@@ -203,7 +235,7 @@ def view_ticket_details(ticket):
     }
 
     print(details)
-    return details
+    return details'''
 #---------------------------------------------------------
 
 
@@ -385,7 +417,7 @@ def changeTicketStatus(ticket, user):
         raise PermissionDenied("Only officers or admins can change ticket status.")
     
 
-def get_overdue_tickets(user):
+'''def get_overdue_tickets(user):
     """Returns queryset of overdue tickets based on user role."""
     
     queryset = Ticket.objects.filter(due_date__lt=timezone.now()) 
@@ -393,8 +425,31 @@ def get_overdue_tickets(user):
     if user.is_superuser or user.is_staff:
         return queryset.filter(assigned_to=user) 
     else:
-        return queryset.filter(created_by=user) 
+        return queryset.filter(created_by=user) '''
+
+def get_overdue_tickets(user):
+    """
+    Updates the is_overdue field for all tickets (only those with a due_date)
+    and returns a queryset of overdue tickets based on the user's role.
+    """
+    now = timezone.now()
+    
+    # Update tickets that have a due_date set:
+    # Mark tickets with a due_date less than now as overdue
+    Ticket.objects.filter(due_date__isnull=False, due_date__lt=now).update(is_overdue=True)
+    # Mark tickets with a due_date set that are not overdue as not overdue
+    Ticket.objects.filter(due_date__isnull=False, due_date__gte=now).update(is_overdue=False)
+
+    # Retrieve tickets that are overdue (due_date is not null by definition)
+    queryset = Ticket.objects.filter(is_overdue=True)
+    
+    if user.is_superuser or user.is_staff:
+        return queryset.filter(assigned_to=user)
+    else:
+        return queryset.filter(created_by=user)
+
   
+
 def get_unanswered_tickets(user):
     """Returns queryset of tickets which haven't been replied to yet based on user role."""
 
@@ -418,7 +473,20 @@ def changeTicketDueDate(ticket, user, new_due_date):
         ticket.due_date = new_due_date
         ticket.save()
 
-        # Notify the student who created the ticket
+        if ticket.status != "Awaiting Student":
+            # Create a status history record for the change.
+            TicketStatusHistory.objects.create(
+                ticket=ticket,
+                old_status=ticket.status,
+                new_status="Awaiting Student",
+                changed_by_profile=user,
+                notes=f"Due date changed to {new_due_date} and Ticket Status is Awaiting Student"
+            )
+
+            # Change the ticket status.
+            ticket.status = "Awaiting Student"
+            ticket.save()
+
         Notification.objects.create(
             user_profile=ticket.created_by,
             ticket=ticket,
@@ -427,16 +495,6 @@ def changeTicketDueDate(ticket, user, new_due_date):
                 f"by {user.username}."
             ),
         )
-
-
-        TicketStatusHistory.objects.create(
-            ticket=ticket,
-            old_status=ticket.status,
-            new_status=ticket.status,
-            changed_by_profile=user,
-            notes=f"Due date changed to {new_due_date}"
-        )
-
 
         return ticket
     

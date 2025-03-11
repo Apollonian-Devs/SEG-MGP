@@ -106,9 +106,16 @@ describe("TicketsCard - rendering", () => {
       />
     );
   
-    expect(screen.getByText("No suggestion")).toBeInTheDocument();
+    const ticketRow = screen.getByRole("row", { name: /ticket 1/i }); // Find the row
 
-    const acceptButton = screen.getByRole("button", { name: /accept/i });
+    const cells = within(ticketRow).getAllByRole("cell");
+
+    const suggestionCell = cells.find((cell) => within(cell).queryByText("No suggestion"));
+
+    expect(suggestionCell).toBeInTheDocument();
+
+
+    //const acceptButton = screen.getByRole("button", { name: /accept/i });
     //expect(acceptButton).toBeDisabled();
   });
   

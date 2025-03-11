@@ -193,6 +193,75 @@ describe("Dashboard Component", () => {
         });
       });
     
+    
+      it("sets popup type and opens popup (e.g. 'addTicket')", async () => {
+
+        api.get.mockResolvedValueOnce({ data: { username: "testuser", is_staff: false } });
+        api.get.mockResolvedValueOnce({ data: { tickets: [] } });
+    
+        renderWithRouter(<Dashboard />);
+    
+        await screen.findByTestId("dashboard-container");
+    
+        // The "New" button presumably triggers openPopup("addTicket")
+        const newButton = screen.getByText("New");
+        userEvent.click(newButton);
+    
+   
+        await waitFor(() => {
+          expect(screen.getByTestId("popup-overlay")).toBeInTheDocument();
+        });
+      });
+    
+      it("sets popup type and ticket when opening popup for a ticket (e.g. 'viewTicket')", async () => {
+        const testTicket = { id: 1, subject: "Test Ticket" };
+    
+        // Mock user + tickets containing "Test Ticket"
+        api.get.mockResolvedValueOnce({ data: { username: "testuser", is_staff: false } });
+        api.get.mockResolvedValueOnce({ data: { tickets: [testTicket] } });
+    
+        renderWithRouter(<Dashboard />);
+    
+        // Wait for dashboard to finish loading
+        await screen.findByTestId("dashboard-container");
+    
+        // Suppose your code triggers openPopup('viewTicket', ticket) when 
+        // the user clicks the ticket row with text "Test Ticket".
+        const ticketRow = await screen.findByText("Test Ticket");
+        userEvent.click(ticketRow);
+    
+     
+        await waitFor(() => {
+          expect(screen.getByTestId("popup-overlay")).toBeInTheDocument();
+        });
+    
+
+      });
+    
+      it("closes popup correctly", async () => {
+
+        api.get.mockResolvedValueOnce({ data: { username: "testuser", is_staff: false } });
+        api.get.mockResolvedValueOnce({ data: { tickets: [] } });
+    
+        renderWithRouter(<Dashboard />);
+    
+        await screen.findByTestId("dashboard-container");
+    
+
+        userEvent.click(screen.getByText("New"));
+        await waitFor(() => {
+          expect(screen.getByTestId("popup-overlay")).toBeInTheDocument();
+        });
+    
+       
+        const closeButton = screen.getByText("✕");
+        userEvent.click(closeButton);
+    
+    
+        await waitFor(() => {
+          expect(screen.queryByTestId("popup-overlay")).not.toBeInTheDocument();
+        });
+      });
 
     afterEach(() => {
         consoleErrorSpy.mockRestore();

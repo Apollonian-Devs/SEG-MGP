@@ -157,226 +157,226 @@ describe("TicketsCard - rendering", () => {
     expect(mockFetchTickets).toHaveBeenCalled();
 
   });
+});
 
 
+describe("TicketsCard - Error Handling", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    localStorage.setItem(ACCESS_TOKEN, "mock_access_token");
+  });
+  
+  it("handles API error when toggling status", async () => {
+    const mockFetchTickets = vi.fn();
 
-  describe("TicketsCard - Error Handling", () => {
-    beforeEach(() => {
-      vi.clearAllMocks();
-      localStorage.setItem(ACCESS_TOKEN, "mock_access_token");
-    });
-  
-    it("handles API error when toggling status", async () => {
-      const mockFetchTickets = vi.fn();
-  
-      api.get.mockRejectedValue(new Error("Network Error"));
-  
-      const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-  
-      render(
-        <TicketsCard
-          user={{ is_staff: true }}
-          officers={[]} 
-          tickets={[{ id: 1, subject: "ticket 1", status: "testStatus" }]}
-          fetchTickets={mockFetchTickets}
-        />
+    api.get.mockRejectedValue(new Error("Network Error"));
+
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    render(
+      <TicketsCard
+        user={{ is_staff: true }}
+        officers={[]} 
+        tickets={[{ id: 1, subject: "ticket 1", status: "testStatus" }]}
+        fetchTickets={mockFetchTickets}
+      />
+    );
+
+    await waitFor(() => screen.getByText("ticket 1"));
+
+    const toggleStatusButton = screen.getByTestId("toggle-status");
+    fireEvent.click(toggleStatusButton);
+
+    await waitFor(() => {
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "Error changing status:",
+        "Network Error"
       );
-  
-      await waitFor(() => screen.getByText("ticket 1"));
-  
-      const toggleStatusButton = screen.getByTestId("toggle-status");
-      fireEvent.click(toggleStatusButton);
-  
-      await waitFor(() => {
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          "Error changing status:",
-          "Network Error"
-        );
-      });
-  
-      expect(mockFetchTickets).toHaveBeenCalled();
-  
-      consoleErrorSpy.mockRestore();
     });
 
-    it("handles API error when toggling priority", async () => {
-      const mockFetchTickets = vi.fn();
-  
-      api.get.mockRejectedValue(new Error("Network Error"));
-  
-      const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-  
-      render(
-        <TicketsCard
-          user={{ is_staff: true }}
-          officers={[]} 
-          tickets={[{ id: 1, subject: "ticket 1", priority: "testPriority" }]}
-          fetchTickets={mockFetchTickets}
-        />
-      );
-  
-      await waitFor(() => screen.getByText("ticket 1"));
-  
-      const togglePriorityButton = screen.getByTestId("toggle-priority");
-      fireEvent.click(togglePriorityButton);
-  
-      await waitFor(() => {
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          "Error changing status:",
-          "Network Error"
-        );
-      });
-  
-      expect(mockFetchTickets).toHaveBeenCalled();
-  
-      consoleErrorSpy.mockRestore();
-    });
+    expect(mockFetchTickets).toHaveBeenCalled();
+
+    consoleErrorSpy.mockRestore();
   });
 
+  it("handles API error when toggling priority", async () => {
+    const mockFetchTickets = vi.fn();
 
-  describe("Popup", () => {
+    api.get.mockRejectedValue(new Error("Network Error"));
 
-    it("Chat popup should be displayed when the chat button is pressed", async() => {
-      render(<TicketsCard 
-        user={{}} 
-        tickets={[{ id: 1, subject: "ticket 1", status: "testStatus" }]} 
-        setSelectedTicket={vi.fn()} 
-        setTickets={vi.fn()}
-      />);
-  
-      await waitFor(() => screen.getByText("ticket 1"));
-      fireEvent.click(screen.getByText("Chat").closest("button"));
-      //await waitFor(() => expect(screen.getByText(/chat for ticket/i)).toBeInTheDocument());
-      const buttons = screen.getAllByRole("button");
-      fireEvent.click(buttons[1]);
-      await waitFor(() => expect(screen.getByText("Chat")).toBeInTheDocument());
-      fireEvent.click(screen.getByText("Chat").closest("button"));
-      const buttons2 = screen.getAllByRole("button");
-      fireEvent.click(buttons2[0]);
-      await waitFor(() => expect(screen.getByText("Chat")).toBeInTheDocument());
-    })
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
+    render(
+      <TicketsCard
+        user={{ is_staff: true }}
+        officers={[]} 
+        tickets={[{ id: 1, subject: "ticket 1", priority: "testPriority" }]}
+        fetchTickets={mockFetchTickets}
+      />
+    );
 
-    it("Change date popup", async() => {
-      const mockOfficer = {
-        user: {
-            id: 101,
-            username: "@officer1",
-        },
-        department: "IT",
-      };
-      
-      render(<MemoryRouter><TicketsCard 
-        user={{is_staff: true}} 
-        officers={[mockOfficer]}
-        tickets={[{ id: 1, subject: "ticket 1", status: "testStatus" }]} 
-        setSelectedTicket={vi.fn()} 
-        setTickets={vi.fn()}
-        selectedTicket={{ id: 1, subject: "ticket 1", status: "testStatus" }}
-      /></MemoryRouter>);
-      
-      await waitFor(() => screen.getByText("ticket 1"));
-      fireEvent.click(screen.getByText("Select Date").closest("button"));
-      await waitFor(() => expect(screen.getByText(/change date/i)).toBeInTheDocument());
-  
-  
-    })
+    await waitFor(() => screen.getByText("ticket 1"));
+
+    const togglePriorityButton = screen.getByTestId("toggle-priority");
+    fireEvent.click(togglePriorityButton);
+
+    await waitFor(() => {
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "Error changing status:",
+        "Network Error"
+      );
+    });
+
+    expect(mockFetchTickets).toHaveBeenCalled();
+
+    consoleErrorSpy.mockRestore();
+  });
+});
 
 
-    it("Status history popup", async() => {
-      
-      const mockSetSelectedTicket = vi.fn();
-      
-      const mockOfficer = {
-        user: {
-            id: 101,
-            username: "@officer1",
-        },
-        department: "IT",
-      };
-      
-      render(<MemoryRouter><TicketsCard 
-        user={{is_staff: true, is_superuser: true}} 
-        officers={[mockOfficer]}
-        tickets={[{ id: 1, subject: "ticket 1", status: "testStatus" }]} 
-        setSelectedTicket = {mockSetSelectedTicket} 
-        setTickets={vi.fn()}
-        selectedTicket={{ id: 1, subject: "ticket 1", status: "testStatus" }}
-      /></MemoryRouter>);
-      
-      await waitFor(() => screen.getByText("ticket 1"));
-      fireEvent.click(screen.getByTestId("status-history-button"));
-      await waitFor(() => expect(screen.getByText(/old status/i)).toBeInTheDocument());
-      await waitFor(() => expect(screen.getByText(/new status/i)).toBeInTheDocument());
-      await waitFor(() => expect(screen.getByText(/changed by/i)).toBeInTheDocument());
-      await waitFor(() => expect(screen.getByText(/changed at/i)).toBeInTheDocument());
-      await waitFor(() => expect(screen.getByText(/notes/i)).toBeInTheDocument());
-  
-      const closeButton = screen.getByRole("button", { name: "✕" });
-      fireEvent.click(closeButton);
+describe("Popup", () => {
 
-      expect(mockSetSelectedTicket).toHaveBeenCalledWith(null);
-    })
+  it("Chat popup should be displayed when the chat button is pressed", async() => {
+    render(<TicketsCard 
+      user={{}} 
+      tickets={[{ id: 1, subject: "ticket 1", status: "testStatus" }]} 
+      setSelectedTicket={vi.fn()} 
+      setTickets={vi.fn()}
+    />);
+
+    await waitFor(() => screen.getByText("ticket 1"));
+    fireEvent.click(screen.getByText("Chat").closest("button"));
+    //await waitFor(() => expect(screen.getByText(/chat for ticket/i)).toBeInTheDocument());
+    const buttons = screen.getAllByRole("button");
+    fireEvent.click(buttons[1]);
+    await waitFor(() => expect(screen.getByText("Chat")).toBeInTheDocument());
+    fireEvent.click(screen.getByText("Chat").closest("button"));
+    const buttons2 = screen.getAllByRole("button");
+    fireEvent.click(buttons2[0]);
+    await waitFor(() => expect(screen.getByText("Chat")).toBeInTheDocument());
+  })
 
 
-    it("Ticket path popup", async() => {
-      
-      const mockSetSelectedTicket = vi.fn();
-      
-      const mockOfficer = {
-        user: {
-            id: 101,
-            username: "@officer1",
-        },
-        department: "IT",
-      };
-      
-      render(<MemoryRouter><TicketsCard 
-        user={{is_staff: true, is_superuser: true}} 
-        officers={[mockOfficer]}
-        tickets={[{ id: 1, subject: "ticket 1", status: "testStatus" }]} 
-        setSelectedTicket = {mockSetSelectedTicket} 
-        setTickets={vi.fn()}
-        selectedTicket={{ id: 1, subject: "ticket 1", status: "testStatus" }}
-      /></MemoryRouter>);
-      
-      await waitFor(() => screen.getByText("ticket 1"));
-      fireEvent.click(screen.getByTestId("ticket-path-button"));
-      await waitFor(() => expect(screen.getByText(/redirected from/i)).toBeInTheDocument());
-      await waitFor(() => expect(screen.getByText(/redirected to/i)).toBeInTheDocument());
-  
-      const closeButton = screen.getByRole("button", { name: "✕" });
-      fireEvent.click(closeButton);
-
-      expect(mockSetSelectedTicket).toHaveBeenCalledWith(null);
-    })
-  
-      
-    it("Ticket details popup", async() => {
-
-      const mockOpenPopup = vi.fn();
-      const mockSetSelectedTicket = vi.fn();
-
-      render(<TicketsCard 
-        user={{}} 
-        tickets={[{ id: 1, subject: "ticket 1", status: "testStatus", due_date: "2025-12-31"}]} 
-        setSelectedTicket={mockSetSelectedTicket} 
-        setTickets={vi.fn()}
-        openPopup={mockOpenPopup}
-      />);
+  it("Change date popup", async() => {
+    const mockOfficer = {
+      user: {
+          id: 101,
+          username: "@officer1",
+      },
+      department: "IT",
+    };
     
-      const cell = screen.getByRole("cell", { name: /ticket 1/i });
-      fireEvent.click(cell);
+    render(<MemoryRouter><TicketsCard 
+      user={{is_staff: true}} 
+      officers={[mockOfficer]}
+      tickets={[{ id: 1, subject: "ticket 1", status: "testStatus" }]} 
+      setSelectedTicket={vi.fn()} 
+      setTickets={vi.fn()}
+      selectedTicket={{ id: 1, subject: "ticket 1", status: "testStatus" }}
+    /></MemoryRouter>);
+    
+    await waitFor(() => screen.getByText("ticket 1"));
+    fireEvent.click(screen.getByText("Select Date").closest("button"));
+    await waitFor(() => expect(screen.getByText(/change date/i)).toBeInTheDocument());
 
 
-      expect(mockSetSelectedTicket).toHaveBeenCalled();
-      expect(mockOpenPopup).toHaveBeenCalled();
+  })
 
-      //const closeButton = screen.getByRole("button", { name: "✕" });
-      //fireEvent.click(closeButton);
+
+  it("Status history popup", async() => {
+    
+    const mockSetSelectedTicket = vi.fn();
+    
+    const mockOfficer = {
+      user: {
+          id: 101,
+          username: "@officer1",
+      },
+      department: "IT",
+    };
+    
+    render(<MemoryRouter><TicketsCard 
+      user={{is_staff: true, is_superuser: true}} 
+      officers={[mockOfficer]}
+      tickets={[{ id: 1, subject: "ticket 1", status: "testStatus" }]} 
+      setSelectedTicket = {mockSetSelectedTicket} 
+      setTickets={vi.fn()}
+      selectedTicket={{ id: 1, subject: "ticket 1", status: "testStatus" }}
+    /></MemoryRouter>);
+    
+    await waitFor(() => screen.getByText("ticket 1"));
+    fireEvent.click(screen.getByTestId("status-history-button"));
+    await waitFor(() => expect(screen.getByText(/old status/i)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText(/new status/i)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText(/changed by/i)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText(/changed at/i)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText(/notes/i)).toBeInTheDocument());
+
+    const closeButton = screen.getByRole("button", { name: "✕" });
+    fireEvent.click(closeButton);
+
+    expect(mockSetSelectedTicket).toHaveBeenCalledWith(null);
+  })
+
+
+  it("Ticket path popup", async() => {
+    
+    const mockSetSelectedTicket = vi.fn();
+    
+    const mockOfficer = {
+      user: {
+          id: 101,
+          username: "@officer1",
+      },
+      department: "IT",
+    };
+    
+    render(<MemoryRouter><TicketsCard 
+      user={{is_staff: true, is_superuser: true}} 
+      officers={[mockOfficer]}
+      tickets={[{ id: 1, subject: "ticket 1", status: "testStatus" }]} 
+      setSelectedTicket = {mockSetSelectedTicket} 
+      setTickets={vi.fn()}
+      selectedTicket={{ id: 1, subject: "ticket 1", status: "testStatus" }}
+    /></MemoryRouter>);
+    
+    await waitFor(() => screen.getByText("ticket 1"));
+    fireEvent.click(screen.getByTestId("ticket-path-button"));
+    await waitFor(() => expect(screen.getByText(/redirected from/i)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText(/redirected to/i)).toBeInTheDocument());
+
+    const closeButton = screen.getByRole("button", { name: "✕" });
+    fireEvent.click(closeButton);
+
+    expect(mockSetSelectedTicket).toHaveBeenCalledWith(null);
+  })
+
+    
+  it("Ticket details popup", async() => {
+
+    const mockOpenPopup = vi.fn();
+    const mockSetSelectedTicket = vi.fn();
+
+    render(<TicketsCard 
+      user={{}} 
+      tickets={[{ id: 1, subject: "ticket 1", status: "testStatus", due_date: "2025-12-31"}]} 
+      setSelectedTicket={mockSetSelectedTicket} 
+      setTickets={vi.fn()}
+      openPopup={mockOpenPopup}
+    />);
   
-    })
-  });
+    const cell = screen.getByRole("cell", { name: /ticket 1/i });
+    fireEvent.click(cell);
+
+
+    expect(mockSetSelectedTicket).toHaveBeenCalled();
+    expect(mockOpenPopup).toHaveBeenCalled();
+
+    //const closeButton = screen.getByRole("button", { name: "✕" });
+    //fireEvent.click(closeButton);
+
+  })
+});
     
 
   // Wrapper written by GPT
@@ -493,5 +493,3 @@ describe("TicketsCard - rendering", () => {
     expect(within(rowsDesc[1]).getByText("Low")).toBeInTheDocument();
     expect(within(rowsDesc[2]).getByText("High")).toBeInTheDocument();
   })
-
-})

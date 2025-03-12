@@ -398,11 +398,22 @@ class SuggestDepartmentView(APIView):
         if not request.user.is_staff and not request.user.is_superuser:
             raise PermissionDenied("Only officers and admins can suggest departments.")
 
+        ticket_id = request.data.get('ticket_id', None)
         ticket_description = request.data.get('description', '')
-        department_names = request.data.get('departments', [])
-
-        if not ticket_description or not department_names:
-            return Response({"error": "Description and departments are required."}, status=400)
+        
+        if not ticket_id or not ticket_description:
+            return Response({"error": "Ticket ID and description are required."}, status=400)
+        
+        try:
+            ticket = Ticket.objects.get(id=ticket_id)
+        except Ticket.DoesNotExist:
+            return Response({"error": "Ticket not found."}, status=404)
+        
+        departments = Department.objects.all()
+        department_names = [dept.name for dept in departments]
+        
+        if not department_names:
+            return Response({"error": "No departments found in the system."}, status=500)
 
         training_data_path = os.path.join(settings.BASE_DIR, 'training_data.json')
         try:
@@ -441,7 +452,7 @@ class SuggestDepartmentView(APIView):
             return Response({"error": "Predicted department does not exist."}, status=400)
 
         ai_response = AIResponse(
-            ticket=None,
+            ticket=ticket,
             prompt_text=ticket_description,
             response_text=suggested_department,
             confidence=confidence_score * 100,

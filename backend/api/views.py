@@ -404,8 +404,6 @@ class SuggestDepartmentView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        if not request.user.is_staff and not request.user.is_superuser:
-            raise PermissionDenied("Only officers and admins can suggest departments.")
 
         ticket_id = request.data.get('ticket_id', None)
         ticket_description = request.data.get('description', '')
@@ -422,9 +420,9 @@ class SuggestDepartmentView(APIView):
         department_names = [dept.name for dept in departments]
         
         if not department_names:
-            return Response({"error": "No departments found in the system."}, status=500)
+            return Response({"error": "No departments found in the system."},status=500)
 
-        training_data_path = os.path.join(settings.BASE_DIR, 'training_data.json')
+        training_data_path = os.path.join(settings.BASE_DIR,'training_data.json')
         try:
             with open(training_data_path, 'r') as f:
                 training_data = json.load(f)

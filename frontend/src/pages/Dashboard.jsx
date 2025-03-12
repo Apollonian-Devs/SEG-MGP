@@ -8,8 +8,6 @@ import NotificationsTab from '../components/Notification';
 import TicketDetails from '../components/TicketDetails';
 import Popup from '../components/Popup';
 
-
-
 const Dashboard = () => {
 	const [current_user, setCurrent_user] = useState(null);
 	const [officers, setOfficers] = useState([]);

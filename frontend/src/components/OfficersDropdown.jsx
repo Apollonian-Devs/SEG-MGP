@@ -4,7 +4,6 @@ import GenericButton from "./GenericButton";
 
 const OfficersDropdown = ({ officers, admin, setSelectedOfficer }) => {
   console.log("Officers in Dropdown", officers)
-  console.log("Admin", admin)
   const [selectedOfficer, setSelectedOfficerState] = useState(null);
 
   const handleSelect = (user) => {

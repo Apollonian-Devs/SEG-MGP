@@ -58,7 +58,7 @@ const Chat = ({ ticket, onClose, user }) => {
       setAttachments(undefined);
       
 
-      alert("Your message has been sent. Please reload the page to see the new status of your ticket.");
+      alert("Your message has been sent. Please reload the page to check any new messages.");
     } catch (err) {
       setError(err.response?.data || "Failed to send text");
     }

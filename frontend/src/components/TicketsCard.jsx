@@ -402,8 +402,7 @@ const TicketsCard = ({
 										{/* Suggested Grouping & Accept the grouping Column */}
 										<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
 											<div className="flex item-center gap-2">
-											{suggestedGrouping[ticket.id] !== undefined ? suggestedGrouping[ticket.id] : 'No suggestion'}
-
+												{suggestedGrouping[ticket.id] || 'No suggestion'}
 													
 											</div>
 										</td>

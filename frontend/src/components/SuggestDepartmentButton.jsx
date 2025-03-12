@@ -19,10 +19,10 @@ const SuggestDepartmentButton = ({ setSuggestedDepartments, tickets }) => {
           },
         }
       );
-      console.log("Fetched Department:", response.data);
-      return response.data;
+      console.log("Fetched Suggested Department:", response.data);
+      return response.data.suggested_department;
     } catch (error) {
-      console.error("Error fetching department:", error.response?.data || error.message);
+      console.error("Error fetching suggested department:", error.response?.data || error.message);
       return null;
     }
   };

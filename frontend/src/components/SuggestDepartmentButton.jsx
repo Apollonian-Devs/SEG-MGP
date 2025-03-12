@@ -4,33 +4,24 @@ import { ACCESS_TOKEN } from "../constants";
 import GenericButton from "./GenericButton";
 
 const SuggestDepartmentButton = ({ setSuggestedDepartments, tickets }) => {
-  const fetchSuggestedDepartment = async (ticketId, ticketDescription) => {
+  const fetchRandomDepartment = async () => {
     try {
       const access = localStorage.getItem(ACCESS_TOKEN);
-      const response = await api.post("/api/suggested-department/", 
-        { 
-          ticket_id: ticketId,
-          description: ticketDescription 
-        },
-        {
-          headers: { 
-            Authorization: `Bearer ${access}`,
-            "Content-Type": "application/json", 
-          },
-        }
-      );
-      console.log("Fetched Department:", response.data);
+      const response = await api.get("/api/random-department/", {
+        headers: { Authorization: `Bearer ${access}` },
+      });
+      console.log("Fetched Random Department:", response.data);
       return response.data;
     } catch (error) {
-      console.error("Error fetching department:", error.response?.data || error.message);
+      console.error("Error fetching random department:", error.response?.data || error.message);
       return null;
     }
   };
 
-  const assignSuggestedDepartments = async () => {
+  const assignRandomDepartments = async () => {
     const updatedDepartments = {};
     for (const ticket of tickets) {
-      const department = await fetchSuggestedDepartment(ticket.id, ticket.description);
+      const department = await fetchRandomDepartment();
       if (department) {
         console.log(`Assigning ${department.name} to Ticket ID: ${ticket.id}`);
         updatedDepartments[ticket.id] = department;
@@ -46,7 +37,7 @@ const SuggestDepartmentButton = ({ setSuggestedDepartments, tickets }) => {
     className="px-3 py-1 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700"
     onClick={(e) => { 
         e.stopPropagation();
-        assignSuggestedDepartments();
+        assignRandomDepartments();
     }}
 >
       Suggest Departments

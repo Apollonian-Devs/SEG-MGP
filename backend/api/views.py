@@ -390,3 +390,21 @@ class RandomDepartmentView(views.APIView):
             return Response(serializer.data)
         except Exception:
             return Response({"error": "An error has occurred"}, status=500)
+
+
+class GroupTicketsView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            user = request.user
+            clusters = get_tags(user)
+            return Response({"clusters": clusters})  # Now returns a dictionary
+        except PermissionDenied:
+            return Response({"error": "Permission denied"}, status=403)
+        except Exception as e:
+            return Response({"error": f"An error has occurred: {str(e)}"}, status=500)
+
+        
+
+

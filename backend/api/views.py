@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
-from rest_framework import generics, views
+from rest_framework import generics, views, serializers
 from rest_framework.response import Response
-from .serializers import UserSerializer, TicketSerializer, TicketMessageSerializer, TicketRedirectSerializer, OfficerSerializer, NotificationSerializer, DepartmentSerializer, ChangeTicketDateSerializer, TicketStatusHistorySerializer
+from .serializers import UserSerializer, TicketSerializer, TicketMessageSerializer, TicketRedirectSerializer, OfficerSerializer, NotificationSerializer, DepartmentSerializer, ChangeTicketDateSerializer, TicketStatusHistorySerializer, TicketPathSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Ticket
 from django.core.exceptions import ObjectDoesNotExist
@@ -20,16 +20,19 @@ class TicketListCreate(generics.ListCreateAPIView):
         return Ticket.objects.filter(created_by=user)
 
     def perform_create(self, serializer):
-        data = serializer.validated_data
-        new_ticket = send_query(
-            student_user=self.request.user,
-            subject=data.get("subject"),
-            description=data.get("description"),
-            message_body=data.get("message"),
-            attachments=data.get("attachments")
-        )
+        try:
+            data = serializer.validated_data
+            new_ticket = send_query(
+                student_user=self.request.user,
+                subject=data.get("subject"),
+                description=data.get("description"),
+                message_body=data.get("message"),
+                attachments=data.get("attachments")
+            )
 
-        serializer.instance = new_ticket
+            serializer.instance = new_ticket
+        except Exception:
+            raise serializers.ValidationError({"error": "An error has occurred"})
 
 class TicketChangeStatus(views.APIView):
     permission_classes = [IsAuthenticated]
@@ -42,6 +45,10 @@ class TicketChangeStatus(views.APIView):
             return Response({"message": "Status changed"}, status= 200)
         except Ticket.DoesNotExist:
             return Response({"error": "Ticket not found"}, status= 404)
+        except PermissionDenied:
+            return Response({"error": "Permission denied"}, status=403)
+        except Exception:
+            return Response({"error": "An error has occurred"}, status=500)
     
 class TicketChangePriority(views.APIView):
     permission_classes = [IsAuthenticated]
@@ -54,6 +61,10 @@ class TicketChangePriority(views.APIView):
             return Response({"message": "Priority changed"}, status= 200)
         except Ticket.DoesNotExist:
             return Response({"error": "Ticket not found"}, status= 404)
+        except PermissionDenied:
+            return Response({"error": "Permission denied"}, status=403)
+        except Exception:
+            return Response({"error": "An error has occurred"}, status=500)
     
 class TicketDelete(generics.DestroyAPIView):
     serializer_class = TicketSerializer
@@ -86,10 +97,12 @@ class CurrentUserView(views.APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        user = request.user
-        serializer = UserSerializer(user)  # Use your UserSerializer to serialize the user data
-        return Response(serializer.data)
-    
+        try:
+            user = request.user
+            serializer = UserSerializer(user)  # Use your UserSerializer to serialize the user data
+            return Response(serializer.data)
+        except Exception:
+            return Response({"error": "An error has occurred"}, status=500)
     
 class UserTicketsView(views.APIView):
     """
@@ -98,9 +111,12 @@ class UserTicketsView(views.APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        user = request.user
-        tickets = get_tickets_for_user(user)  # Call helper function
-        return Response({"tickets": tickets})
+        try:
+            user = request.user
+            tickets = get_tickets_for_user(user)  # Call helper function
+            return Response({"tickets": tickets})
+        except Exception:
+            return Response({"error": "An error has occurred"}, status=500)
 
 
 class TicketSendResponseView(views.APIView):
@@ -141,6 +157,8 @@ class TicketSendResponseView(views.APIView):
                 return Response({"error": "Ticket not found"}, status=404)
             except ValueError as e:
                 return Response({"error": str(e)}, status=400)
+            except Exception:
+                return Response({"error": "An error has occurred"}, status=500)
         else:
             print(" Serializer errors:", serializer.errors)
             return Response(serializer.errors, status=400)
@@ -165,8 +183,8 @@ class TicketMessageHistory(views.APIView):
             return Response({"messages": messages}, status=200)
         except ObjectDoesNotExist:
             return Response({"error": "Ticket not found"}, status=404)
-        except Exception as e:
-            return Response({"error": str(e)}, status=500)
+        except Exception:
+            return Response({"error": "An error has occurred"}, status=500)
 
         
 
@@ -177,25 +195,28 @@ class AllOfficersView(views.APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        user = request.user
-        officers = get_officers_same_department(user)
+        try:
+            user = request.user
+            officers = get_officers_same_department(user)
 
-        officer_serializer = OfficerSerializer(officers, many=True)
+            officer_serializer = OfficerSerializer(officers, many=True)
 
-        admin = None
-        if is_chief_officer(user):
-            admin = get_default_superuser()
-            admin_serializer = UserSerializer(admin)
-            admin_data = admin_serializer.data
-        else:
-            admin_data = None
+            admin = None
+            if is_chief_officer(user):
+                admin = get_default_superuser()
+                admin_serializer = UserSerializer(admin)
+                admin_data = admin_serializer.data
+            else:
+                admin_data = None
 
-        response_data = {
-            "officers": officer_serializer.data,
-            "admin": admin_data
-        }
+            response_data = {
+                "officers": officer_serializer.data,
+                "admin": admin_data
+            }
 
-        return Response(response_data)
+            return Response(response_data)
+        except Exception:
+            return Response({"error": "An error has occurred"}, status=500)
 
 class UserNotificationsView(views.APIView):
     """
@@ -204,15 +225,20 @@ class UserNotificationsView(views.APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        user = request.user
-        notifications = get_notifications(user)  # Call helper function
-        serializer = NotificationSerializer(notifications, many=True)
-        return Response({"notifications": serializer.data})
-    
-    def post(self,request):
-        mark_id_as_read(request.data.get("id"))
-        return Response({"message": "mark success"})
+        try:
+            user = request.user
+            notifications = get_notifications(user)  # Call helper function
+            serializer = NotificationSerializer(notifications, many=True)
+            return Response({"notifications": serializer.data})
+        except Exception:
+            return Response({"error": "An error has occurred"}, status=500)
 
+    def post(self,request):
+        try:
+            mark_id_as_read(request.data.get("id"))
+            return Response({"message": "mark success"})
+        except Exception:
+            return Response({"error": "An error has occurred"}, status=500)
 
 class TicketRedirectView(views.APIView):
     permission_classes = [IsAuthenticated]
@@ -250,7 +276,7 @@ class TicketRedirectView(views.APIView):
                 )
             except Exception as e:
                 print(f"error occured: {e}")
-                return Response({"error": "an error has occured"}, status=400)
+                return Response({"error": "an error has occured"}, status=500)
         else:
             print(f"Serializer errors: ", serializer.errors)
             return Response(serializer.errors, status=400)
@@ -266,29 +292,48 @@ class TicketStatusHistoryView(views.APIView):
             return Response({"status_history": serializer.data})
         except PermissionDenied:
             return Response({"error": "Permission denied"}, status=403)
-        except Exception as e:
-            return Response({"error": str(e)}, status=500)
+        except Exception:
+            return Response({"error": "An error has occurred"}, status=500)
+        
+class TicketPathView(views.APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, ticket_id):
+        try:
+            user = request.user
+            ticket = Ticket.objects.get(id=ticket_id)
+            ticket_path = get_ticket_path(user,ticket)
+            serializer = TicketPathSerializer(ticket_path, many=True)
+            return Response({"ticket_path": serializer.data})
+        except PermissionDenied:
+            return Response({"error": "Permission denied"}, status=403)
+        except Exception:
+            return Response({"error": "An error has occurred"}, status=500)
 
 
 class OverdueTicketsView(views.APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        user = request.user
-        overdue_tickets = get_overdue_tickets(user) 
-        serializer = TicketSerializer(overdue_tickets, many=True)  
-        return Response({"tickets": serializer.data})  
+        try:
+            user = request.user
+            overdue_tickets = get_overdue_tickets(user) 
+            serializer = TicketSerializer(overdue_tickets, many=True)  
+            return Response({"tickets": serializer.data})  
+        except Exception:
+            return Response({"error": "An error has occurred"}, status=500)        
     
 class UnansweredTicketsView(views.APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        user = request.user
-        unanswered_tickets = get_unanswered_tickets(user) 
-        serializer = TicketSerializer(unanswered_tickets, many=True)  
-        return Response({"tickets": serializer.data})  
+        try:
+            user = request.user
+            unanswered_tickets = get_unanswered_tickets(user) 
+            serializer = TicketSerializer(unanswered_tickets, many=True)  
+            return Response({"tickets": serializer.data})  
+        except Exception:
+            return Response({"error": "An error has occurred"}, status=500)        
 
-    
 
 class ChangeTicketDateView(views.APIView):
     permission_classes = [IsAuthenticated]
@@ -315,6 +360,8 @@ class ChangeTicketDateView(views.APIView):
             except ValueError as e:
                 print("The error", str(e))
                 return Response({"error": str(e)}, status=400)
+            except Exception:
+                return Response({"error": "An error has occurred"}, status=500)
         else:
             return Response(serializer.errors, status=400)
 
@@ -322,17 +369,24 @@ class DepartmentsListView(views.APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        departments = Department.objects.all()
-        return Response([{
-            "id": dept.id,
-            "name": dept.name,
-            "description": dept.description
-        } for dept in departments])
-        
+        try:
+            departments = Department.objects.all()
+            return Response([{
+                "id": dept.id,
+                "name": dept.name,
+                "description": dept.description
+            } for dept in departments])
+        except Exception:
+            return Response({"error": "An error has occurred"}, status=500)        
+
+
 class RandomDepartmentView(views.APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        department = get_random_department()
-        serializer = DepartmentSerializer(department)
-        return Response(serializer.data)
+        try:    
+            department = get_random_department()
+            serializer = DepartmentSerializer(department)
+            return Response(serializer.data)
+        except Exception:
+            return Response({"error": "An error has occurred"}, status=500)

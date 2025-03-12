@@ -226,10 +226,12 @@ const TicketsCard = ({
 
 									{user.is_superuser && (
 										<>
-											<th className="px-6 py-3 text-end text-xs font-medium text-gray-500">
+											<th className="px-6 py-3 text-end text-xs font-medium text-gray-500"
+												data-testid="status-history-header">
 												<p>Status History</p>
 											</th>
-											<th className="px-6 py-3 text-end text-xs font-medium text-gray-500">
+											<th className="px-6 py-3 text-end text-xs font-medium text-gray-500"
+												data-testid="ticket-path-header">
 												<p>Ticket Path</p>
 											</th>
 											<th className="px-6 py-3 text-end text-xs font-medium text-gray-500">
@@ -284,6 +286,7 @@ const TicketsCard = ({
 										{user.is_staff && (
 											<>
 												<GenericButton
+													dataTestId="toggle-status"
 													className="flex items-center justify-items-center px-2 py-1 gap-1 text-white hover:bg-customOrange-light transition-colors duration-500 bg-customOrange-dark rounded-md"
 													onClick={() => toggleChange('status', ticket.id)}
 												>
@@ -291,6 +294,7 @@ const TicketsCard = ({
 													Status
 												</GenericButton>
 												<GenericButton
+												dataTestId="toggle-priority"
 													className="flex items-center justify-items-center px-2 py-1 gap-1 text-white hover:bg-customOrange-light transition-colors duration-500 bg-customOrange-dark rounded-md"
 													onClick={() => toggleChange('priority', ticket.id)}
 												>
@@ -313,6 +317,7 @@ const TicketsCard = ({
 														/>
 													) : (
 														<OfficersDropdown
+															
 															officers={officers}
 															admin={admin}
 															setSelectedOfficer={setSelectedOfficer}
@@ -350,6 +355,7 @@ const TicketsCard = ({
 											{/* Status History Column */}
 											<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
 												<GenericButton
+													dataTestId="status-history-button"
 													className="px-3 py-1 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700"
 													onClick={(e) => {
 														e.stopPropagation();
@@ -364,6 +370,7 @@ const TicketsCard = ({
 											{/* Ticket Path Column */}
 											<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
 												<GenericButton
+												dataTestId="ticket-path-button"
 													className="px-3 py-1 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700"
 													onClick={(e) => {
 														e.stopPropagation();

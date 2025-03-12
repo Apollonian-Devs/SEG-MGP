@@ -4,41 +4,16 @@ import { Filter } from 'lucide-react';
 import GenericInput from './GenericInput';
 import GenericButton from './GenericButton';
 
-const FilterTicketsDropdown = ({ tickets, setShowingTickets }) => {
-	const [priority, setPriority] = useState('');
-	const [status, setStatus] = useState('');
-	const [isOverdue, setIsOverdue] = useState(false);
-
-	const applyFilters = () => {
-		if (tickets.length === 0) {
-			return;
-		}
-
-		const filteredTickets = tickets.filter((ticket) => {
-			if (priority && ticket.priority !== priority) {
-				return false;
-			}
-			if (status && ticket.status !== status) {
-				return false;
-			}
-			if (isOverdue && !ticket.is_overdue) {
-				return false;
-			}
-
-			return true;
-		});
-
-		setShowingTickets(filteredTickets);
-	};
-
-	const clearFilters = () => {
-		setPriority('');
-		setStatus('');
-		setIsOverdue(false);
-
-		setShowingTickets(tickets);
-	};
-
+const FilterTicketsDropdown = ({
+	priority,
+	status,
+	isOverdue,
+	setPriority,
+	setStatus,
+	setIsOverdue,
+	applyFilters,
+	clearFilters,
+}) => {
 	return (
 		<GenericDropdown
 			buttonName={<Filter size={16} />}

@@ -38,11 +38,16 @@ const TicketsCard = ({
 	const [suggestedDepartments, setSuggestedDepartments] = useState({});
 	const [suggestedGrouping, setSuggestedGrouping] = useState({});
 
+	// Filtering State
+	const [priority, setPriority] = useState('');
+	const [status, setStatus] = useState('');
+	const [isOverdue, setIsOverdue] = useState(false);
+
 	// Sorting State
 	const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
 	useEffect(() => {
-		setShowingTickets(tickets);
+		applyFilters(); // setShowingTickets is included in applyFilters
 	}, [tickets]);
 
 	const toggleChange = async (type, ticket_id) => {
@@ -82,6 +87,37 @@ const TicketsCard = ({
 		});
 
 		setShowingTickets(sortedTickets);
+	};
+
+	// Filtering Functions
+	const applyFilters = () => {
+		if (tickets.length === 0) {
+			return;
+		}
+
+		const filteredTickets = tickets.filter((ticket) => {
+			if (priority && ticket.priority !== priority) {
+				return false;
+			}
+			if (status && ticket.status !== status) {
+				return false;
+			}
+			if (isOverdue && !ticket.is_overdue) {
+				return false;
+			}
+
+			return true;
+		});
+
+		setShowingTickets(filteredTickets);
+	};
+
+	const clearFilters = () => {
+		setPriority('');
+		setStatus('');
+		setIsOverdue(false);
+
+		setShowingTickets(tickets);
 	};
 
 	const toggleChangeDate = () => {
@@ -158,8 +194,14 @@ const TicketsCard = ({
 						<h1 className="flex text-center">Tickets</h1>
 						<div className="flex justify-between items-center gap-2 h-10">
 							<FilterTicketsDropdown
-								tickets={tickets}
-								setShowingTickets={setShowingTickets}
+								priority={priority}
+								status={status}
+								isOverdue={isOverdue}
+								setPriority={setPriority}
+								setStatus={setStatus}
+								setIsOverdue={setIsOverdue}
+								applyFilters={applyFilters}
+								clearFilters={clearFilters}
 							/>
 							{/* Suggest Department Button (Only for Superuser Staff) */}
 							{user.is_staff && user.is_superuser && (

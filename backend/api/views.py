@@ -438,7 +438,7 @@ class SuggestDepartmentView(APIView):
         all_descriptions = training_descriptions + [ticket_description]
         X = vectorizer.fit_transform(all_descriptions)
 
-        clusterer = hdbscan.HDBSCAN(min_cluster_size=2, metric='euclidean')
+        clusterer = hdbscan.HDBSCAN(min_cluster_size=2,min_samples=1, metric='euclidean')
         cluster_labels = clusterer.fit_predict(X.toarray())
 
         cluster_to_department = {}

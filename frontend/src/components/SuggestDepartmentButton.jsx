@@ -30,10 +30,10 @@ const SuggestDepartmentButton = ({ setSuggestedDepartments, tickets }) => {
   const assignSuggestedDepartments = async () => {
     const updatedDepartments = {};
     for (const ticket of tickets) {
-      const department = await fetchSuggestedDepartment(ticket.id, ticket.description);
-      if (department) {
-        console.log(`Assigning ${department.name} to Ticket ID: ${ticket.id}`);
-        updatedDepartments[ticket.id] = department;
+      const response = await fetchSuggestedDepartment(ticket.id, ticket.description);
+      if (response && response.suggested_department) {
+        console.log(`Assigning ${response.suggested_department.name} to Ticket ID: ${ticket.id}`);
+        updatedDepartments[ticket.id] = response.suggested_department;
       } else {
         console.warn(`No department assigned to Ticket ID: ${ticket.id}`);
       }
@@ -43,12 +43,12 @@ const SuggestDepartmentButton = ({ setSuggestedDepartments, tickets }) => {
 
   return (
     <GenericButton
-    className="px-3 py-1 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700"
-    onClick={(e) => { 
+      className="px-3 py-1 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700"
+      onClick={(e) => {
         e.stopPropagation();
         assignSuggestedDepartments();
-    }}
->
+      }}
+    >
       Suggest Departments
     </GenericButton>
   );

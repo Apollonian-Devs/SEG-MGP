@@ -19,7 +19,7 @@ const SuggestDepartmentButton = ({ setSuggestedDepartments, tickets }) => {
           },
         }
       );
-      console.log("Fetched Suggested Department:", response.data);
+      console.log("Fetched Suggested Department:", response.data.suggested_department);
       return response.data.suggested_department;
     } catch (error) {
       console.error("Error fetching suggested department:", error.response?.data || error.message);
@@ -31,9 +31,9 @@ const SuggestDepartmentButton = ({ setSuggestedDepartments, tickets }) => {
     const updatedDepartments = {};
     for (const ticket of tickets) {
       const response = await fetchSuggestedDepartment(ticket.id, ticket.description);
-      if (response && response.suggested_department) {
-        console.log(`Assigning ${response.suggested_department.name} to Ticket ID: ${ticket.id}`);
-        updatedDepartments[ticket.id] = response.suggested_department;
+      if (response) {
+        console.log(`Assigning ${response} to Ticket ID: ${ticket.id}`);
+        updatedDepartments[ticket.id] = response;
       } else {
         console.warn(`No department assigned to Ticket ID: ${ticket.id}`);
       }

@@ -4,7 +4,7 @@ import api from '../api';
 
 
 describe('OfficersDropdown Component', () => {
-    it('renders with correct button name', () => {
+    it('renders with correct default text', () => {
         render(<OfficersDropdown officers={[]} setSelectedOfficer={() => {}} />);
         expect(screen.getByText('Select an officer')).toBeInTheDocument();
     });
@@ -26,5 +26,27 @@ describe('OfficersDropdown Component', () => {
         expect(screen.getByText('user2')).toBeInTheDocument();
     });
 
+    it('renders correct text when officer is selected', () => {
+
+        const mockSetSelectedOfficer = vi.fn();
+
+        render(
+            <OfficersDropdown 
+                officers={[
+                    { user: { id: 1, username: 'user1' } },
+                    { user: { id: 2, username: 'user2' } },
+                ]}
+                setSelectedOfficer={mockSetSelectedOfficer}
+            />
+        );
+
+        fireEvent.click(screen.getByText('Select an officer'));
+        fireEvent.click(screen.getByText('user1'));
+
+        expect(mockSetSelectedOfficer).toHaveBeenCalledTimes(1);
+        expect(screen.queryByText('Select an officer')).not.toBeInTheDocument();
+
+
+    });
    
 });

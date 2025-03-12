@@ -1,5 +1,5 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import { describe, it, expect} from 'vitest';
 import StatusHistoryButton from '../components/StatusHistoryButton';
 import api from "../api";
 

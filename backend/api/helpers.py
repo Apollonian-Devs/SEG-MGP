@@ -6,7 +6,8 @@ from api.models import (
     TicketAttachment, Notification, Officer, STATUS_CHOICES, PRIORITY_CHOICES, AIResponse
 )
 import random
-from MessagesGroupingAI import *
+from api.MessagesGroupingAI import *
+import yagmail
 
 """
 STATUS_CHOICES = [
@@ -143,6 +144,7 @@ def send_response(sender_profile, ticket, message_body, is_internal=False, attac
             ticket=ticket,
             message=f"Staff responded to Ticket #{ticket.id}"
         )
+        send_email(ticket.created_by, "Message Recieved", f"Staff replied on Ticket #{ticket.id}")
     else:
         if ticket.assigned_to is not None:
             Notification.objects.create(
@@ -150,6 +152,7 @@ def send_response(sender_profile, ticket, message_body, is_internal=False, attac
                 ticket=ticket,
                 message=f"Student replied on Ticket #{ticket.id}"
             )
+            send_email(ticket.assigned_to, "Message Recieved", f"Student replied on Ticket #{ticket.id}")
 
     return new_msg
 
@@ -207,6 +210,8 @@ def redirect_query(ticket, from_user, to_user, reason=None, new_status=None, new
         ticket=ticket,
         message=f"Ticket #{ticket.id} has been redirected to you by {from_user.username}.",
     )
+
+    send_email(to_user, 'Testing Redirection', 'Body message test')
 
 
     return ticket
@@ -279,6 +284,18 @@ def get_ticket_history(admin_user, ticket):
 
 
     return history
+
+def get_ticket_path(admin_user, ticket):
+    """
+    Return list of all path changes for a given ticket.
+    """
+    if not admin_user.is_staff and not admin_user.is_superuser:
+        raise PermissionDenied("Only officers or admins can view ticket path.")
+
+    path = TicketRedirect.objects.filter(ticket=ticket)
+
+
+    return path
 
     
 
@@ -497,6 +514,21 @@ def changeTicketDueDate(ticket, user, new_due_date):
             ),
         )
 
+        send_email(ticket.created_by, 'Test change due date', (
+                f"Due date has been set/updated to {new_due_date.strftime('%Y-%m-%d %H:%M:%S')} "
+                f"by {user.username}."
+            ),)
+
+
+        TicketStatusHistory.objects.create(
+            ticket=ticket,
+            old_status=ticket.status,
+            new_status=ticket.status,
+            changed_by_profile=user,
+            notes=f"Due date changed to {new_due_date}"
+        )
+
+
         return ticket
     
 
@@ -526,6 +558,21 @@ def is_chief_officer(user):
     """
     return Officer.objects.filter(user=user, is_department_head=True).exists()
 
+def send_email(recepient_user, subject, body):
+
+    try:
+        yag = yagmail.SMTP('no.reply.testTicketApp@gmail.com', 'jvls lbft kkpr uazn')
+
+        # Send the email
+        yag.send(
+            to=recepient_user.email,
+            subject=subject,
+            contents=body
+        )
+
+        print("Email sent successfully!")
+    except:
+        print("email not sent")
 
 '''
 class AIResponse(models.Model):
@@ -561,18 +608,25 @@ def get_tags(user):
     tickets = Ticket.objects.filter(assigned_to=user)
     lst = [f"Title: {ticket.subject}, description: {ticket.description}" for ticket in tickets]
 
-    clusters, probabilities = MessageGroupAI(lst)  # Get clustered ticket groups
+    clusters, probabilities = MessageGroupAI(lst) 
+
+
+    ticket_cluster_map = {}
 
     for index, ticket in enumerate(tickets):
+        cluster_id = int(clusters[index]) 
+        ticket_cluster_map[ticket.id] = cluster_id
+
         AIResponse.objects.create(
             ticket=ticket,
-            response_text=str(clusters[index]),  # Store cluster ID
-            confidence=str(probabilities[index]),  # Store confidence score
+            response_text=str(cluster_id), 
+            confidence=str(probabilities[index]), 
             verified_by_profile=user,
             verification_status="Verified"
         )
 
-    return clusters, probabilities
+    return ticket_cluster_map  
+
 
     
 

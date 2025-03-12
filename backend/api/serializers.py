@@ -123,4 +123,12 @@ class TicketStatusHistorySerializer(serializers.ModelSerializer):
         fields = ["old_status", "new_status", "profile_username","changed_at","notes"]
         extra_kwargs = {"ticket": {"read_only": True}}
 
+class TicketPathSerializer(serializers.ModelSerializer):
+    from_username = serializers.CharField(source="from_profile.username", read_only=True)
+    to_username = serializers.CharField(source="to_profile.username", read_only=True)
+    class Meta:
+        model = TicketRedirect
+        fields = ["from_username","to_username"]
+        extra_kwargs = {"ticket": {"read_only": True}}
+
         

@@ -381,7 +381,8 @@ const TicketsCard = ({
 													Ticket Path
 												</GenericButton>
 											</td>
-
+											
+											
 											{/* Suggested Departments & Accept Button Column */}
 											<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
 												<div className="flex item-center gap-2">

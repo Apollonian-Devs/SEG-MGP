@@ -5,16 +5,32 @@ import GenericButton from "./GenericButton";
 
 
 const SuggestTicketGroupingButton = ({ setSuggestedGrouping, tickets }) => {
-    
     const assignRandomGrouping = async () => {
         const groupedTickets = {};
-        for (const ticket of tickets) {
-            const randomNumber = Math.floor(Math.random() * (10 - 1 + 1)) + 1;
-            groupedTickets[ticket.id] = randomNumber;
+
+        try {
+            const access = localStorage.getItem(ACCESS_TOKEN);
+            const response = await api.get('/api/user-tickets-grouping/', {
+                headers: { Authorization: `Bearer ${access}` },
+            });
+
+            const clusterData = response.data.clusters; 
+
+            for (const ticket of tickets) {
+                if (clusterData[ticket.id] !== undefined) {
+                    groupedTickets[ticket.id] = clusterData[ticket.id];
+                }
+            }
+
+            setSuggestedGrouping(groupedTickets); // Update state
+        } catch (error) {
+            console.error(
+                'Error fetching groupings:',
+                error.response?.data || error.message
+            );
         }
-        setSuggestedGrouping(groupedTickets);
-    }
-    
+    };
+
     return (
         <GenericButton
             className="px-3 py-1 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700"
@@ -26,6 +42,7 @@ const SuggestTicketGroupingButton = ({ setSuggestedGrouping, tickets }) => {
             Suggest Ticket Grouping
         </GenericButton>
     );
-}
+};
 
 export default SuggestTicketGroupingButton;
+

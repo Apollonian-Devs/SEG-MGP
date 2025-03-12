@@ -102,6 +102,18 @@ class Ticket(models.Model):
 
     def __str__(self):
         return self.subject
+    
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                check=models.Q(status__in=[choice[0] for choice in STATUS_CHOICES]),
+                name="valid_ticket_status"
+            ),
+            models.CheckConstraint(
+                check=models.Q(priority__in=[choice[0] for choice in PRIORITY_CHOICES]) | models.Q(priority__isnull=True),
+                name="valid_ticket_priority"
+            )
+        ]
 
 class TicketMessage(models.Model):
      ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)

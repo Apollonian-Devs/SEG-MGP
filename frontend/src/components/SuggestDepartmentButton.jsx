@@ -4,7 +4,7 @@ import { ACCESS_TOKEN } from "../constants";
 import GenericButton from "./GenericButton";
 
 const SuggestDepartmentButton = ({ setSuggestedDepartments, tickets }) => {
-  const fetchSuggestedDepartment = async (ticketId, ticketDescription) => {
+  const fetchRandomDepartment = async () => {
     try {
       const access = localStorage.getItem(ACCESS_TOKEN);
       const response = await api.post("/api/suggested-department/", 
@@ -27,7 +27,7 @@ const SuggestDepartmentButton = ({ setSuggestedDepartments, tickets }) => {
     }
   };
 
-  const assignSuggestedDepartments = async () => {
+  const assignRandomDepartments = async () => {
     const updatedDepartments = {};
     for (const ticket of tickets) {
       const response = await fetchSuggestedDepartment(ticket.id, ticket.description);

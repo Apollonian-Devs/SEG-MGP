@@ -398,9 +398,9 @@ class RandomDepartmentView(views.APIView):
             return Response(serializer.data)
         except Exception:
             return Response({"error": "An error has occurred"}, status=500)
-        
-    
-class SuggestDepartmentView(APIView):
+
+
+class GroupTicketsView(views.APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):

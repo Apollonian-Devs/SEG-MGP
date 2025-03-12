@@ -41,6 +41,10 @@ const TicketsCard = ({
 	// Sorting State
 	const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
+	useEffect(() => {
+		setShowingTickets(tickets);
+	}, [tickets]);
+
 	const toggleChange = async (type, ticket_id) => {
 		try {
 			const access = localStorage.getItem(ACCESS_TOKEN);
@@ -321,6 +325,8 @@ const TicketsCard = ({
 													departmentId={
 														user.is_superuser ? selectedDepartment?.id : null
 													}
+													fetchTickets={fetchTickets}
+													setShowingTickets={setShowingTickets}
 												/>
 											</div>
 										</td>

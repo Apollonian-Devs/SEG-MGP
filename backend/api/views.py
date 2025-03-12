@@ -88,6 +88,15 @@ class CreateUserView(generics.CreateAPIView):
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
 
+    def perform_create(self, serializer):
+        
+        user = serializer.save()
+        send_email(
+                user, 
+                f"Welcome {user.first_name} {user.last_name}", 
+                f"you made an account {user.username}"
+                )
+
 
 class CurrentUserView(views.APIView):
     """

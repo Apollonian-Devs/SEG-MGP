@@ -388,16 +388,77 @@ class DepartmentsListView(views.APIView):
             return Response({"error": "An error has occurred"}, status=500)        
 
 
-class RandomDepartmentView(views.APIView):
+class SuggestDepartmentView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        try:    
-            department = get_random_department()
-            serializer = DepartmentSerializer(department)
-            return Response(serializer.data)
-        except Exception:
-            return Response({"error": "An error has occurred"}, status=500)
+    def post(self, request):
+
+        ticket_id = request.data.get('ticket_id', None)
+        ticket_description = request.data.get('description', '')
+        
+        if not ticket_id or not ticket_description:
+            return Response({"error": "Ticket ID and description are required."}, status=400)
+        
+        try:
+            ticket = Ticket.objects.get(id=ticket_id)
+        except Ticket.DoesNotExist:
+            return Response({"error": "Ticket not found."}, status=404)
+        
+        departments = Department.objects.all()
+        department_names = [dept.name for dept in departments]
+        
+        if not department_names:
+            return Response({"error": "No departments found in the system."},status=500)
+
+        training_data_path = os.path.join(settings.BASE_DIR,'training_data.json')
+        try:
+            with open(training_data_path, 'r') as f:
+                training_data = json.load(f)
+        except FileNotFoundError:
+            return Response({"error": "Training data file not found."}, status=500)
+
+        training_descriptions = [item['description'] for item in training_data]
+        training_departments = [item['department'] for item in training_data]
+
+        vectorizer = TfidfVectorizer()
+        all_descriptions = training_descriptions + [ticket_description]
+        X = vectorizer.fit_transform(all_descriptions)
+
+        clusterer = hdbscan.HDBSCAN(min_cluster_size=2,min_samples=1, metric='euclidean')
+        cluster_labels = clusterer.fit_predict(X.toarray())
+
+        cluster_to_department = {}
+        for i, label in enumerate(cluster_labels[:-1]):
+            if label != -1:
+                cluster_to_department[label] = training_departments[i]
+
+        new_ticket_cluster = cluster_labels[-1]
+
+        if new_ticket_cluster == -1:
+            suggested_department = "Unknown"
+            confidence_score = 0.0
+        else:
+            suggested_department = cluster_to_department.get(new_ticket_cluster, "Unknown")
+            confidence_score = clusterer.probabilities_[-1]
+
+        try:
+            department = Department.objects.get(name=suggested_department)
+        except Department.DoesNotExist:
+            return Response({"error": "Predicted department does not exist."}, status=400)
+
+        ai_response = AIResponse(
+            ticket=ticket,
+            prompt_text=ticket_description,
+            response_text=suggested_department,
+            confidence=confidence_score * 100,
+            verification_status="Pending"
+        )
+        ai_response.save()
+
+        return Response({
+            "suggested_department": DepartmentSerializer(department).data,
+            "confidence_score": confidence_score
+        })
 
 
 class GroupTicketsView(views.APIView):

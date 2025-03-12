@@ -14,11 +14,11 @@ const SuggestTicketGroupingButton = ({ setSuggestedGrouping, tickets }) => {
                 headers: { Authorization: `Bearer ${access}` },
             });
 
-            const clusterData = response.data.clusters; // Now correctly a dictionary
+            const clusterData = response.data.clusters; 
 
             for (const ticket of tickets) {
                 if (clusterData[ticket.id] !== undefined) {
-                    groupedTickets[ticket.id] = clusterData[ticket.id]; // Now correctly mapped
+                    groupedTickets[ticket.id] = clusterData[ticket.id];
                 }
             }
 

@@ -4,6 +4,7 @@ import { jwtDecode } from 'jwt-decode';
 import api from '../api';
 import { REFRESH_TOKEN, ACCESS_TOKEN } from '../constants';
 import React, { useState, useEffect } from 'react';
+import { Loader } from 'lucide-react';
 
 function ProtectedRoute({ children }) {
 	const [isAuthorized, setIsAuthorized] = useState(null);
@@ -48,10 +49,15 @@ function ProtectedRoute({ children }) {
 	};
 
 	if (isAuthorized === null) {
-		return <div>Loading...</div>;
+		return (
+			<div className="flex items-center justify-center p-5 bg-white shadow-lg rounded-lg gap-5">
+				<Loader size={20} className="animate-spin" />
+				Loading...
+			</div>
+		);
 	}
 
-	return isAuthorized ? children : <Navigate to="/" />;
+	return isAuthorized ? children : <Navigate to="/login" />;
 }
 
 export default ProtectedRoute;

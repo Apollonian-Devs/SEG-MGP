@@ -52,7 +52,7 @@ const RedirectButton = ({
 
 	return (
 		<GenericButton
-			className="px-3 py-1 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700"
+			className="flex items-center justify-items-center px-2 py-1 gap-1 text-white hover:bg-customOrange-light transition-colors duration-500 bg-customOrange-dark rounded-md"
 			onClick={(e) => {
 				e.stopPropagation();
 				handleRedirect();

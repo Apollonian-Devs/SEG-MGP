@@ -3,32 +3,23 @@
 @tailwind utilities;
 
 @layer base {
-  h1 {
-    @apply text-4xl font-bold; /* 40px, bold */
-  }
+	h1 {
+		@apply text-4xl font-bold; /* 40px, bold */
+	}
 
-  h2 {
-    @apply text-3xl font-semibold; /* 32px, semi-bold */
-  }
+	h2 {
+		@apply text-3xl font-semibold; /* 32px, semi-bold */
+	}
 
-  h3 {
-    @apply text-2xl font-medium; /* 28px, medium */
-  }
+	h3 {
+		@apply text-2xl font-medium; /* 28px, medium */
+	}
 
-  h4 {
-    @apply text-xl font-normal; /* 24px, normal */
-  }
+	h4 {
+		@apply text-xl font-normal; /* 24px, normal */
+	}
 
-  p {
-    @apply text-base; /* Tailwind utility for standard text size */
-  }
-}
-
-body {
-  background: linear-gradient(to right, #ecbc76 50%, #fffef9 50%);
-  height: 100vh; /* Make the background cover the full viewport height */
-  margin: 0; /* Remove default margin for a clean layout */
-  display: flex;
-  justify-content: center; /* Horizontal centering */
-  align-items: center; /* Vertical centering */
+	p {
+		@apply text-base; /* Tailwind utility for standard text size */
+	}
 }

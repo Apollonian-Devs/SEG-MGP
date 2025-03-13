@@ -91,7 +91,7 @@ const TicketsCard = ({
 
 	// Filtering Functions
 	const applyFilters = () => {
-		if (tickets.length === 0) {
+		if (!tickets || tickets.length === 0) {
 			return;
 		}
 

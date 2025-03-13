@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ACCESS_TOKEN, REFRESH_TOKEN } from '../constants';
 import api from '../api';
@@ -36,6 +36,13 @@ const LoginForm = () => {
 			setLoading(false);
 		}
 	};
+
+	// Automatically redirect to the dashboard if the user is already logged in
+	useEffect(() => {
+		if (localStorage.getItem(ACCESS_TOKEN)) {
+			navigate('/dashboard');
+		}
+	}, []);
 
 	return (
 		<>

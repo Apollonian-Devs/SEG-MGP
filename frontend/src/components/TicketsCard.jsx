@@ -464,18 +464,19 @@ const TicketsCard = ({
 											</div>
 										</td>
 										
-										{/* Suggested Departments & Accept Button Column */}
-										<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-											<div className="flex item-center gap-2">
-												{suggestedDepartments[ticket.id]?.name ||
-													'No suggestion'}
-												<AcceptButton
-													ticketId={ticket.id}
-													selectedOfficer={selectedOfficer}
-													departmentId={suggestedDepartments[ticket.id]?.id}
-												/>
-											</div>
-										</td>
+										{/* Suggested Departments & Accept Button Column (Only for Superusers) */}
+										{user.is_superuser && (
+											<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+												<div className="flex items-center gap-2">
+													{suggestedDepartments[ticket.id]?.name || 'No suggestion'}
+													<AcceptButton
+														ticketId={ticket.id}
+														selectedOfficer={selectedOfficer}
+														departmentId={suggestedDepartments[ticket.id]?.id}
+													/>
+												</div>
+											</td>
+										)}
 									</>
 								)}
 

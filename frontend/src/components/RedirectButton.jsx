@@ -2,6 +2,7 @@ import React from 'react';
 import { ACCESS_TOKEN } from '../constants';
 import api from '../api';
 import GenericButton from './GenericButton';
+import { toast } from 'sonner';
 
 const RedirectButton = ({
 	ticketid,
@@ -9,7 +10,7 @@ const RedirectButton = ({
 	departmentId,
 	fetchTickets,
 }) => {
-	const handleRedirect = async () => {
+	const handleRedirect = () => {
 		// Check if either an officer or department is selected
 		if (!selectedOfficer && !departmentId) {
 			alert(
@@ -18,34 +19,35 @@ const RedirectButton = ({
 			return;
 		}
 
-		try {
-			const access = localStorage.getItem(ACCESS_TOKEN);
-			const response = await api.post(
-				'/api/redirect-ticket/',
-				{
-					ticket: ticketid,
-					to_profile: selectedOfficer
-						? selectedOfficer.is_superuser
-							? selectedOfficer.id
-							: selectedOfficer.user.id
-						: null,
-					department_id: departmentId,
+		const access = localStorage.getItem(ACCESS_TOKEN);
+		const redirectTicketPromise = api.post(
+			'/api/redirect-ticket/',
+			{
+				ticket: ticketid,
+				to_profile: selectedOfficer
+					? selectedOfficer.is_superuser
+						? selectedOfficer.id
+						: selectedOfficer.user.id
+					: null,
+				department_id: departmentId,
+			},
+			{
+				headers: {
+					Authorization: `Bearer ${access}`,
 				},
-				{
-					headers: {
-						Authorization: `Bearer ${access}`,
-					},
-				}
-			);
+			}
+		);
 
-			alert(`Ticket successfully redirected`);
-
-			console.log('Redirect response:', response.data);
-			fetchTickets();
-		} catch (error) {
-			console.error('Error redirecting ticket:', error);
-			alert('Failed to redirect ticket. Please try again.');
-		}
+		toast.promise(redirectTicketPromise, {
+			loading: 'Loading...',
+			success: () => {
+				fetchTickets(); // ✅ Now this runs only after success
+				return 'Ticket Redirected successfully';
+			},
+			error: (error) => {
+				return `Error redirecting ticket: ${error.message}`;
+			},
+		});
 	};
 
 	return (

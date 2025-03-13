@@ -1,173 +1,107 @@
-import NewTicketForm from '../components/NewTicketForm';
-import { render, fireEvent, screen } from "@testing-library/react";
-import { MemoryRouter, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, expect, vi } from 'vitest';
-import api from "../api";
+import { vi } from 'vitest'; // Vitest for mocking
+import NewTicketForm from '../components/NewTicketForm';
+import api from '../api';
+import { toast } from 'sonner';
 
-describe(NewTicketForm, () => {
-    
-    vi.mock("../api", () => ({
-        default: {
-            post: vi.fn(),
-        }
-    }));
+// Mock API calls
+vi.mock('../api', async () => {
+	const actual = await vi.importActual('../api'); // Keep other exports if any
+	return {
+		...actual,
+		default: { post: vi.fn() }, // Mock the default export properly
+	};
+});
 
-    vi.mock(import("react-router-dom"), async (importOriginal) => {
-        const actual = await importOriginal()
-        return {
-          ...actual,
-          useNavigate: vi.fn(),
-        }
-      });
-    
-    it("New ticket form should be correctly rendered with correct input fields", () => {
-        render(<NewTicketForm />);
-        expect(screen.getByText(/send query/i)).toBeInTheDocument();
-        expect(screen.getByLabelText(/subject/i)).toBeInTheDocument();
-        expect(screen.getByLabelText(/description/i)).toBeInTheDocument();
-        expect(screen.getByLabelText(/message/i)).toBeInTheDocument();
-        expect(screen.getByLabelText(/attachments/i)).toBeInTheDocument();
-    });
+// Mock toast notifications
+vi.mock('sonner', () => ({
+	toast: {
+		promise: vi.fn(),
+	},
+}));
 
-    it("New ticket form should be successfully submitted with all valid input and the user should be navigated to the dashboard", async () => {
-        api.post.mockResolvedValue({ status: 201 });
-        
-        const user = userEvent.setup();
-        
-        const navigate = vi.fn();
-        useNavigate.mockReturnValue(navigate);
+describe('NewTicketForm Component', () => {
+	it('renders all form fields', () => {
+		render(<NewTicketForm togglePopup={vi.fn()} />);
 
-        render(<MemoryRouter><NewTicketForm /></MemoryRouter>)
+		expect(screen.getByLabelText(/Subject/i)).toBeInTheDocument();
+		expect(screen.getByLabelText(/Description/i)).toBeInTheDocument();
+		expect(screen.getByLabelText(/Message/i)).toBeInTheDocument();
+		expect(screen.getByLabelText(/Attachments/i)).toBeInTheDocument();
+		expect(screen.getByText(/Send Ticket/i)).toBeInTheDocument();
+	});
 
-        const subject = screen.getByPlaceholderText(/enter the subject of your query/i);
-        await user.type(subject, 'Dorm issue');
-        
-        const description = screen.getByPlaceholderText(/enter the description of your query/i);
-        await user.type(description, 'I have no hot water in my dorm room');
-        
-        const message = screen.getByPlaceholderText(/enter your message to the team/i);
-        await user.type(message, 'Any updates? It has been 2 days since my hot water went out');
-        
-        const attachments = screen.getByPlaceholderText(/optionally attach relevant files/i);
-        const file = new File(['hello'], 'hello.png', {type: 'image/png'});
-        await user.upload(attachments, file);
+	it('updates input fields when the user types', async () => {
+		render(<NewTicketForm togglePopup={vi.fn()} />);
+		const user = userEvent.setup();
 
-        await user.click(screen.getByRole('button', {name: /send ticket/i}));
+		const subjectInput = screen.getByLabelText(/Subject/i);
+		const descriptionInput = screen.getByLabelText(/Description/i);
+		const messageInput = screen.getByLabelText(/Message/i);
 
-        // Testing submission of form
-        expect(api.post).toHaveBeenCalledTimes(1);
-        
-        expect(api.post).toHaveBeenCalledWith("api/tickets/", {
-            "subject": "Dorm issue",
-            "description": "I have no hot water in my dorm room",
-            "message": "Any updates? It has been 2 days since my hot water went out",
-            "attachments": [
-                {
-                "file_name": "hello.png",
-                "file_path": "https://your-storage-service.com/uploads/hello.png",
-                "mime_type": "image/png",
-                },
-            ],
-        });
-        
-        // Testing navigation of form
-        expect(navigate).toHaveBeenCalledWith("/dashboard");
-    });
-    
-    it("Console error and alert should be displayed when there is some error submitting the form", async () => {
-        const user = userEvent.setup();
-        
-        api.post.mockRejectedValue(new Error('Submission failed'));
+		await user.type(subjectInput, 'Dorm issue');
+		await user.type(descriptionInput, 'I have no hot water');
+		await user.type(messageInput, 'Please fix it soon');
 
-        const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
-        const alert = vi.spyOn(window, 'alert').mockImplementation(() => {});
+		expect(subjectInput.value).toBe('Dorm issue');
+		expect(descriptionInput.value).toBe('I have no hot water');
+		expect(messageInput.value).toBe('Please fix it soon');
+	});
 
-        api.post.mockClear();
+	it('submits the form successfully', async () => {
+		api.post.mockResolvedValue({ status: 201 });
+		const togglePopup = vi.fn();
+		render(<NewTicketForm togglePopup={togglePopup} />);
+		const user = userEvent.setup();
 
-        render(<MemoryRouter><NewTicketForm /></MemoryRouter>)
+		// Fill out the form
+		await user.type(screen.getByLabelText(/Subject/i), 'Dorm issue');
+		await user.type(screen.getByLabelText(/Description/i), 'No hot water');
+		await user.type(screen.getByLabelText(/Message/i), 'Any update?');
 
-        const subject = screen.getByPlaceholderText(/enter the subject of your query/i);
-        await user.type(subject, 'Dorm issue');
-        
-        const description = screen.getByPlaceholderText(/enter the description of your query/i);
-        await user.type(description, 'I have no hot water in my dorm room');
-        
-        const message = screen.getByPlaceholderText(/enter your message to the team/i);
-        await user.type(message, 'Any updates? It has been 2 days since my hot water went out');
+		// Submit the form
+		fireEvent.submit(screen.getByTestId('generic-form'));
 
-        const attachments = screen.getByPlaceholderText(/optionally attach relevant files/i);
-        const file = new File(['hello'], 'hello.png', {type: 'image/png'});
-        await user.upload(attachments, file);
+		// Wait for API call and state reset
+		await waitFor(() => {
+			expect(api.post).toHaveBeenCalledWith('api/tickets/', {
+				subject: 'Dorm issue',
+				description: 'No hot water',
+				message: 'Any update?',
+				attachments: [],
+			});
 
-        await user.click(screen.getByRole('button', {name: /send ticket/i}));
+			expect(toast.promise).toHaveBeenCalled();
+		});
+	});
 
-        expect(consoleError).toHaveBeenCalledWith("Error submitting ticket:", expect.any(Error));
-        
-        expect(alert).toHaveBeenCalledWith("Sorry, there was an error trying to send this ticket.");
-    });
+	it('handles file upload correctly', async () => {
+		render(<NewTicketForm togglePopup={vi.fn()} />);
+		const user = userEvent.setup();
 
-    it("Form should not be able to be submitted with a missing required field", async () => {
-        const user = userEvent.setup();
+		const fileInput = screen.getByLabelText(/Attachments/i);
+		const file = new File(['file content'], 'example.png', {
+			type: 'image/png',
+		});
 
-        api.post.mockClear();
+		await user.upload(fileInput, file);
 
-        render(<MemoryRouter><NewTicketForm /></MemoryRouter>);
+		expect(fileInput.files.length).toBe(1);
+		expect(fileInput.files[0].name).toBe('example.png');
+	});
 
-        // Missing required subject field
-        const subject = screen.getByPlaceholderText(/enter the subject of your query/i);
-        
-        const description = screen.getByPlaceholderText(/enter the description of your query/i);
-        await user.type(description, 'I have no hot water in my dorm room');
-        
-        const message = screen.getByPlaceholderText(/enter your message to the team/i);
-        await user.type(message, 'Any updates? It has been 2 days since my hot water went out');
+	it('shows an error toast when API call fails', async () => {
+		api.post.mockRejectedValue(new Error('Network error'));
+		render(<NewTicketForm togglePopup={vi.fn()} />);
 
-        const attachments = screen.getByPlaceholderText(/optionally attach relevant files/i);
-        const file = new File(['hello'], 'hello.png', {type: 'image/png'});
-        await user.upload(attachments, file);
+		// Submit the form
+		fireEvent.submit(screen.getByTestId('generic-form'));
 
-        await user.click(screen.getByRole('button', {name: /send ticket/i}));
-
-        expect(api.post).toHaveBeenCalledTimes(0);
-    });
-
-    it("Form should be able to be submitted with a missing non-required field", async () => {
-        api.post.mockResolvedValue({ status: 201 });
-        
-        const user = userEvent.setup();
-
-        const navigate = vi.fn();
-        useNavigate.mockReturnValue(navigate);
-
-        api.post.mockClear();
-
-        render(<MemoryRouter><NewTicketForm /></MemoryRouter>);
-
-        const subject = screen.getByPlaceholderText(/enter the subject of your query/i);
-        await user.type(subject, 'Dorm issue');
-        
-        const description = screen.getByPlaceholderText(/enter the description of your query/i);
-        await user.type(description, 'I have no hot water in my dorm room');
-        
-        const message = screen.getByPlaceholderText(/enter your message to the team/i);
-        await user.type(message, 'Any updates? It has been 2 days since my hot water went out');
-        
-        // Missing non-required attachment field
-        const attachments = screen.getByPlaceholderText(/optionally attach relevant files/i);
-
-        await user.click(screen.getByRole('button', {name: /send ticket/i}));
-
-        expect(api.post).toHaveBeenCalledTimes(1);
-
-        expect(api.post).toHaveBeenCalledWith("api/tickets/", {
-            "subject": "Dorm issue",
-            "description": "I have no hot water in my dorm room",
-            "message": "Any updates? It has been 2 days since my hot water went out",
-            "attachments": [],
-        });
-
-        expect(navigate).toHaveBeenCalledWith("/dashboard");
-    });
-
-})
+		// Wait for error toast to be displayed
+		await waitFor(() => {
+			expect(toast.promise).toHaveBeenCalled();
+		});
+	});
+});

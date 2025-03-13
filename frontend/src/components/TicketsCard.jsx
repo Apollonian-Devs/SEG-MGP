@@ -14,7 +14,7 @@ import StatusHistoryButton from './StatusHistoryButton';
 import SuggestTicketGroupingButton from './SuggestTicketGroupingButton';
 import TicketPathButton from './TicketPathButton';
 import ChangeDate from './ChangeDate';
-import { MessageSquareMore, RefreshCw, MoreVertical, View, Pen, CheckCircle, AlertCircle, Clock, XCircle  } from 'lucide-react';
+import { MessageSquareMore, RefreshCw, MoreVertical, View, Pen, CheckCircle, AlertCircle, Clock, XCircle, Sparkle  } from 'lucide-react';
 import FilterTicketsDropdown from './FilterTicketsDropdown';
 import GenericDropdown from './GenericDropdown';
 
@@ -212,26 +212,43 @@ const TicketsCard = ({
 								applyFilters={applyFilters}
 								clearFilters={clearFilters}
 							/>
-							{/* Suggest Department Button (Only for Superuser Staff) */}
-							{user.is_staff && user.is_superuser && (
-								<div className="flex justify-end">
+							{/* AI-powered suggestion dropdown */}
+							{(user.is_staff && (user.is_superuser || user.is_department_head)) && (
+							
+							<GenericDropdown
+								className="inline-flex items-center justify-center gap-2 text-white hover:bg-customOrange-light transition-colors duration-500 bg-customOrange-dark rounded-md px-3 py-1"
+								showArrow={false}
+								buttonName={
+									<div className="flex items-center gap-2">
+									  <Sparkle className="size-5" />
+									  <span>AI Suggestion</span>
+									</div>
+								  }
+							>
+								
+
+								{/* Suggest Department Button (Only for Superuser Staff) */}
+								{user.is_superuser && (
+								<div className="flex justify-end px-2 py-1">
 									<SuggestDepartmentButton
-										setSuggestedDepartments={setSuggestedDepartments}
-										tickets={tickets}
+									setSuggestedDepartments={setSuggestedDepartments}
+									tickets={tickets}
 									/>
 								</div>
+								)}
+
+								{/* Group Tickets Button (For department heads and admins (superusers)) */}
+								{(user.is_department_head || user.is_superuser) && (
+								<div className="flex justify-end px-2 py-1">
+									<SuggestTicketGroupingButton
+									setSuggestedGrouping={setSuggestedGrouping}
+									tickets={tickets}
+									/>
+								</div>
+								)}
+							</GenericDropdown>
 							)}
 
-							{/* Group Tickets Button (For department heads and admins (superusers) ) */}
-							{user.is_staff &&
-								(user.is_department_head || user.is_superuser) && (
-									<div className="flex justify-end">
-										<SuggestTicketGroupingButton
-											setSuggestedGrouping={setSuggestedGrouping}
-											tickets={tickets}
-										/>
-									</div>
-								)}
 						</div>
 					</div>
 

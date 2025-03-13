@@ -32,7 +32,7 @@ const SuggestTicketGroupingButton = ({ setSuggestedGrouping, tickets }) => {
 
 	return (
 		<GenericButton
-			className="flex items-center justify-items-center px-3 h-10 gap-1 text-white hover:bg-customOrange-light transition-colors duration-500 bg-customOrange-dark rounded-md"
+			className="px-3 py-1 text-sm font-semibold text-gray-800 bg-gray-200 rounded-md hover:bg-gray-300 inline-flex items-center"
 			onClick={(e) => {
 				e.stopPropagation();
 				assignRandomGrouping();

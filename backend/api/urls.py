@@ -19,7 +19,7 @@ urlpatterns = [
      path("ticket-path/<int:ticket_id>/", views.TicketPathView.as_view(), name="ticket-path"),    
     path("redirect-ticket/", views.TicketRedirectView.as_view(), name="redirect-ticket"),
     path('api/departments/', views.DepartmentsListView.as_view(), name='departments-list'), 
-    path('user-tickets-grouping/', views.GroupTicketsView.as_view(), name='user-tickets-grouping'), 
+    path('user-tickets-grouping/', views.GroupTicketsView.as_view(), name='user-tickets-grouping'),
     path("suggested-department/", views.SuggestDepartmentView.as_view(), name= "suggest-deparment")
 
 ]

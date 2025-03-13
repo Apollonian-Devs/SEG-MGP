@@ -7,6 +7,7 @@ import GenericDropdown from '../components/GenericDropdown';
 import NotificationsTab from '../components/Notification';
 import TicketDetails from '../components/TicketDetails';
 import Popup from '../components/Popup';
+import { CircleUserRound } from 'lucide-react';
 
 const Dashboard = () => {
 	const [current_user, setCurrent_user] = useState(null);
@@ -105,8 +106,13 @@ const Dashboard = () => {
 				</div>
 				<div className="flex items-stretch justify-between w-full mb-5">
 					<GenericDropdown
-						buttonName={current_user.username}
-						className="flex justify-center items-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-2xl font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50"
+						buttonName={
+							<div className="flex items-center gap-x-1.5">
+								<CircleUserRound size={48} />
+								<span>{current_user.username}</span>
+							</div>
+						}
+						className="flex justify-center items-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-2xl h-fit w-fit font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50"
 					>
 						<a
 							href="/logout"

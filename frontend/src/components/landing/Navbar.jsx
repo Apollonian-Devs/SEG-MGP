@@ -11,13 +11,13 @@ const Navbar = () => {
 				</div>
 				<div className="flex justify-center space-x-12 items-center">
 					<a
-						href="#"
+						href="/login"
 						className="py-2 px-3 border-2 border-gray-900 rounded-md bg-customOrange-light font-medium hover:bg-customOrange-dark/80  transition-colors duration-500"
 					>
 						Log In
 					</a>
 					<a
-						href="#"
+						href="/register"
 						className="py-2 px-3 border-2 border-gray-900 rounded-md bg-customGray-light font-medium hover:bg-customGray-dark/80 transition-colors duration-500"
 					>
 						Create an account

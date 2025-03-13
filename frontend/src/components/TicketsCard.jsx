@@ -47,6 +47,14 @@ const TicketsCard = ({
 	// Sorting State
 	const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
+	// Icon mapping
+	const statusIconMapping = {
+		'Open': <Clock className="size-4 text-blue-500" />,
+		'In Progress': <AlertCircle className="size-4 text-yellow-500" />,
+		'Closed': <CheckCircle className="size-4 text-green-500" />,
+		'Awaiting Student': <XCircle className="size-4 text-red-500" />,
+	  };
+
 	useEffect(() => {
 		applyFilters(); // setShowingTickets is included in applyFilters
 	}, [tickets]);
@@ -283,16 +291,23 @@ const TicketsCard = ({
 							<tr key={ticket.id} className="hover:bg-gray-100 cursor-pointer">
 								{/* Ticket Information */}
 								{['subject', 'status', 'priority'].map((key) => (
-									<td
-										key={key}
-										className="px-6 py-4 whitespace-nowrap text-sm text-gray-800"
-										onClick={() => {
-											setSelectedTicket(ticket);
-											openPopup('viewTicket');
-										}}
-									>
-										{ticket[key] || (key === 'priority' ? 'Not Set' : '')}
-									</td>
+								<td
+									key={key}
+									className="px-6 py-4 whitespace-nowrap text-sm text-gray-800"
+									onClick={() => {
+									setSelectedTicket(ticket);
+									openPopup('viewTicket');
+									}}
+								>
+									{key === 'status' ? (
+									<div className="flex items-center gap-2">
+										{statusIconMapping[ticket[key]]}
+										{ticket[key] || 'Not Set'}
+									</div>
+									) : (
+									ticket[key] || (key === 'priority' ? 'Not Set' : '')
+									)}
+								</td>
 								))}
 
 								{/* Chat Button */}

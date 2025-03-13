@@ -348,8 +348,8 @@ const TicketsCard = ({
 
 										{/* More Actions Dropdown */}
 										<GenericDropdown
-											buttonName={<MoreVertical className="size-5 text-gray-400" />}
-											className="flex items-center justify-center px-2 py-1 gap-1 text-gray-800 hover:text-gray-900 transition-colors duration-200"
+											buttonName={<MoreVertical className="size-5 text-gray-400 hover:text-gray-600 transition-colors duration-200" />}
+											className="flex items-center justify-center px-1 py-1 gap-1"
 											showArrow={false}
 										>
 											<div className="flex flex-col space-y-2 p-2">

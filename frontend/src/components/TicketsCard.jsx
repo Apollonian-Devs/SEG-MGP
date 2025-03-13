@@ -14,7 +14,7 @@ import StatusHistoryButton from './StatusHistoryButton';
 import SuggestTicketGroupingButton from './SuggestTicketGroupingButton';
 import TicketPathButton from './TicketPathButton';
 import ChangeDate from './ChangeDate';
-import { MessageSquareMore, RefreshCw, MoreVertical, View, Pen, CheckCircle, AlertCircle, Clock, XCircle, Sparkle  } from 'lucide-react';
+import { MessageSquareMore, RefreshCw, MoreVertical, View, Pen, CheckCircle, AlertCircle, Clock, XCircle, Sparkles  } from 'lucide-react';
 import FilterTicketsDropdown from './FilterTicketsDropdown';
 import GenericDropdown from './GenericDropdown';
 
@@ -35,7 +35,7 @@ const TicketsCard = ({
 	const [isChangeDateOpen, setChangeDateOpen] = useState(null);
 	const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 	const [isPathOpen, setIsPathOpen] = useState(false);
-	const [selectedDepartment, setSelectedDepartment] = useState(null);
+	const [selectedDepartments, setSelectedDepartments] = useState({});
 	const [suggestedDepartments, setSuggestedDepartments] = useState({});
 	const [suggestedGrouping, setSuggestedGrouping] = useState({});
 
@@ -220,7 +220,7 @@ const TicketsCard = ({
 								showArrow={false}
 								buttonName={
 									<div className="flex items-center gap-2">
-									  <Sparkle className="size-5" />
+									  <Sparkles className="size-5" />
 									  <span>AI Suggestion</span>
 									</div>
 								  }
@@ -443,7 +443,12 @@ const TicketsCard = ({
 											<div className="flex items-center gap-2">
 												{user.is_superuser ? (
 													<DepartmentsDropdown
-														setSelectedDepartment={setSelectedDepartment}
+														setSelectedDepartment={(dept) =>
+															setSelectedDepartments((prev) => ({
+																...prev,
+																[ticket.id]: dept,
+															}))
+														}
 													/>
 												) : (
 													<OfficersDropdown
@@ -455,9 +460,7 @@ const TicketsCard = ({
 												<RedirectButton
 													ticketid={ticket.id}
 													selectedOfficer={selectedOfficer}
-													departmentId={
-														user.is_superuser ? selectedDepartment?.id : null
-													}
+													departmentId={user.is_superuser ? selectedDepartments[ticket.id]?.id : null}
 													fetchTickets={fetchTickets}
 													setShowingTickets={setShowingTickets}
 												/>
@@ -469,10 +472,12 @@ const TicketsCard = ({
 											<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
 												<div className="flex items-center gap-2">
 													{suggestedDepartments[ticket.id]?.name || 'No suggestion'}
-													<AcceptButton
-														ticketId={ticket.id}
+													<RedirectButton
+														ticketid={ticket.id}
 														selectedOfficer={selectedOfficer}
-														departmentId={suggestedDepartments[ticket.id]?.id}
+														departmentId={user.is_superuser ? suggestedDepartments[ticket.id]?.id : null}
+														fetchTickets={fetchTickets}
+														setShowingTickets={setShowingTickets}
 													/>
 												</div>
 											</td>

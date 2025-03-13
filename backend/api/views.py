@@ -394,8 +394,10 @@ class SuggestDepartmentView(APIView):
     def post(self, request):
 
         ticket_id = request.data.get('ticket_id', None)
+        print(ticket_id)
         ticket_description = request.data.get('description', '')
         
+        print(ticket_description)
         if not ticket_id or not ticket_description:
             return Response({"error": "Ticket ID and description are required."}, status=400)
         
@@ -434,17 +436,31 @@ class SuggestDepartmentView(APIView):
 
         new_ticket_cluster = cluster_labels[-1]
 
+    
+        
         if new_ticket_cluster == -1:
             suggested_department = "Unknown"
             confidence_score = 0.0
+            
+            response = Response({
+                "suggested_department": "Unknown",
+                "confidence_score": confidence_score
+            })
+
         else:
             suggested_department = cluster_to_department.get(new_ticket_cluster, "Unknown")
             confidence_score = clusterer.probabilities_[-1]
 
-        try:
-            department = Department.objects.get(name=suggested_department)
-        except Department.DoesNotExist:
-            return Response({"error": "Predicted department does not exist."}, status=400)
+            response = Response({
+                "suggested_department": DepartmentSerializer(department).data,
+                "confidence_score": confidence_score
+            })
+
+            try:
+                department = Department.objects.get(name=suggested_department)
+            except Department.DoesNotExist:
+                return Response({"error": "Predicted department does not exist."}, status=400)
+            
 
         ai_response = AIResponse(
             ticket=ticket,
@@ -455,10 +471,9 @@ class SuggestDepartmentView(APIView):
         )
         ai_response.save()
 
-        return Response({
-            "suggested_department": DepartmentSerializer(department).data,
-            "confidence_score": confidence_score
-        })
+        print(response)
+
+        return response
 
 
 
@@ -469,10 +484,15 @@ class GroupTicketsView(views.APIView):
         try:
             user = request.user
             clusters = get_tags(user)
-            return Response({"clusters": clusters})  # Now returns a dictionary
+
+            if "error" in clusters:
+                print(f"❌ API Error: {clusters['error']}")
+                return Response({"error": clusters["error"]}, status=400)  # Return 400 Bad Request
+
+            return Response({"clusters": clusters}, status=200)  # Return normal response
+
         except PermissionDenied:
             return Response({"error": "Permission denied"}, status=403)
         except Exception as e:
+            print(f"❌ API Exception: {e}")
             return Response({"error": f"An error has occurred: {str(e)}"}, status=500)
-        
-        

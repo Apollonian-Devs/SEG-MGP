@@ -22,29 +22,27 @@ sentences = [
 
 """
 def MessageGroupAI(sentences):
+    if len(sentences) < 2:
+        raise ValueError(f"Clustering error: Invalid input: Need at least 2 sentences, got {len(sentences)}.")
+
     model = SentenceTransformer('all-MiniLM-L6-v2')
     embeddings = model.encode(sentences)
     
     # Compute cosine distances and convert to float64
     distance_matrix = cosine_distances(embeddings).astype(np.float64)
-    
-    # Initialize HDBSCAN with parameters
+
     clusterer = hdbscan.HDBSCAN(
-        min_cluster_size=2,
-        min_samples=1, 
+        min_cluster_size=2,  
+        min_samples=1,       
         metric='precomputed',
         cluster_selection_method='eom',
-        cluster_selection_epsilon=0.1  
+        cluster_selection_epsilon=0.001 
     )
-    
-    clusters = clusterer.fit_predict(distance_matrix)
-    
 
+    clusters = clusterer.fit_predict(distance_matrix)
     probabilities = clusterer.probabilities_
-    
-    # Print sentence clusters with their confidence levels
-    for i, sentence in enumerate(sentences):
-        print(f"Sentence: '{sentence}' => Cluster: {clusters[i]} (Confidence: {probabilities[i]:.2f})")
-    
-    print(clusters, probabilities)
+
+    print(f"🔍 DEBUG: Clusters assigned: {clusters}")
+    print(f"🔍 DEBUG: Probabilities: {probabilities}")
+
     return clusters, probabilities

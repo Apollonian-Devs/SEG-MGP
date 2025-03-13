@@ -48,7 +48,7 @@ const GenericDropdown = ({
 			{/* Dropdown Menu */}
 			{isOpen && (
 				<div
-					className={`absolute flex flex-col top-full left-0 z-10 mt-1 w-fit min-w-56 rounded-md bg-slate-100 ring-1 shadow-lg ring-black/5 max-h-${maxHeight} overflow-y-auto`}
+					className={`absolute flex flex-col top-full left-0 z-10 mt-1 w-fit min-w-40 rounded-md bg-slate-100 ring-1 shadow-lg ring-black/5 max-h-${maxHeight} overflow-y-auto`}
 					role="menu"
 				>
 					{children}

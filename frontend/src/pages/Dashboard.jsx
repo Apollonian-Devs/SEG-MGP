@@ -100,28 +100,26 @@ const Dashboard = () => {
 	}
 	return (
 		<div data-testid="dashboard-container">
-			<div className="flex justify-space-around items-center gap-x-5">
-				<div className="flex justify-center items-center">
-					{!current_user.is_staff && <NewTicketButton />}
-				</div>
-				<div className="flex items-stretch justify-between w-full mb-5">
-					<GenericDropdown
-						buttonName={
-							<div className="flex items-center gap-x-1.5">
-								<CircleUserRound size={48} />
-								<span>{current_user.username}</span>
-							</div>
-						}
-						className="flex justify-center items-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-2xl h-fit w-fit font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50"
+			<div className="flex justify-between items-center gap-x-5 mb-5">
+				<GenericDropdown
+					buttonName={
+						<div className="flex items-center gap-x-1.5">
+							<CircleUserRound size={30} />
+							<span>{current_user.username}</span>
+						</div>
+					}
+					className="flex items-center justify-items-center px-5 h-12 gap-1 text-black hover:bg-slate-200 transition-colors duration-500 bg-white rounded-full shadow-lg text-lg font-semibold"
+				>
+					<a
+						href="/logout"
+						className="block px-4 py-2 text-sm text-gray-700 hover:bg-slate-200 transitions-colors duration-500"
 					>
-						<a
-							href="/logout"
-							className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-						>
-							Logout
-						</a>
-					</GenericDropdown>
+						Logout
+					</a>
+				</GenericDropdown>
 
+				<div className="flex justify-between items-center gap-x-5">
+					{!current_user.is_staff && <NewTicketButton />}
 					<NotificationsTab user={current_user} />
 				</div>
 			</div>

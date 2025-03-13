@@ -14,8 +14,9 @@ import StatusHistoryButton from './StatusHistoryButton';
 import SuggestTicketGroupingButton from './SuggestTicketGroupingButton';
 import TicketPathButton from './TicketPathButton';
 import ChangeDate from './ChangeDate';
-import { MessageSquareMore, RefreshCw } from 'lucide-react';
+import { MessageSquareMore, RefreshCw, MoreVertical, View, Pen, CheckCircle, AlertCircle, Clock, XCircle  } from 'lucide-react';
 import FilterTicketsDropdown from './FilterTicketsDropdown';
+import GenericDropdown from './GenericDropdown';
 
 const TicketsCard = ({
 	user,
@@ -257,26 +258,11 @@ const TicketsCard = ({
 										<th className="px-6 py-3 text-end text-xs font-medium text-gray-500">
 											<p>Redirect</p>
 										</th>
-										<th className="px-6 py-3 text-end text-xs font-medium text-gray-500">
-											<p>Change Due Date</p>
-										</th>
 									</>
 								)}
 
 								{user.is_superuser && (
 									<>
-										<th
-											className="px-6 py-3 text-end text-xs font-medium text-gray-500"
-											data-testid="status-history-header"
-										>
-											<p>Status History</p>
-										</th>
-										<th
-											className="px-6 py-3 text-end text-xs font-medium text-gray-500"
-											data-testid="ticket-path-header"
-										>
-											<p>Ticket Path</p>
-										</th>
 										<th className="px-6 py-3 text-end text-xs font-medium text-gray-500">
 											<p>Suggested Departments</p>
 										</th>
@@ -322,27 +308,86 @@ const TicketsCard = ({
 										<MessageSquareMore className="size-4" />
 										Chat
 									</GenericButton>
+									{/* Only show for staff */}
 									{user.is_staff && (
 										<>
+										{/* Status Button */}
+										<GenericButton
+											dataTestId="toggle-status"
+											className="flex items-center justify-items-center px-2 py-1 gap-1 text-white hover:bg-customOrange-light transition-colors duration-500 bg-customOrange-dark rounded-md"
+											onClick={() => toggleChange('status', ticket.id)}
+										>
+											<RefreshCw className="size-4" />
+											Status
+										</GenericButton>
+
+										{/* Priority Button */}
+										<GenericButton
+											dataTestId="toggle-priority"
+											className="flex items-center justify-items-center px-2 py-1 gap-1 text-white hover:bg-customOrange-light transition-colors duration-500 bg-customOrange-dark rounded-md"
+											onClick={() => toggleChange('priority', ticket.id)}
+										>
+											<RefreshCw className="size-4" />
+											Priority
+										</GenericButton>
+
+										{/* More Actions Dropdown */}
+										<GenericDropdown
+											buttonName={<MoreVertical className="size-5 text-gray-400" />}
+											className="flex items-center justify-center px-2 py-1 gap-1 text-gray-800 hover:text-gray-900 transition-colors duration-200"
+											showArrow={false}
+										>
+											<div className="flex flex-col space-y-2 p-2">
+											{/* Change Due Date */}
 											<GenericButton
-												dataTestId="toggle-status"
-												className="flex items-center justify-items-center px-2 py-1 gap-1 text-white hover:bg-customOrange-light transition-colors duration-500 bg-customOrange-dark rounded-md"
-												onClick={() => toggleChange('status', ticket.id)}
+												className="px-3 py-1 text-sm font-semibold text-gray-800 bg-gray-200 rounded-md hover:bg-gray-300 inline-flex items-center"
+												onClick={(e) => {
+												e.stopPropagation();
+												setSelectedTicket(ticket);
+												toggleChangeDate();
+												}}
 											>
-												<RefreshCw className="size-4" />
-												Status
+												<Pen className="mr-2 size-4" />
+												Change Due Date
 											</GenericButton>
-											<GenericButton
-												dataTestId="toggle-priority"
-												className="flex items-center justify-items-center px-2 py-1 gap-1 text-white hover:bg-customOrange-light transition-colors duration-500 bg-customOrange-dark rounded-md"
-												onClick={() => toggleChange('priority', ticket.id)}
-											>
-												<RefreshCw className="size-4" />
-												Priority
-											</GenericButton>
+
+											{/* Superuser-Specific Actions */}
+											{user.is_superuser && (
+												<>
+												{/* Status History Button */}
+												<GenericButton
+													dataTestId="status-history-button"
+													className="px-3 py-1 text-sm font-semibold text-gray-800 bg-gray-200 rounded-md hover:bg-gray-300 inline-flex items-center"
+													onClick={(e) => {
+													e.stopPropagation();
+													setSelectedTicket(ticket);
+													setIsHistoryOpen(true);
+													}}
+												>
+													<View className="mr-2 size-4" />
+													Status History
+												</GenericButton>
+
+												{/* Ticket Path Button */}
+												<GenericButton
+													dataTestId="ticket-path-button"
+													className="px-3 py-1 text-sm font-semibold text-gray-800 bg-gray-200 rounded-md hover:bg-gray-300 inline-flex items-center"
+													onClick={(e) => {
+													e.stopPropagation();
+													setSelectedTicket(ticket);
+													setIsPathOpen(true);
+													}}
+												>
+													<View className="mr-2 size-4" />
+													Ticket Path
+												</GenericButton>
+												</>
+											)}
+											</div>
+										</GenericDropdown>
 										</>
 									)}
-								</td>
+									</td>
 
 								{/* Staff-Specific Actions */}
 								{user.is_staff && (
@@ -372,56 +417,7 @@ const TicketsCard = ({
 												/>
 											</div>
 										</td>
-
-										{/* Change Due Date */}
-										<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-											<GenericButton
-												className="px-3 py-1 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700"
-												onClick={(e) => {
-													e.stopPropagation();
-													setSelectedTicket(ticket);
-													toggleChangeDate();
-												}}
-											>
-												Select Date
-											</GenericButton>
-										</td>
-									</>
-								)}
-
-								{/* Superuser-Specific Actions */}
-								{user.is_superuser && (
-									<>
-										{/* Status History Column */}
-										<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-											<GenericButton
-												dataTestId="status-history-button"
-												className="px-3 py-1 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700"
-												onClick={(e) => {
-													e.stopPropagation();
-													setSelectedTicket(ticket);
-													setIsHistoryOpen(true);
-												}}
-											>
-												Status History
-											</GenericButton>
-										</td>
-
-										{/* Ticket Path Column */}
-										<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-											<GenericButton
-												dataTestId="ticket-path-button"
-												className="px-3 py-1 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700"
-												onClick={(e) => {
-													e.stopPropagation();
-													setSelectedTicket(ticket);
-													setIsPathOpen(true);
-												}}
-											>
-												Ticket Path
-											</GenericButton>
-										</td>
-
+										
 										{/* Suggested Departments & Accept Button Column */}
 										<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
 											<div className="flex item-center gap-2">

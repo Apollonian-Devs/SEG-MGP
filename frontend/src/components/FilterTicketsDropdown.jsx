@@ -38,7 +38,7 @@ const FilterTicketsDropdown = ({
 				<div className="space-y-3 p-3">
 					<div className="space-y-2">
 						<p className="w-full text-center font-medium text-lg">Status</p>
-						<ul className="grid grid-cols-2 gap-2 space-x-3 w-full items-center justify-center">
+						<ul className="flex gap-5 w-full items-center justify-center">
 							<li>
 								<GenericInput
 									label="Open"

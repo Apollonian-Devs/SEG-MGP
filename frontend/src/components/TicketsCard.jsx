@@ -321,6 +321,20 @@ const TicketsCard = ({
 										{statusIconMapping[ticket[key]]}
 										{ticket[key] || 'Not Set'}
 									</div>
+									) : key === 'priority' ? (
+									<div
+										className={`px-3 py-1 rounded-full text-center ${
+										ticket[key] === 'High'
+											? 'bg-red-500 text-white'
+											: ticket[key] === 'Medium'
+											? 'bg-yellow-500 text-white'
+											: ticket[key] === 'Low'
+											? 'bg-green-500 text-white'
+											: 'bg-gray-300 text-black'
+										}`}
+									>
+										{ticket[key] || 'Not Set'}
+									</div>
 									) : (
 									ticket[key] || (key === 'priority' ? 'Not Set' : '')
 									)}

@@ -43,8 +43,9 @@ const AcceptButton = ({ ticketId, selectedOfficer, departmentId }) => {
 
     return (
         <GenericButton
-            className={`px-3 py-1 text-sm font-semibold rounded-md 
-            ${isDisabled ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
+            className={`flex items-center justify-center px-2 py-1 gap-1 rounded-md transition-colors duration-500
+                ${isDisabled ? "bg-gray-400 text-gray-600 cursor-not-allowed" : "bg-customOrange-dark text-white hover:bg-customOrange-light"}
+            `}
             onClick={(e) => { 
             e.stopPropagation();
             handleRedirect();

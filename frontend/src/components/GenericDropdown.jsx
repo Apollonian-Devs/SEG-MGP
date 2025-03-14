@@ -7,6 +7,7 @@ const GenericDropdown = ({
 	className,
 	children,
 	maxHeight = '60',
+	showArrow = true,
 }) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const dropdownRef = useRef(null);
@@ -39,10 +40,12 @@ const GenericDropdown = ({
 				className={className}
 			>
 				{buttonName}
+				{showArrow && (
 				<LucideChevronDown
 					size={16}
 					className={`transition-transform ${isOpen ? 'rotate-180' : 'rotate-0'}`}
 				/>
+			)}
 			</GenericButton>
 
 			{/* Dropdown Menu */}

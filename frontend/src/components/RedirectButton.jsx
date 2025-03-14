@@ -11,11 +11,7 @@ const RedirectButton = ({
 	fetchTickets,
 }) => {
 	const handleRedirect = () => {
-		// Check if either an officer or department is selected
 		if (!selectedOfficer && !departmentId) {
-			alert(
-				'Please select either an officer or a department to redirect the ticket.'
-			);
 			return;
 		}
 
@@ -41,7 +37,7 @@ const RedirectButton = ({
 		toast.promise(redirectTicketPromise, {
 			loading: 'Loading...',
 			success: () => {
-				fetchTickets(); // ✅ Now this runs only after success
+				fetchTickets();
 				return 'Ticket Redirected successfully';
 			},
 			error: (error) => {
@@ -50,17 +46,22 @@ const RedirectButton = ({
 		});
 	};
 
+	const isDisabled = !selectedOfficer && !departmentId;
+
 	return (
-		<GenericButton
-			className="px-3 py-1 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700"
-			onClick={(e) => {
-				e.stopPropagation();
-				handleRedirect();
-			}}
-		>
-			Redirect
-		</GenericButton>
-	);
+        <GenericButton
+            className={`flex items-center justify-center px-2 py-1 gap-1 rounded-md transition-colors duration-500
+                ${isDisabled ? "bg-gray-400 text-gray-600 cursor-not-allowed" : "bg-customOrange-dark text-white hover:bg-customOrange-light"}
+            `}
+            onClick={(e) => { 
+            e.stopPropagation();
+            handleRedirect();
+            }}
+            disabled={isDisabled}
+        >
+            Redirect
+        </GenericButton>
+    );
 };
 
 export default RedirectButton;

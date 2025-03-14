@@ -464,6 +464,7 @@ const TicketsCard = ({
 													ticketid={ticket.id}
 													selectedOfficer={selectedOfficer}
 													departmentId={user.is_superuser ? selectedDepartments[ticket.id]?.id : null}
+													fetchTickets={fetchTickets}
 													setTickets={setTickets}
 													setShowingTickets={setShowingTickets}
 												/>

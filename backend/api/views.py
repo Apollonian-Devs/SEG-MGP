@@ -161,8 +161,8 @@ class TicketSendResponseView(views.APIView):
                 serializer = TicketMessageSerializer(comment)
                 return Response(serializer.data, status=201)
 
-            except Ticket.DoesNotExist:
-                return Response({"error": "Ticket not found"}, status=404)
+            except ValidationError as e:
+                return Response({"error": str(e)}, status=404)
             except ValueError as e:
                 return Response({"error": str(e)}, status=400)
             except Exception:

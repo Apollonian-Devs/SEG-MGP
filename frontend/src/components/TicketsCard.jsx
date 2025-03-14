@@ -38,6 +38,7 @@ const TicketsCard = ({
 	const [selectedDepartments, setSelectedDepartments] = useState({});
 	const [suggestedDepartments, setSuggestedDepartments] = useState({});
 	const [suggestedGrouping, setSuggestedGrouping] = useState({});
+	const [redirectedIds, setRedirectedIds] = useState(new Set());
 
 	// Filtering State
 	const [priority, setPriority] = useState('');
@@ -56,7 +57,8 @@ const TicketsCard = ({
 	  };
 
 	useEffect(() => {
-		applyFilters(); // setShowingTickets is included in applyFilters
+		applyFilters(); 
+		setRedirectedIds(new Set());
 	}, [tickets]);
 
 	const toggleChange = async (type, ticket_id) => {
@@ -101,10 +103,11 @@ const TicketsCard = ({
 	// Filtering Functions
 	const applyFilters = () => {
 		if (!tickets || tickets.length === 0) {
+			setShowingTickets([])
 			return;
 		}
 
-		const filteredTickets = tickets.filter((ticket) => {
+		const filteredTickets = tickets.filter((ticket) => !redirectedIds.has(ticket.id)).filter((ticket) => {
 			if (priority && ticket.priority !== priority) {
 				return false;
 			}
@@ -461,7 +464,7 @@ const TicketsCard = ({
 													ticketid={ticket.id}
 													selectedOfficer={selectedOfficer}
 													departmentId={user.is_superuser ? selectedDepartments[ticket.id]?.id : null}
-													fetchTickets={fetchTickets}
+													setTickets={setTickets}
 													setShowingTickets={setShowingTickets}
 												/>
 											</div>

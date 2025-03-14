@@ -3,6 +3,7 @@ import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import Register from './pages/Register';
 import Login from './pages/Login';
+import HelpQA from './pages/HelpQ&A';
 import NotFound from './pages/NotFound';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Toaster } from 'sonner';
@@ -36,6 +37,7 @@ function App() {
 					<Route path="/login" element={<Login />} />
 					<Route path="/register" element={<RegisterAndLogout />} />
 					<Route path="/logout" element={<Logout />} />
+					<Route path="/helpfaq" element={<HelpQA />} />
 					<Route path="*" element={<NotFound />} />
 				</Routes>
 			</Layout>

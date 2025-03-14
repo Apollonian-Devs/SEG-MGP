@@ -2,6 +2,7 @@ import React from "react";
 import { ACCESS_TOKEN } from "../constants";
 import api from "../api";
 import GenericButton from "./GenericButton";
+import { playSound } from "../utils/SoundUtils";
 
 const AcceptButton = ({ ticketId, selectedOfficer, departmentId }) => {
     const handleRedirect = async () => {
@@ -48,6 +49,7 @@ const AcceptButton = ({ ticketId, selectedOfficer, departmentId }) => {
             `}
             onClick={(e) => { 
             e.stopPropagation();
+            playSound();
             handleRedirect();
             }}
             disabled={isDisabled}

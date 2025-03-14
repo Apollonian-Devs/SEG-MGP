@@ -3,6 +3,7 @@ import { Plus } from 'lucide-react';
 import NewTicketForm from './NewTicketForm';
 import GenericButton from './GenericButton';
 import Popup from './Popup';
+import { playSound } from "../utils/SoundUtils";
 
 const NewTicketButton = () => {
 	const [isPopupOpen, setPopupOpen] = useState(false);
@@ -17,7 +18,10 @@ const NewTicketButton = () => {
 			<GenericButton
 				type="button"
 				className="flex items-center justify-items-center px-3 h-12 gap-1 text-white hover:bg-customOrange-light transition-colors duration-500 bg-customOrange-dark rounded-full shadow-lg"
-				onClick={togglePopup}
+				onClick={() => {
+					playSound();
+					togglePopup();
+				}}
 			>
 				<Plus /> New
 			</GenericButton>

@@ -44,8 +44,6 @@ const RedirectButton = ({
         		setShowingTickets(prev => prev.filter(t => t.id !== ticketid));
         
         		await fetchTickets();
-<<<<<<< HEAD
-=======
 				console.log("Ticket was redirected to:", selectedOfficer || departmentId);
 >>>>>>> 2d86397f6dfe156fe8cbb052e10b078dfbcf42f6
 				return 'Ticket Redirected successfully';

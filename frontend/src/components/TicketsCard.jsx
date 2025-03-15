@@ -214,6 +214,7 @@ const TicketsCard = ({
 								setIsOverdue={setIsOverdue}
 								applyFilters={applyFilters}
 								clearFilters={clearFilters}
+								dataTestId="filter-tickets-dropdown"
 							/>
 							{/* AI-powered suggestion dropdown */}
 							{(user.is_staff && (user.is_superuser || user.is_department_head)) && (
@@ -385,6 +386,7 @@ const TicketsCard = ({
 											buttonName={<MoreVertical className="size-5 text-gray-400 hover:text-gray-600 transition-colors duration-200" />}
 											className="flex items-center justify-center px-1 py-1 gap-1"
 											showArrow={false}
+											dataTestId="more-actions-dropdown"
 										>
 											<div className="flex flex-col space-y-2 p-2">
 											{/* Change Due Date */}
@@ -482,6 +484,7 @@ const TicketsCard = ({
 														departmentId={user.is_superuser ? suggestedDepartments[ticket.id]?.id : null}
 														fetchTickets={fetchTickets}
 														setShowingTickets={setShowingTickets}
+														dataTestId="suggested-redirect-button"
 													/>
 												</div>
 											</td>

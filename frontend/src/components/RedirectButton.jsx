@@ -10,7 +10,8 @@ const RedirectButton = ({
 	departmentId,
 	fetchTickets,
 	setShowingTickets,
-	setTickets
+	setTickets,
+	dataTestId,
 }) => {
 	const handleRedirect = () => {
 		if (!selectedOfficer && !departmentId) {
@@ -63,6 +64,7 @@ const RedirectButton = ({
             handleRedirect();
             }}
             disabled={isDisabled}
+			dataTestId={dataTestId}
         >
             Redirect
         </GenericButton>

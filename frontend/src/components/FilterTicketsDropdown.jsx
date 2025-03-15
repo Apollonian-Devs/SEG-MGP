@@ -13,6 +13,7 @@ const FilterTicketsDropdown = ({
 	setIsOverdue,
 	applyFilters,
 	clearFilters,
+	dataTestId,
 }) => {
 	const [isFilterActive, setIsFilterActive] = useState(false);
 
@@ -33,6 +34,7 @@ const FilterTicketsDropdown = ({
 			<GenericDropdown
 				buttonName={<Filter size={16} />}
 				maxHeight={'none'}
+				dataTestId={dataTestId}
 				className="flex items-center justify-items-center h-10 px-3 w-fit gap-1 text-white font-medium hover:bg-customOrange-light transition-colors duration-500 bg-customOrange-dark rounded-md"
 			>
 				<div className="space-y-3 p-3">

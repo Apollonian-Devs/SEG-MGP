@@ -8,6 +8,7 @@ const GenericDropdown = ({
 	children,
 	maxHeight = '60',
 	showArrow = true,
+	dataTestId,
 }) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const dropdownRef = useRef(null);
@@ -38,6 +39,7 @@ const GenericDropdown = ({
 					toggleDropdown();
 				}}
 				className={className}
+				dataTestId={dataTestId}
 			>
 				{buttonName}
 				{showArrow && (

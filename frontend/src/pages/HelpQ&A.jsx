@@ -2,11 +2,44 @@ import React from 'react';
 import GenericDropdown from '../components/GenericDropdown';
 
 const faqData = [
-  { question: 'What is this service about?', answer: 'This service provides useful information and tools for users.' },
-  { question: 'How do I reset my password?', answer: 'You can reset your password from the login page by clicking on "Forgot Password?" and following the instructions.' },
-  { question: 'Can I change my subscription plan?', answer: 'Yes, you can change your plan anytime from the account settings page.' },
-  { question: 'How can I contact support?', answer: 'You can reach our support team via the contact page or email us at support@example.com.' },
-];
+    {
+      question: "How do I submit a ticket?",
+      answer: "You can submit a ticket by logging into your account, navigating to the dashboard, and clicking on 'Submit a Ticket'. Provide the necessary details and submit your request.",
+    },
+    {
+      question: "How can I check the status of my submitted ticket?",
+      answer: "To check your ticket status, go to the 'My Tickets' section in your dashboard. Each ticket will display its current status: Open, In Progress, Awaiting Student, or Closed.",
+    },
+    {
+      question: "What happens when my ticket is redirected to another officer?",
+      answer: "If your ticket is redirected, you'll receive a notification. The new officer will review your request and continue assisting you. You can check the new assigned officer in the ticket details.",
+    },
+    {
+      question: "Can I update or edit my ticket after submission?",
+      answer: "Once a ticket is submitted, you cannot edit the original request. However, you can add comments or attach additional files by opening the ticket and posting a response.",
+    },
+    {
+      question: "How will I be notified about ticket updates?",
+      answer: "You'll receive notifications on your dashboard whenever an officer responds to your ticket or if there are important updates regarding your request.",
+    },
+    {
+      question: "What should I do if my ticket is marked as 'Awaiting Student'?",
+      answer: "If your ticket is in 'Awaiting Student' status, it means the assigned officer needs additional information. Open the ticket and provide the requested details to proceed.",
+    },
+    {
+      question: "Who can access my support tickets?",
+      answer: "Your tickets are visible only to you and the assigned support officer. If necessary, higher-level staff may access them for administrative purposes.",
+    },
+    {
+      question: "How long does it take to resolve a ticket?",
+      answer: "Resolution times depend on the complexity of the request and officer availability. Most tickets are addressed within 24-48 hours.",
+    },
+    {
+      question: "Can I close my own ticket?",
+      answer: "Currently, only assigned officers can mark a ticket as 'Closed'. However, if your issue is resolved, you can leave a comment requesting closure.",
+    },
+  ];
+  
 
 const HelpQA = () => {
   return (

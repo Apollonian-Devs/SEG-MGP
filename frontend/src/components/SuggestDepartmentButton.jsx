@@ -2,6 +2,7 @@ import React from 'react';
 import api from '../api';
 import { ACCESS_TOKEN } from '../constants';
 import GenericButton from './GenericButton';
+import { playSound } from "../utils/SoundUtils";
 
 const SuggestDepartmentButton = ({ setSuggestedDepartments, tickets }) => {
 	const fetchSuggestedDepartment = async (ticketId, ticketDescription) => {
@@ -55,6 +56,7 @@ const SuggestDepartmentButton = ({ setSuggestedDepartments, tickets }) => {
 		<GenericButton
 			className="px-3 py-1 text-sm font-semibold text-gray-800 bg-gray-200 rounded-md hover:bg-gray-300 inline-flex items-center"
 			onClick={(e) => {
+				playSound();
 				e.stopPropagation();
 				assignSuggestedDepartments();
 			}}

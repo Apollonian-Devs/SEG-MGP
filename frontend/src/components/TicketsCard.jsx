@@ -17,6 +17,7 @@ import ChangeDate from './ChangeDate';
 import { MessageSquareMore, RefreshCw, MoreVertical, View, Pen, CheckCircle, AlertCircle, Clock, XCircle, Sparkles  } from 'lucide-react';
 import FilterTicketsDropdown from './FilterTicketsDropdown';
 import GenericDropdown from './GenericDropdown';
+import { playSound } from "../utils/SoundUtils";
 
 const TicketsCard = ({
 	user,
@@ -31,7 +32,7 @@ const TicketsCard = ({
 }) => {
 	const [showingTickets, setShowingTickets] = useState(tickets);
 	const [isChatOpen, setIsChatOpen] = useState(false);
-	const [selectedOfficer, setSelectedOfficer] = useState(null);
+	const [selectedOfficers, setSelectedOfficers] = useState({});
 	const [isChangeDateOpen, setChangeDateOpen] = useState(null);
 	const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 	const [isPathOpen, setIsPathOpen] = useState(false);
@@ -56,6 +57,14 @@ const TicketsCard = ({
 		'Awaiting Student': <XCircle className="size-4 text-red-500" />,
 	  };
 
+	const handleSelectOfficer = (ticketId, officer) => {
+	setSelectedOfficers((prev) => ({
+		...prev,
+		[ticketId]: officer,
+	}));
+	};
+	  
+	  
 	useEffect(() => {
 		applyFilters(); 
 		setRedirectedIds(new Set());
@@ -455,14 +464,15 @@ const TicketsCard = ({
 													/>
 												) : (
 													<OfficersDropdown
+														ticketId={ticket.id}
 														officers={officers}
 														admin={admin}
-														setSelectedOfficer={setSelectedOfficer}
-													/>
+														onSelectOfficer={handleSelectOfficer} 
+														/>
 												)}
 												<RedirectButton
 													ticketid={ticket.id}
-													selectedOfficer={selectedOfficer}
+													selectedOfficer={selectedOfficers[ticket.id]}
 													departmentId={user.is_superuser ? selectedDepartments[ticket.id]?.id : null}
 													fetchTickets={fetchTickets}
 													setTickets={setTickets}
@@ -478,11 +488,12 @@ const TicketsCard = ({
 													{suggestedDepartments[ticket.id]?.name || 'No suggestion'}
 													<RedirectButton
 														ticketid={ticket.id}
-														selectedOfficer={selectedOfficer}
+														selectedOfficer={selectedOfficers[ticket.id]} 
 														departmentId={user.is_superuser ? suggestedDepartments[ticket.id]?.id : null}
 														fetchTickets={fetchTickets}
 														setShowingTickets={setShowingTickets}
 													/>
+
 												</div>
 											</td>
 										)}

@@ -3,6 +3,7 @@ import GenericDropdown from "./GenericDropdown";
 import GenericButton from "./GenericButton";
 import api from "../api";
 import { ACCESS_TOKEN } from "../constants";
+import { University } from 'lucide-react';
 
 const DepartmentsDropdown = ({ setSelectedDepartment }) => {
   const [departments, setDepartments] = useState([]);
@@ -52,8 +53,9 @@ const DepartmentsDropdown = ({ setSelectedDepartment }) => {
                 e.stopPropagation();
                 handleSelect(department);
               }}
-              className="block w-full text-left px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
+              className="flex items-center w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 border-b border-gray-300"
             >
+              <University className="h-5 w-5 text-customOrange-dark mr-2" />
               {department.name}
             </GenericButton>
           ))}

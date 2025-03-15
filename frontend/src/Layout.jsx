@@ -11,6 +11,8 @@ const Layout = ({ children }) => {
 		margin: '0',
 		paddingTop: '40px',
 		paddingBottom: '40px',
+		paddingLeft: '40px',
+		paddingRight: '40px',
 		display: 'flex',
 		justifyContent: 'center',
 		alignItems: 'center',
@@ -19,6 +21,7 @@ const Layout = ({ children }) => {
 	return (
 		<div
 			style={isHomePage ? { background: '#ecbc76', margin: '0' } : bodyStyle}
+			data-testid="layout-container"
 		>
 			{children}
 		</div>

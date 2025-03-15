@@ -14,7 +14,7 @@ const HeroSection = () => {
 			<h1 className="text-4xl sm:text-6xl lg:text-7xl text-center tracking-wide">
 				Student Support Hub: <br />
 				<span className="bg-gradient-to-r from-customOrange-dark to-slate-700 text-transparent bg-clip-text">
-					Apllonian Devs
+					Apollonian Devs
 				</span>
 			</h1>
 			<p className="mt-10 text-lg text-center text-black max-w-4xl">
@@ -35,7 +35,7 @@ const HeroSection = () => {
 					Submit a Ticket
 				</a>
 				<a
-					href="/#"
+					href="/helpfaq"
 					className="py-2 px-3 border-2 border-gray-900 rounded-md bg-customGray-light font-medium hover:bg-customGray-dark/80 transition-colors duration-500"
 				>
 					Help & FAQs

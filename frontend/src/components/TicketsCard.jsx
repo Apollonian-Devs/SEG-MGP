@@ -327,7 +327,7 @@ const TicketsCard = ({
 								{['subject', 'status', 'priority'].map((key) => (
 									<td
 										key={key}
-										className="px-6 py-4 whitespace-nowrap text-sm text-gray-800"
+										className={`px-6 py-4 whitespace-nowrap text-sm text-gray-800 ${key === 'subject' ? 'max-w-52 truncate' : ''}`}
 										onClick={() => {
 											setSelectedTicket(ticket);
 											openPopup('viewTicket');
@@ -358,7 +358,6 @@ const TicketsCard = ({
 									</td>
 								))}
 
-								{/* Chat Button */}
 								<td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium flex gap-1.5">
 									<GenericButton
 										className="flex items-center justify-items-center px-2 py-1 gap-1 text-white hover:bg-customOrange-light transition-colors duration-500 bg-customOrange-dark rounded-md"

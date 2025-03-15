@@ -475,8 +475,6 @@ const TicketsCard = ({
 													selectedOfficer={selectedOfficers[ticket.id]}
 													departmentId={user.is_superuser ? selectedDepartments[ticket.id]?.id : null}
 													fetchTickets={fetchTickets}
-													setTickets={setTickets}
-													setShowingTickets={setShowingTickets}
 												/>
 											</div>
 										</td>
@@ -491,7 +489,6 @@ const TicketsCard = ({
 														selectedOfficer={selectedOfficers[ticket.id]} 
 														departmentId={user.is_superuser ? suggestedDepartments[ticket.id]?.id : null}
 														fetchTickets={fetchTickets}
-														setShowingTickets={setShowingTickets}
 													/>
 
 												</div>

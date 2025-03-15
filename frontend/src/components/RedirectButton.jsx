@@ -10,8 +10,6 @@ const RedirectButton = ({
 	selectedOfficer,
 	departmentId,
 	fetchTickets,
-	setShowingTickets,
-	setTickets
 }) => {
 	const handleRedirect = () => {
 		if (!selectedOfficer && !departmentId) {

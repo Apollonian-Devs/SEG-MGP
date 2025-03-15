@@ -26,6 +26,7 @@ const FilterTicketsDropdown = ({
 						setIsFilterActive(false);
 					}}
 					className="flex items-center justify-items-center gap-2 px-3 h-10 text-white hover:bg-red-400 transition-colors duration-500 bg-red-700 rounded-md"
+					dataTestId='clear-button-outside'
 				>
 					<FilterX size={16} />
 					Clear
@@ -177,6 +178,7 @@ const FilterTicketsDropdown = ({
 								setIsFilterActive(false);
 							}}
 							className="flex items-center justify-items-center px-3 py-1 text-white hover:bg-red-400 transition-colors duration-500 bg-red-700 rounded-md"
+							dataTestId='clear-button-inside'
 						>
 							Clear
 						</GenericButton>

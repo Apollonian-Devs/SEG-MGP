@@ -12,7 +12,7 @@ const GenericTable = ({
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const totalPages = Math.ceil(data.length / rowsPerPage);
 
-  // New: Ensure currentPage is valid when data changes
+
   useEffect(() => {
     if (currentPage > totalPages) {
       setCurrentPage(totalPages > 0 ? totalPages : 1);

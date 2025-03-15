@@ -26,10 +26,9 @@ const GenericTable = ({
 		setRowsPerPage(Number(event.target.value));
 		setCurrentPage(1);
 	};
-
 	return (
 		<>
-			<div className="flex justify-end mb-4">
+			<div className="flex justify-end items-center mb-4">
 				<label className="mr-2 text-gray-700">Rows per page:</label>
 				<select
 					value={rowsPerPage}
@@ -44,9 +43,9 @@ const GenericTable = ({
 				</select>
 			</div>
 
-			<div className="max-h-[400px] overflow-y-auto border border-gray-300 rounded-lg">
+			<div>
 				<table className={tableClass}>
-					<thead className="bg-gray-100 sticky top-0 z-5">
+					<thead>
 						<tr>{columnDefinition}</tr>
 					</thead>
 					<tbody className={bodyClass}>
@@ -75,6 +74,7 @@ const GenericTable = ({
 					>
 						First
 					</button>
+
 					{currentPage > 1 && (
 						<button
 							onClick={() => setCurrentPage(currentPage - 1)}
@@ -83,9 +83,11 @@ const GenericTable = ({
 							{currentPage - 1}
 						</button>
 					)}
+
 					<button className="px-4 py-2 border rounded-md bg-customOrange-dark text-white">
 						{currentPage}
 					</button>
+
 					{currentPage < totalPages && (
 						<button
 							onClick={() => setCurrentPage(currentPage + 1)}
@@ -94,6 +96,7 @@ const GenericTable = ({
 							{currentPage + 1}
 						</button>
 					)}
+
 					<button
 						onClick={() => setCurrentPage(totalPages)}
 						disabled={currentPage === totalPages}

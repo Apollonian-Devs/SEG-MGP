@@ -40,8 +40,8 @@ const RedirectButton = ({
 		toast.promise(redirectTicketPromise, {
 			loading: 'Loading...',
 			success: async () => {
-				setTickets(prev => prev.filter(t => t.id !== ticketid));
-        		setShowingTickets(prev => prev.filter(t => t.id !== ticketid));
+				//setTickets(prev => prev.filter(t => t.id !== ticketid));
+        		//setShowingTickets(prev => prev.filter(t => t.id !== ticketid));
         
         		await fetchTickets();
 				console.log("Ticket was redirected to:", selectedOfficer || departmentId);

@@ -1,24 +1,5 @@
 [
-    {
-        "description": "I cannot access the required course materials for my humanities class.",
-        "department": "Faculty of Arts & Humanities"
-    },
-    {
-        "description": "I would like to request a change in my class schedule due to a timing conflict.",
-        "department": "Faculty of Arts & Humanities"
-    },
-    {
-        "description": "I need clarification on the essay requirements for my history course.",
-        "department": "Faculty of Arts & Humanities"
-    },
-    {
-        "description": "Could you please confirm the current office hours for my professor?",
-        "department": "Faculty of Arts & Humanities"
-    },
-    {
-        "description": "The online resources for my philosophy class are not loading properly.",
-        "department": "Faculty of Arts & Humanities"
-    },
+
     {
         "description": "I have some feedback regarding the recent lecture on art history.",
         "department": "Faculty of Arts & Humanities"
@@ -39,26 +20,7 @@
         "description": "I am confused about the assignment guidelines for my literature course.",
         "department": "Faculty of Arts & Humanities"
     },
-    {
-        "description": "I am unable to access some research journals required for my policy studies.",
-        "department": "Faculty of Social Science & Public Policy"
-    },
-    {
-        "description": "I need assistance registering for an upcoming seminar on public policy.",
-        "department": "Faculty of Social Science & Public Policy"
-    },
-    {
-        "description": "Could you clarify the ethical guidelines for conducting social science research?",
-        "department": "Faculty of Social Science & Public Policy"
-    },
-    {
-        "description": "Our group project members have conflicting class schedules.",
-        "department": "Faculty of Social Science & Public Policy"
-    },
-    {
-        "description": "I need an extension on my policy analysis assignment due to unforeseen circumstances.",
-        "department": "Faculty of Social Science & Public Policy"
-    },
+    
     {
         "description": "I am unable to access my recorded lectures online.",
         "department": "Faculty of Social Science & Public Policy"
@@ -80,26 +42,6 @@
         "department": "Faculty of Social Science & Public Policy"
     },
     {
-        "description": "I am unable to access the physics lab outside of my scheduled hours.",
-        "department": "Faculty of Natural, Mathematical & Engineering Sciences"
-    },
-    {
-        "description": "There appears to be a mistake in my calculus assignment grading.",
-        "department": "Faculty of Natural, Mathematical & Engineering Sciences"
-    },
-    {
-        "description": "Our group project requires additional equipment in the engineering lab.",
-        "department": "Faculty of Natural, Mathematical & Engineering Sciences"
-    },
-    {
-        "description": "I am unable to activate my MATLAB student license.",
-        "department": "Faculty of Natural, Mathematical & Engineering Sciences"
-    },
-    {
-        "description": "I need additional tutoring sessions for my quantum physics course.",
-        "department": "Faculty of Natural, Mathematical & Engineering Sciences"
-    },
-    {
         "description": "The math department's posted office hours are inconsistent.",
         "department": "Faculty of Natural, Mathematical & Engineering Sciences"
     },
@@ -119,26 +61,7 @@
         "description": "Our physics lab equipment malfunctioned during an experiment, affecting our results.",
         "department": "Faculty of Natural, Mathematical & Engineering Sciences"
     },
-    {
-        "description": "The centrifuge in the biomedical lab is malfunctioning.",
-        "department": "Faculty of Life Sciences & Medicine"
-    },
-    {
-        "description": "I need access to more case studies for my medical research.",
-        "department": "Faculty of Life Sciences & Medicine"
-    },
-    {
-        "description": "My clinical placement schedule has conflicting dates.",
-        "department": "Faculty of Life Sciences & Medicine"
-    },
-    {
-        "description": "What are the licensing requirements for international students?",
-        "department": "Faculty of Life Sciences & Medicine"
-    },
-    {
-        "description": "I would like to schedule more sessions in the surgery simulation lab.",
-        "department": "Faculty of Life Sciences & Medicine"
-    },
+    
     {
         "description": "I am unable to access patient case studies in the online database.",
         "department": "Faculty of Life Sciences & Medicine"
@@ -159,26 +82,7 @@
         "description": "I need extended lab access hours for my ongoing research.",
         "department": "Faculty of Life Sciences & Medicine"
     },
-    {
-        "description": "I am unable to register for the Advanced Corporate Finance elective.",
-        "department": "King's Business School"
-    },
-    {
-        "description": "I need guidance on how to approach the data analysis section.",
-        "department": "King's Business School"
-    },
-    {
-        "description": "The online collaboration tool is not functioning properly for our team.",
-        "department": "King's Business School"
-    },
-    {
-        "description": "I would like to learn more about the entrepreneurship mentorship initiative.",
-        "department": "King's Business School"
-    },
-    {
-        "description": "The case studies used in our marketing course seem outdated.",
-        "department": "King's Business School"
-    },
+    
     {
         "description": "How does the school assist with internship placements?",
         "department": "King's Business School"
@@ -199,26 +103,7 @@
         "description": "The Bloomberg Terminal in the business lab is currently inaccessible.",
         "department": "King's Business School"
     },
-    {
-        "description": "Can we schedule more mock trial practice sessions before the exam?",
-        "department": "The Dickson Poon School of Law"
-    },
-    {
-        "description": "I need clarification on the required structure for my case law analysis.",
-        "department": "The Dickson Poon School of Law"
-    },
-    {
-        "description": "I am unable to access the online legal research databases.",
-        "department": "The Dickson Poon School of Law"
-    },
-    {
-        "description": "What are the selection criteria for the upcoming moot court competition?",
-        "department": "The Dickson Poon School of Law"
-    },
-    {
-        "description": "Our exam results have not been released within the expected timeframe.",
-        "department": "The Dickson Poon School of Law"
-    },
+    
     {
         "description": "When are the next networking events with law firms?",
         "department": "The Dickson Poon School of Law"
@@ -239,26 +124,7 @@
         "description": "Can professors extend their office hours for additional student consultations?",
         "department": "The Dickson Poon School of Law"
     },
-    {
-        "description": "I need extra practice sessions in the dental simulation lab.",
-        "department": "Faculty of Dentistry, Oral & Craniofacial Sciences"
-    },
-    {
-        "description": "The X-ray machine in the dental lab is malfunctioning.",
-        "department": "Faculty of Dentistry, Oral & Craniofacial Sciences"
-    },
-    {
-        "description": "Can you provide details about the oral surgery exam format?",
-        "department": "Faculty of Dentistry, Oral & Craniofacial Sciences"
-    },
-    {
-        "description": "Our batch has had fewer clinical rotations compared to previous years.",
-        "department": "Faculty of Dentistry, Oral & Craniofacial Sciences"
-    },
-    {
-        "description": "I am unable to access online journals related to dental studies.",
-        "department": "Faculty of Dentistry, Oral & Craniofacial Sciences"
-    },
+    
     {
         "description": "I feel the prosthodontics course needs more practical sessions.",
         "department": "Faculty of Dentistry, Oral & Craniofacial Sciences"
@@ -279,26 +145,7 @@
         "description": "I am unable to enter patient details in the case logging system.",
         "department": "Faculty of Dentistry, Oral & Craniofacial Sciences"
     },
-    {
-        "description": "I need additional clinical placement hours to meet my course requirements.",
-        "department": "Florence Nightingale Faculty of Nursing, Midwifery & Palliative Care"
-    },
-    {
-        "description": "Could you clarify the certification requirements for midwifery students?",
-        "department": "Florence Nightingale Faculty of Nursing, Midwifery & Palliative Care"
-    },
-    {
-        "description": "The patient simulation mannequin in the lab is not functioning properly.",
-        "department": "Florence Nightingale Faculty of Nursing, Midwifery & Palliative Care"
-    },
-    {
-        "description": "Several students have overlapping schedules for clinical rotations.",
-        "department": "Florence Nightingale Faculty of Nursing, Midwifery & Palliative Care"
-    },
-    {
-        "description": "Can we have more practical sessions on palliative care nursing?",
-        "department": "Florence Nightingale Faculty of Nursing, Midwifery & Palliative Care"
-    },
+    
     {
         "description": "Are there opportunities for international placements in the nursing program?",
         "department": "Florence Nightingale Faculty of Nursing, Midwifery & Palliative Care"
@@ -319,26 +166,7 @@
         "description": "The ethics course should include more real-world case discussions.",
         "department": "Florence Nightingale Faculty of Nursing, Midwifery & Palliative Care"
     },
-    {
-        "description": "I need access to the fMRI research lab for my neuroscience project.",
-        "department": "Institute of Psychiatry, Psychology & Neuroscience"
-    },
-    {
-        "description": "I am unable to obtain anonymized data from the recent clinical trial.",
-        "department": "Institute of Psychiatry, Psychology & Neuroscience"
-    },
-    {
-        "description": "Can you clarify the case study requirements for the CBT module?",
-        "department": "Institute of Psychiatry, Psychology & Neuroscience"
-    },
-    {
-        "description": "The EEG machine in the research center is not properly calibrated.",
-        "department": "Institute of Psychiatry, Psychology & Neuroscience"
-    },
-    {
-        "description": "I need additional training sessions for administering neuropsychological tests.",
-        "department": "Institute of Psychiatry, Psychology & Neuroscience"
-    },
+    
     {
         "description": "Are there funding opportunities available for student-led mental health research?",
         "department": "Institute of Psychiatry, Psychology & Neuroscience"
@@ -359,26 +187,7 @@
         "description": "The fMRI data analysis software is crashing when I try to process results.",
         "department": "Institute of Psychiatry, Psychology & Neuroscience"
     },
-    {
-        "description": "I cannot log into my student portal due to an error.",
-        "department": "IT"
-    },
-    {
-        "description": "I am unable to connect to the university VPN from home.",
-        "department": "IT"
-    },
-    {
-        "description": "I need specific software installed on my workstation.",
-        "department": "IT"
-    },
-    {
-        "description": "The WiFi speed in the library is extremely slow.",
-        "department": "IT"
-    },
-    {
-        "description": "My university email login credentials are not working.",
-        "department": "IT"
-    },
+    
     {
         "description": "The department printer is jammed and not functioning.",
         "department": "IT"
@@ -399,26 +208,7 @@
         "description": "I received a phishing email pretending to be from IT support.",
         "department": "IT"
     },
-    {
-        "description": "My salary for this month has not been credited yet.",
-        "department": "HR"
-    },
-    {
-        "description": "There appears to be a discrepancy in my leave balance.",
-        "department": "HR"
-    },
-    {
-        "description": "Could you provide details on the criteria for promotion?",
-        "department": "HR"
-    },
-    {
-        "description": "I need an ergonomic chair due to a back issue.",
-        "department": "HR"
-    },
-    {
-        "description": "There are unexplained deductions in my payslip.",
-        "department": "HR"
-    },
+    
     {
         "description": "Could you clarify the remote work policy for staff?",
         "department": "HR"
@@ -439,26 +229,7 @@
         "description": "I need financial assistance for a training course.",
         "department": "HR"
     },
-    {
-        "description": "I have been charged an extra amount for my tuition fees.",
-        "department": "Finance"
-    },
-    {
-        "description": "My scholarship payment has not been deposited yet.",
-        "department": "Finance"
-    },
-    {
-        "description": "I would like to know if I can pay my fees in installments.",
-        "department": "Finance"
-    },
-    {
-        "description": "My student loan balance seems incorrect.",
-        "department": "Finance"
-    },
-    {
-        "description": "I have not received my reimbursement for a recent academic conference.",
-        "department": "Finance"
-    },
+    
     {
         "description": "My account was charged twice for the same transaction.",
         "department": "Finance"
@@ -479,26 +250,7 @@
         "description": "Our department's budget approval is taking longer than expected.",
         "department": "Finance"
     },
-    {
-        "description": "I need to book a counseling session as soon as possible.",
-        "department": "Wellbeing"
-    },
-    {
-        "description": "Could you provide details on upcoming stress management workshops?",
-        "department": "Wellbeing"
-    },
-    {
-        "description": "I'm having trouble scheduling a counseling session online.",
-        "department": "Wellbeing"
-    },
-    {
-        "description": "I'd like to participate in mindfulness or meditation training.",
-        "department": "Wellbeing"
-    },
-    {
-        "description": "There are too few therapists available for student consultations.",
-        "department": "Wellbeing"
-    },
+    
     {
         "description": "Some links to self-help materials on the portal are broken.",
         "department": "Wellbeing"
@@ -519,26 +271,7 @@
         "description": "Could you suggest ways to manage academic stress more effectively?",
         "department": "Wellbeing"
     },
-    {
-        "description": "There is a leaking pipe in my dorm that needs urgent repair.",
-        "department": "Maintenance"
-    },
-    {
-        "description": "A window in one of the lecture halls is broken.",
-        "department": "Maintenance"
-    },
-    {
-        "description": "The lighting in the corridor is very dim and needs replacement.",
-        "department": "Maintenance"
-    },
-    {
-        "description": "The heating in the library is not working properly.",
-        "department": "Maintenance"
-    },
-    {
-        "description": "There have been reports of pests in the student dorms.",
-        "department": "Maintenance"
-    },
+    
     {
         "description": "The elevator in the main building is frequently out of service.",
         "department": "Maintenance"
@@ -559,26 +292,7 @@
         "description": "Several outdoor benches on campus are broken and need fixing.",
         "department": "Maintenance"
     },
-    {
-        "description": "The heating system in my dorm room is not working.",
-        "department": "Housing"
-    },
-    {
-        "description": "I would like to change my room due to conflicts with my roommate.",
-        "department": "Housing"
-    },
-    {
-        "description": "There is water leakage in my room that needs immediate attention.",
-        "department": "Housing"
-    },
-    {
-        "description": "My rent payment has not been processed despite making the transaction.",
-        "department": "Housing"
-    },
-    {
-        "description": "Does the university provide assistance with off-campus housing?",
-        "department": "Housing"
-    },
+    
     {
         "description": "My dorm room needs basic maintenance, such as painting and plumbing.",
         "department": "Housing"
@@ -599,26 +313,7 @@
         "description": "The cleaning service in the dormitories could be improved.",
         "department": "Housing"
     },
-    {
-        "description": "My application form keeps showing an error when I try to submit it.",
-        "department": "Admissions"
-    },
-    {
-        "description": "I would like to defer my admission to the next academic year.",
-        "department": "Admissions"
-    },
-    {
-        "description": "Can you provide information on scholarships available for my program?",
-        "department": "Admissions"
-    },
-    {
-        "description": "I am unable to upload the required documents for my application.",
-        "department": "Admissions"
-    },
-    {
-        "description": "Can you provide an update on my application status?",
-        "department": "Admissions"
-    },
+    
     {
         "description": "I have not received any response to my queries regarding my application.",
         "department": "Admissions"
@@ -639,26 +334,7 @@
         "description": "When is the deadline to pay the tuition deposit for securing my seat?",
         "department": "Admissions"
     },
-    {
-        "description": "Can the library remain open later during the exam period?",
-        "department": "Library Services"
-    },
-    {
-        "description": "I am unable to borrow books due to an issue with my student account.",
-        "department": "Library Services"
-    },
-    {
-        "description": "There are not enough copies of a required textbook in the library.",
-        "department": "Library Services"
-    },
-    {
-        "description": "The online library search tool is not returning any results.",
-        "department": "Library Services"
-    },
-    {
-        "description": "The quiet study areas are often too loud for focused studying.",
-        "department": "Library Services"
-    },
+    
     {
         "description": "How can I access restricted research papers for my dissertation?",
         "department": "Library Services"
@@ -679,26 +355,7 @@
         "description": "The library study areas are always full. Can more spaces be provided?",
         "department": "Library Services"
     },
-    {
-        "description": "I am unable to register for the student union online.",
-        "department": "Student Affairs"
-    },
-    {
-        "description": "There are not enough student social events being organized.",
-        "department": "Student Affairs"
-    },
-    {
-        "description": "How can I start a new student club on campus?",
-        "department": "Student Affairs"
-    },
-    {
-        "description": "I need assistance in resolving a dispute with another student.",
-        "department": "Student Affairs"
-    },
-    {
-        "description": "The student elections process should be more transparent.",
-        "department": "Student Affairs"
-    },
+    
     {
         "description": "I need accommodations for my disability in student activities.",
         "department": "Student Affairs"

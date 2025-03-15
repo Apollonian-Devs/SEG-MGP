@@ -394,10 +394,10 @@ class SuggestDepartmentView(APIView):
     def post(self, request):
 
         ticket_id = request.data.get('ticket_id', None)
-        print(ticket_id)
+    
         ticket_description = request.data.get('description', '')
+
         
-        print(ticket_description)
         if not ticket_id or not ticket_description:
             return Response({"error": "Ticket ID and description are required."}, status=400)
         
@@ -410,9 +410,9 @@ class SuggestDepartmentView(APIView):
         department_names = [dept.name for dept in departments]
         
         if not department_names:
-            return Response({"error": "No departments found in the system."},status=500)
+            return Response({"error": "No departments found in the system."}, status=500)
 
-        training_data_path = os.path.join(settings.BASE_DIR,'training_data.json')
+        training_data_path = os.path.join(settings.BASE_DIR, 'training_data.json')
         try:
             with open(training_data_path, 'r') as f:
                 training_data = json.load(f)
@@ -426,7 +426,7 @@ class SuggestDepartmentView(APIView):
         all_descriptions = training_descriptions + [ticket_description]
         X = vectorizer.fit_transform(all_descriptions)
 
-        clusterer = hdbscan.HDBSCAN(min_cluster_size=2,min_samples=1, metric='euclidean')
+        clusterer = hdbscan.HDBSCAN(min_cluster_size=2, min_samples=1, metric='euclidean')
         cluster_labels = clusterer.fit_predict(X.toarray())
 
         cluster_to_department = {}
@@ -435,32 +435,29 @@ class SuggestDepartmentView(APIView):
                 cluster_to_department[label] = training_departments[i]
 
         new_ticket_cluster = cluster_labels[-1]
+        confidence_score = clusterer.probabilities_[-1] if clusterer.probabilities_ is not None else 0.0
+        suggested_department = "Unknown"
+        department = None
 
-    
-        
-        if new_ticket_cluster == -1:
-            suggested_department = "Unknown"
-            confidence_score = 0.0
-            
-            response = Response({
-                "suggested_department": "Unknown",
-                "confidence_score": confidence_score
-            })
 
-        else:
+
+        if new_ticket_cluster != -1:
             suggested_department = cluster_to_department.get(new_ticket_cluster, "Unknown")
-            confidence_score = clusterer.probabilities_[-1]
-
-            response = Response({
-                "suggested_department": DepartmentSerializer(department).data,
-                "confidence_score": confidence_score
-            })
 
             try:
                 department = Department.objects.get(name=suggested_department)
             except Department.DoesNotExist:
-                return Response({"error": "Predicted department does not exist."}, status=400)
-            
+                suggested_department = "Unknown"
+
+        response_data = {
+            "suggested_department": suggested_department,
+            "confidence_score": float(confidence_score)
+        }
+
+        print(department)
+        if department:
+            response_data["suggested_department"] = DepartmentSerializer(department).data
+
 
         ai_response = AIResponse(
             ticket=ticket,
@@ -471,9 +468,7 @@ class SuggestDepartmentView(APIView):
         )
         ai_response.save()
 
-        print(response)
-
-        return response
+        return Response(response_data)
 
 
 

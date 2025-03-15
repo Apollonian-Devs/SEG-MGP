@@ -6,6 +6,7 @@ import { faBell } from '@fortawesome/free-solid-svg-icons';
 import Popup from './Popup';
 import GenericTable from './GenericTable';
 import GenericButton from './GenericButton';
+import { playSound } from "../utils/SoundUtils";
 
 const NotificationsTab = ({ user }) => {
 	const [notifications, setNotifications] = useState([]);
@@ -81,7 +82,10 @@ const NotificationsTab = ({ user }) => {
 		<>
 			<GenericButton
 				className="flex items-center justify-items-center px-5 h-12 gap-1 text-white hover:bg-customOrange-light transition-colors duration-500 bg-customOrange-dark rounded-full shadow-lg"
-				onClick={toggleNotifications}
+				onClick={() => {
+					playSound();
+					toggleNotifications();
+				}}
 			>
 				<FontAwesomeIcon icon={faBell} />
 			</GenericButton>

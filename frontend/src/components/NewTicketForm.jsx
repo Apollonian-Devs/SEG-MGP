@@ -5,6 +5,7 @@ import GenericInput from './GenericInput';
 import { handleFileChange } from '../utils/attachmentUtils';
 import { toast } from 'sonner';
 
+
 const NewTicketForm = ({ togglePopup }) => {
 	const [subject, setSubject] = useState('');
 	const [description, setDescription] = useState('');

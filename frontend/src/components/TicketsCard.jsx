@@ -17,6 +17,7 @@ import ChangeDate from './ChangeDate';
 import { MessageSquareMore, RefreshCw, MoreVertical, View, Pen, CheckCircle, AlertCircle, Clock, XCircle, Sparkles  } from 'lucide-react';
 import FilterTicketsDropdown from './FilterTicketsDropdown';
 import GenericDropdown from './GenericDropdown';
+import { playSound } from "../utils/SoundUtils";
 
 const TicketsCard = ({
 	user,
@@ -31,13 +32,14 @@ const TicketsCard = ({
 }) => {
 	const [showingTickets, setShowingTickets] = useState(tickets);
 	const [isChatOpen, setIsChatOpen] = useState(false);
-	const [selectedOfficer, setSelectedOfficer] = useState(null);
+	const [selectedOfficers, setSelectedOfficers] = useState({});
 	const [isChangeDateOpen, setChangeDateOpen] = useState(null);
 	const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 	const [isPathOpen, setIsPathOpen] = useState(false);
 	const [selectedDepartments, setSelectedDepartments] = useState({});
 	const [suggestedDepartments, setSuggestedDepartments] = useState({});
 	const [suggestedGrouping, setSuggestedGrouping] = useState({});
+	const [redirectedIds, setRedirectedIds] = useState(new Set());
 
 	// Filtering State
 	const [priority, setPriority] = useState('');
@@ -55,8 +57,17 @@ const TicketsCard = ({
 		'Awaiting Student': <XCircle className="size-4 text-red-500" />,
 	  };
 
+	const handleSelectOfficer = (ticketId, officer) => {
+	setSelectedOfficers((prev) => ({
+		...prev,
+		[ticketId]: officer,
+	}));
+	};
+	  
+	  
 	useEffect(() => {
-		applyFilters(); // setShowingTickets is included in applyFilters
+		applyFilters(); 
+		setRedirectedIds(new Set());
 	}, [tickets]);
 
 	const toggleChange = async (type, ticket_id) => {
@@ -101,10 +112,11 @@ const TicketsCard = ({
 	// Filtering Functions
 	const applyFilters = () => {
 		if (!tickets || tickets.length === 0) {
+			setShowingTickets([])
 			return;
 		}
 
-		const filteredTickets = tickets.filter((ticket) => {
+		const filteredTickets = tickets.filter((ticket) => !redirectedIds.has(ticket.id)).filter((ticket) => {
 			if (priority && ticket.priority !== priority) {
 				return false;
 			}
@@ -452,16 +464,18 @@ const TicketsCard = ({
 													/>
 												) : (
 													<OfficersDropdown
+														ticketId={ticket.id}
 														officers={officers}
 														admin={admin}
-														setSelectedOfficer={setSelectedOfficer}
-													/>
+														onSelectOfficer={handleSelectOfficer} 
+														/>
 												)}
 												<RedirectButton
 													ticketid={ticket.id}
-													selectedOfficer={selectedOfficer}
+													selectedOfficer={selectedOfficers[ticket.id]}
 													departmentId={user.is_superuser ? selectedDepartments[ticket.id]?.id : null}
 													fetchTickets={fetchTickets}
+													setTickets={setTickets}
 													setShowingTickets={setShowingTickets}
 												/>
 											</div>
@@ -474,11 +488,12 @@ const TicketsCard = ({
 													{suggestedDepartments[ticket.id]?.name || 'No suggestion'}
 													<RedirectButton
 														ticketid={ticket.id}
-														selectedOfficer={selectedOfficer}
+														selectedOfficer={selectedOfficers[ticket.id]} 
 														departmentId={user.is_superuser ? suggestedDepartments[ticket.id]?.id : null}
 														fetchTickets={fetchTickets}
 														setShowingTickets={setShowingTickets}
 													/>
+
 												</div>
 											</td>
 										)}

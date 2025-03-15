@@ -52,6 +52,7 @@ const SuggestDepartmentButton = ({ setSuggestedDepartments, tickets }) => {
 		setSuggestedDepartments(updatedDepartments);
 	};
 
+	
 	return (
 		<GenericButton
 			className="px-3 py-1 text-sm font-semibold text-gray-800 bg-gray-200 rounded-md hover:bg-gray-300 inline-flex items-center"

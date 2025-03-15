@@ -29,8 +29,9 @@ const GenericTable = ({ tableClass = `min-w-full divide-y divide-gray-200`,bodyC
             </select>
           </div>
         
+        <div className="max-h-[400px] overflow-y-auto border border-gray-300 rounded-lg">
         <table className = {tableClass}>
-            <thead>
+        <thead className="bg-gray-100 sticky top-0 z-10">
                 <tr>
                   {columnDefinition}
                 </tr>
@@ -51,6 +52,7 @@ const GenericTable = ({ tableClass = `min-w-full divide-y divide-gray-200`,bodyC
                 
             </tbody>
         </table>
+        </div>
 
         {totalPages > 1 && (
         <div className="flex justify-center space-x-2 mt-4">

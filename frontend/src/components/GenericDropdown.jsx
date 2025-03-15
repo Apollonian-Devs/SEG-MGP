@@ -51,23 +51,18 @@ const GenericDropdown = ({
         )}
       </GenericButton>
 
-      {/* Animated Dropdown Content */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className={`absolute left-0 top-full z-10 mt-1 w-full rounded-md bg-white border border-gray-200 shadow-md overflow-hidden`}
-            role="menu"
-          >
-            <div className="p-3 text-gray-700">{children}</div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
+			{/* Dropdown Menu */}
+			{isOpen && (
+				<div
+					className={`absolute flex flex-col top-full left-0 z-10 mt-1 w-fit min-w-40 rounded-md bg-slate-100 ring-1 shadow-lg ring-black/5 max-h-${maxHeight} overflow-y-auto`}
+					role="menu"
+				>
+					{children}
+				</div>
+			)}
+		</div>
+
+	);
 };
 
 export default GenericDropdown;

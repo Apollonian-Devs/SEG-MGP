@@ -43,7 +43,7 @@ const OfficersDropdown = ({
 							handleSelect(officer);
 						}}
 						className="flex items-center gap-2 w-full text-left px-3 py-1 text-sm 
-                       text-gray-700 hover:bg-gray-100"
+                       text-gray-700 hover:bg-gray-300"
 					>
 						<User className="h-5 w-5 text-customOrange-dark" />
 						{officer.user.username}
@@ -58,7 +58,7 @@ const OfficersDropdown = ({
 							handleSelect(admin);
 						}}
 						className="flex items-center w-full gap-2 text-left px-3 py-1 text-sm 
-                       text-gray-700 hover:bg-gray-100 mt-2"
+                       text-gray-700 hover:bg-gray-300 mt-2"
 					>
 						<User className="h-5 w-5 text-green-500" />
 						Admin: {admin.username}

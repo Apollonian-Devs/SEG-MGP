@@ -58,7 +58,7 @@ const DepartmentsDropdown = ({ setSelectedDepartment }) => {
 								e.stopPropagation();
 								handleSelect(department);
 							}}
-							className="flex items-center w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-customGray-light transition-colors duration-200 border-b border-gray-300"
+							className="flex items-center w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-300 transition-colors duration-200 border-b border-gray-300"
 						>
 							<University className="h-5 w-5 text-customOrange-dark mr-2" />
 							{department.name}

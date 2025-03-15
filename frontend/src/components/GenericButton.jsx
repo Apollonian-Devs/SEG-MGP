@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./GenericButton.css";
 
+
 const GenericButton = ({ 
   children, 
   onClick, 
@@ -9,6 +10,8 @@ const GenericButton = ({
   style, 
   dataTestId = "generic-button" 
 }) => {
+
+
   const [ripples, setRipples] = useState([]);
 
   const createRipple = (event) => {
@@ -26,6 +29,7 @@ const GenericButton = ({
       setRipples((prev) => prev.filter((ripple) => ripple.id !== newRipple.id));
     }, 600);
   };
+
 
   return (
     <button 

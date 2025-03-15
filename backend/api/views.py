@@ -440,6 +440,7 @@ class SuggestDepartmentView(APIView):
         department = None
 
 
+
         if new_ticket_cluster != -1:
             suggested_department = cluster_to_department.get(new_ticket_cluster, "Unknown")
 
@@ -453,6 +454,7 @@ class SuggestDepartmentView(APIView):
             "confidence_score": float(confidence_score)
         }
 
+        print(department)
         if department:
             response_data["suggested_department"] = DepartmentSerializer(department).data
 

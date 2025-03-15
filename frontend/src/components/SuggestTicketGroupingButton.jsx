@@ -3,6 +3,7 @@ import { toast } from "sonner";  // ✅ Import Sonner
 import api from "../api";
 import { ACCESS_TOKEN } from "../constants";
 import GenericButton from "./GenericButton";
+import { playSound } from "../utils/SoundUtils";
 
 const SuggestTicketGroupingButton = ({ setSuggestedGrouping, tickets }) => {
     const assignRandomGrouping = async () => {
@@ -42,6 +43,7 @@ const SuggestTicketGroupingButton = ({ setSuggestedGrouping, tickets }) => {
         <GenericButton
             className="px-3 py-1 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700"
             onClick={(e) => { 
+                playSound();
                 e.stopPropagation();
                 assignRandomGrouping();
             }}

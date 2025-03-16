@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import GenericTable from '../components/GenericTable';
 
@@ -45,8 +45,76 @@ describe('GenericTable', () => {
       />
     )
     expect(screen.getByText('No test data found.')).toBeInTheDocument();
-  }
+  } );
 
+  it('test table pagination',()=>{
+    const data = [
+    ];
+    for (let i = 0; i < 50; i++) {
+      data.push(
+        {
+        id: i, column1: `row ${i} column 1`, column2: `row ${i} column 2`,
+        }
+      );
+  }
+  render(
+    <GenericTable
+      columnDefinition={columnDefinition}
+      data={data}
+      dataName='test data'
+      rowDefinition={rowDefinition}
+    />
+  );
+    expect(screen.getByText('Last')).toBeInTheDocument();
+    fireEvent.click((screen.getByText('Last')));
+    expect(screen.getByText('row 49 column 1')).toBeInTheDocument();
+    expect(screen.queryByText('row 1 column 1')).not.toBeInTheDocument();
+    fireEvent.click((screen.getByText('First')));
+    fireEvent.click(screen.getAllByRole("button")[3]);
+    expect(screen.getByText('row 9 column 1')).toBeInTheDocument();
+    fireEvent.click(screen.getAllByRole("button")[2]);
+    expect(screen.getByText('row 1 column 1')).toBeInTheDocument();
+    expect(screen.getByText('Rows per page:')).toBeInTheDocument();
+    expect(screen.queryByText('row 9 column 1')).not.toBeInTheDocument();
+    fireEvent.click(screen.getAllByRole("button")[0]);
+    expect(screen.getByText('10')).toBeInTheDocument();
+    fireEvent.click((screen.getByText('10')));
+    expect(screen.getByText('row 9 column 1')).toBeInTheDocument();
+    expect(screen.getByText('Last')).toBeInTheDocument();
+    fireEvent.click((screen.getByText('Last')));
+
+   
+  }
+  
+
+  
   )
+  
+  it('test changing rows per page leading to less total pages',()=>{
+      const data = [
+      ];
+      for (let i = 0; i < 6; i++) {
+        data.push(
+          {
+          id: i, column1: `row ${i} column 1`, column2: `row ${i} column 2`,
+          }
+        );
+    }
+    render(
+      <GenericTable
+        columnDefinition={columnDefinition}
+        data={data}
+        dataName='test data'
+        rowDefinition={rowDefinition}
+      />
+    );
+    expect(screen.getByText('Last')).toBeInTheDocument();
+    fireEvent.click((screen.getByText('Last')));
+    expect(screen.getByText('row 5 column 1')).toBeInTheDocument();
+    fireEvent.click(screen.getAllByRole("button")[0]);
+    expect(screen.getByText('10')).toBeInTheDocument();
+    fireEvent.click((screen.getByText('10')));
+    expect(screen.getByText('row 0 column 1')).toBeInTheDocument();
+  })
 })
   

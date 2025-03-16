@@ -14,12 +14,9 @@ const GenericTable = ({
 	const [rowsPerPage, setRowsPerPage] = useState(5);
 	const totalPages = Math.ceil(data.length / rowsPerPage);
 
-	// New: Ensure currentPage is valid when data changes
 	useEffect(() => {
-		if (currentPage > totalPages) {
-			setCurrentPage(totalPages > 0 ? totalPages : 1);
-		}
-	}, [currentPage, totalPages]);
+		setCurrentPage(totalPages > 0 ? totalPages : 1);
+	}, [data]);
 
 	const startIndex = (currentPage - 1) * rowsPerPage;
 	const paginatedData = data.slice(startIndex, startIndex + rowsPerPage);
@@ -27,7 +24,8 @@ const GenericTable = ({
 
 	const handleRowsPerPageChange = (option) => {
 		setRowsPerPage(option);
-		setCurrentPage(1);
+		const currentTotalPages = Math.ceil(data.length / option);
+		setCurrentPage(currentTotalPages < currentPage ? currentTotalPages : currentPage);
 	};
 	return (
 		<>

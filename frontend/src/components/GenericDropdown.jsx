@@ -7,7 +7,7 @@ const GenericDropdown = ({
 	buttonName,
 	className,
 	children,
-	maxHeight = '32',
+	maxHeight = '128',
 	showArrow = true,
 	dataTestId,
 }) => {
@@ -87,6 +87,7 @@ const GenericDropdown = ({
 					} ${menuPositionRight ? 'right-0' : 'left-0'}`}
 					style={{
 						minWidth: dropdownWidth > 0 ? `${dropdownWidth}px` : 'auto',
+						maxHeight: maxHeight === 'none' ? 'none' : `${maxHeight}px`,
 					}}
 					role="menu"
 				>

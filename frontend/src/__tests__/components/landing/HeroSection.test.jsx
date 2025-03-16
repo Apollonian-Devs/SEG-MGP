@@ -49,6 +49,18 @@ describe('HeroSection Component', () => {
 		expect(faqButton).toHaveAttribute('href', '/helpfaq');
 	});
 
+	it('renders the Github button with correct link', () => {
+		renderWithRouter();
+		const githubButton = screen.getByRole('link', {
+			name: /Github Repository/i,
+		});
+		expect(githubButton).toBeInTheDocument();
+		expect(githubButton).toHaveAttribute(
+			'href',
+			'https://github.com/Lluc4s/SEG-MGP'
+		);
+	});
+
 	it('renders the GIF1 image', () => {
 		renderWithRouter();
 		const gifImage = screen.getByAltText('GIF 1');

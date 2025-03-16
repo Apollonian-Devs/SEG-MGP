@@ -8,6 +8,7 @@ import NotificationsTab from '../components/Notification';
 import TicketDetails from '../components/TicketDetails';
 import Popup from '../components/Popup';
 import { CircleUserRound } from 'lucide-react';
+import GenericButton from '../components/GenericButton';
 
 const Dashboard = () => {
 	const [current_user, setCurrent_user] = useState(null);
@@ -17,6 +18,18 @@ const Dashboard = () => {
 	const [tickets, setTickets] = useState([]);
 	const [selectedTicket, setSelectedTicket] = useState(null);
 	const [isPopupOpen, setPopupOpen] = useState(false);
+
+
+	const [lightMode, setLightMode] = useState(() => {
+		return localStorage.getItem("lightMode") === "false" ? false : true;
+	  });
+	
+	  // Save mode in localStorage and apply dark mode class
+	  useEffect(() => {
+		localStorage.setItem("lightMode", lightMode);
+		document.documentElement.classList.toggle("dark", !lightMode);
+	  }, [lightMode]);
+
 
 	const fetchCurrentUser = async () => {
 		try {
@@ -99,6 +112,18 @@ const Dashboard = () => {
 		return <p>Loading user details...</p>;
 	}
 	return (
+		<div className="min-h-screen w-full flex flex-col items-center transition-colors duration-500">
+		{/* Dark Mode Toggle */}
+		<div className="flex justify-center py-6">
+		  <GenericButton
+			onClick={() => setLightMode(!lightMode)}
+			className="bg-red-500 text-white px-4 py-2 rounded-md"
+		  >
+			{lightMode ? "Switch to Dark Mode" : "Switch to Light Mode"}
+		  </GenericButton>
+		</div>
+
+
 		<div data-testid="dashboard-container">
 			<div className="flex justify-between items-center gap-x-5 mb-5">
 				<GenericDropdown
@@ -123,6 +148,8 @@ const Dashboard = () => {
 					<NotificationsTab user={current_user} />
 				</div>
 			</div>
+
+			<div className="bg-white text-black p-6 rounded-xl shadow-lg">
 			<TicketsCard
 				user={current_user}
 				officers={
@@ -136,6 +163,7 @@ const Dashboard = () => {
 				setSelectedTicket={setSelectedTicket}
 				fetchTickets={fetchTickets}
 			/>
+			</div>
 
 			<Popup isOpen={isPopupOpen} onClose={closePopup}>
 				{popupType === 'addTicket' && <AddTicketPopup />}
@@ -144,6 +172,7 @@ const Dashboard = () => {
 				)}
 			</Popup>
 		</div>
+	</div>
 	);
 };
 

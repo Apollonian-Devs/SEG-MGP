@@ -6,12 +6,12 @@ import {
   within,
 } from "@testing-library/react";
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import OfficersDropdown from "../components/OfficersDropdown";
-import TicketsCard from "../components/TicketsCard";
-import api from "../api";
+import OfficersDropdown from "../../components/OfficersDropdown";
+import TicketsCard from "../../components/TicketsCard";
+import api from "../../api";
 import { MemoryRouter } from "react-router-dom";
 import { useState } from "react";
-import { ACCESS_TOKEN } from "../constants";
+import { ACCESS_TOKEN } from "../../constants";
 import React from "react";
 
 vi.mock("../api");

@@ -14,7 +14,7 @@ import { useState } from "react";
 import { ACCESS_TOKEN } from "../../constants";
 import React from "react";
 
-vi.mock("../api");
+vi.mock("../../api");
 
 describe("TicketsCard - rendering", () => {
   beforeEach(() => {
@@ -826,7 +826,9 @@ describe("TicketsCard - Filtering", () => {
 
   it("handle case where no tickets are present corectly", async () => {
     const setShowingTickets = vi.fn();
-    vi.spyOn(React, "useState").mockReturnValueOnce([[], setShowingTickets]);
+    vi.spyOn(React, "useState")
+      .mockImplementationOnce(() => [[], setShowingTickets])
+      .mockImplementation((initial) => [initial, vi.fn()]);
 
     render(<TicketsCard user={user} tickets={[]} officers={officers} />);
 
@@ -845,11 +847,8 @@ describe("TicketsCard - Filtering", () => {
     const applyButton = screen.getByText("Apply");
     fireEvent.click(applyButton);
 
-    // Close dropdown
-    fireEvent.click(filterTicketsDropdown);
-
     //await waitFor(() => {
-    //  expect(setShowingTicketsSpy).toHaveBeenCalledWith([]);
+    //  expect(setShowingTickets).toHaveBeenCalledWith([]);
     //});
   });
 });

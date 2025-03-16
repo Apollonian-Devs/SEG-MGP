@@ -1,6 +1,6 @@
 import React from 'react';
 import gif1 from '../../assets/feel-me-think-about-it.gif';
-import video2 from '../../assets/video2.mp4';
+import gif2 from '../../assets/coding.gif';
 import { motion } from 'framer-motion';
 
 const HeroSection = () => {
@@ -52,15 +52,11 @@ const HeroSection = () => {
 					alt="GIF 1"
 					className="rounded-lg w-1/2 border-4 border-black shadow-lg mx-2 my-4 max-h-[300px]"
 				/>
-				<video
-					autoPlay
-					loop
-					muted
-					className="rounded-lg w-1/2 border-4 border-black shadow-lg mx-2 my-4 max-h-[300px] object-fill"
-				>
-					<source src={video2} type="video/mp4" /> Your browser does not support
-					the video tag.
-				</video>
+				<img
+					src={gif2}
+					alt="GIF 2"
+					className="rounded-lg w-1/2 border-4 border-black shadow-lg mx-2 my-4 max-h-[300px]"
+				/>
 			</motion.div>
 		</motion.div>
 	);

@@ -8,6 +8,7 @@ import NotFound from './pages/NotFound';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Toaster } from 'sonner';
 import Layout from './Layout';
+import Departments from './components/Departments';
 
 function Logout() {
 	localStorage.clear();
@@ -39,6 +40,7 @@ function App() {
 					<Route path="/register" element={<RegisterAndLogout />} />
 					<Route path="/logout" element={<Logout />} />
 					<Route path="/helpfaq" element={<HelpQA />} />
+					<Route path = "/departmentsList" element={<Departments />} />
 					<Route path="*" element={<NotFound />} />
 				</Routes>
 			</Layout>

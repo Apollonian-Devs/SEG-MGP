@@ -40,25 +40,24 @@ const faqData = [
     },
   ];
   
-
-const HelpQA = () => {
-  return (
-    <div className="max-w-3xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4 text-center">Frequently Asked Questions</h1>
-      <div className="space-y-3">
-        {faqData.map((faq, index) => (
-          <GenericDropdown
-            key={index}
-            buttonName={faq.question}
-            className="w-full text-left p-4 rounded-md bg-white border border-gray-200 shadow-sm hover:bg-gray-100 transition"
-            >
-          <div className="p-3 text-gray-700 border-t border-gray-200">{faq.answer}</div>
-        </GenericDropdown>
-        
-        ))}
+  const HelpQA = () => {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-3xl">
+          <h1 className="text-2xl font-bold mb-4 text-center">Frequently Asked Questions</h1>
+          <div className="space-y-3">
+            {faqData.map((faq, index) => (
+              <GenericDropdown
+                key={index}
+                buttonName={faq.question}
+                className="w-full text-left p-4 rounded-md bg-white border border-gray-200 shadow-sm hover:bg-gray-100 transition"
+              >
+                <div className="p-3 text-gray-700 border-t border-gray-200">{faq.answer}</div>
+              </GenericDropdown>
+            ))}
+          </div>
+        </div>
       </div>
-    </div>
-  );
-};
-
-export default HelpQA;
+    );
+  };
+export default HelpQA;  

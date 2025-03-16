@@ -275,7 +275,7 @@ const TicketsCard = ({
 								{['Subject', 'Status', 'Priority'].map((header) => (
 									<th
 										key={header}
-										className="px-6 py-3 text-start text-xs font-medium text-gray-500 cursor-pointer"
+										className="px-6 py-3 text-start text-xs font-medium cursor-pointer"
 									>
 										<GenericButton
 											className="flex items-center w-full gap-x-1"
@@ -291,13 +291,13 @@ const TicketsCard = ({
 									</th>
 								))}
 
-								<th className="px-6 py-3 text-end text-xs font-medium text-gray-500">
+								<th className="px-6 py-3 text-end text-xs font-medium">
 									<p>Actions</p>
 								</th>
 
 								{user.is_staff && (
 									<>
-										<th className="px-6 py-3 text-end text-xs font-medium text-gray-500">
+										<th className="px-6 py-3 text-end text-xs font-medium">
 											<p>Redirect</p>
 										</th>
 									</>
@@ -305,14 +305,14 @@ const TicketsCard = ({
 
 								{user.is_superuser && (
 									<>
-										<th className="px-6 py-3 text-end text-xs font-medium text-gray-500">
+										<th className="px-6 py-3 text-end text-xs font-medium">
 											<p>Suggested Departments</p>
 										</th>
 									</>
 								)}
 								{(user.is_superuser || user.is_department_head) && (
 									<>
-										<th className="px-6 py-3 text-end text-xs font-medium text-gray-500">
+										<th className="px-6 py-3 text-end text-xs font-medium">
 											<p>Suggested Ticket Grouping</p>
 										</th>
 									</>
@@ -327,7 +327,7 @@ const TicketsCard = ({
 								{['subject', 'status', 'priority'].map((key) => (
 									<td
 										key={key}
-										className="px-6 py-4 whitespace-nowrap text-sm text-gray-800"
+										className={`px-6 py-4 whitespace-nowrap text-sm text-gray-800 ${key === 'subject' ? 'max-w-52 truncate' : ''}`}
 										onClick={() => {
 											setSelectedTicket(ticket);
 											openPopup('viewTicket');
@@ -358,7 +358,6 @@ const TicketsCard = ({
 									</td>
 								))}
 
-								{/* Chat Button */}
 								<td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium flex gap-1.5">
 									<GenericButton
 										className="flex items-center justify-items-center px-2 py-1 gap-1 text-white hover:bg-customOrange-light transition-colors duration-500 bg-customOrange-dark rounded-md"

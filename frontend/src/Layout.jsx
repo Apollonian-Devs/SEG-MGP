@@ -7,8 +7,10 @@ const Layout = ({ children }) => {
 
 	const bodyStyle = {
 		background: 'linear-gradient(to right, #ecbc76 50%, #fffef9 50%)',
-		height: '100vh',
+		minHeight: '100vh',
 		margin: '0',
+		paddingTop: '40px',
+		paddingBottom: '40px',
 		display: 'flex',
 		justifyContent: 'center',
 		alignItems: 'center',

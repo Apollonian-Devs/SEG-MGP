@@ -5,7 +5,7 @@ import GenericButton from './GenericButton';
 import Popup from './Popup';
 import { playSound } from "../utils/SoundUtils";
 
-const NewTicketButton = () => {
+const NewTicketButton = ({fetchTickets}) => {
 	const [isPopupOpen, setPopupOpen] = useState(false);
 
 	const togglePopup = () => {
@@ -34,7 +34,7 @@ const NewTicketButton = () => {
 				height="h-fit"
 				data-testid="new-ticket-popup"
 			>
-				<NewTicketForm onClose={togglePopup} togglePopup={togglePopup} />
+				<NewTicketForm onClose={togglePopup} togglePopup={togglePopup} fetchTickets={fetchTickets}/>
 			</Popup>
 		</>
 	);

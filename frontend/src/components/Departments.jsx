@@ -2,6 +2,16 @@ import React, { useState, useEffect } from "react";
 import TeamCard from "./TeamCard";
 import GenericButton from "./GenericButton";
 
+// Import all images
+import JosiahImage1 from '../assets/Josiah.png';
+import JosiahImage2 from '../assets/Rahat.png';
+import JosiahImage3 from '../assets/Lucas.png';
+import JosiahImage4 from '../assets/Dimitrios.png';
+import JosiahImage5 from '../assets/Siddhant.png';
+import JosiahImage6 from '../assets/Fahim.png';
+import JosiahImage7 from '../assets/Ryan.png';
+import JosiahImage8 from '../assets/Adam.png';
+
 const Departments = () => {
   // State for light/dark mode
   const [lightMode, setLightMode] = useState(false);
@@ -15,8 +25,20 @@ const Departments = () => {
     }
   }, [lightMode]);
 
+  // Team members data with unique images
+  const teamMembers = [
+    { name: "Josiah", profession: "Web Developer", imageSrc: JosiahImage1 },
+    { name: "Josiah", profession: "Web Developer", imageSrc: JosiahImage2 },
+    { name: "Josiah", profession: "Web Developer", imageSrc: JosiahImage3 },
+    { name: "Josiah", profession: "Web Developer", imageSrc: JosiahImage4 },
+    { name: "Josiah", profession: "Web Developer", imageSrc: JosiahImage5 },
+    { name: "Josiah", profession: "Web Developer", imageSrc: JosiahImage6 },
+    { name: "Josiah", profession: "Web Developer", imageSrc: JosiahImage7 },
+    { name: "Josiah", profession: "Web Developer", imageSrc: JosiahImage8 },
+  ];
+
   return (
-<div className={`${lightMode ? "bg-white text-black" : "bg-gray-900 text-white"} min-h-screen transition-colors duration-500 ease-in-out`}>
+    <div className={`${lightMode ? "bg-white text-black" : "bg-gray-900 text-white"} min-h-screen transition-colors duration-500 ease-in-out`}>
 
       {/* Toggle Button */}
       <div className="flex justify-center py-6">
@@ -45,10 +67,14 @@ const Departments = () => {
 
           {/* Team Members */}
           <div className="flex flex-wrap -mx-4 justify-center">
-            <TeamCard name="Coriss Ambady" profession="Web Developer" imageSrc="https://i.ibb.co/T1J9LD4/image-03-2.jpg" />
-            <TeamCard name="Coriss Ambady" profession="Web Developer" imageSrc="https://i.ibb.co/8P6cvVy/image-01-1.jpg" />
-            <TeamCard name="Coriss Ambady" profession="Web Developer" imageSrc="https://i.ibb.co/30tGtjP/image-04.jpg" />
-            <TeamCard name="Coriss Ambady" profession="Web Developer" imageSrc="https://i.ibb.co/yVVT0Dp/image-02-2.jpg" />
+            {teamMembers.map((member, index) => (
+              <TeamCard
+                key={index}
+                name={member.name}
+                profession={member.profession}
+                imageSrc={member.imageSrc}
+              />
+            ))}
           </div>
         </div>
       </section>
@@ -57,3 +83,5 @@ const Departments = () => {
 };
 
 export default Departments;
+
+

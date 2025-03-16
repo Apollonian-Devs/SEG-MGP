@@ -1,196 +1,70 @@
-import React from "react";
+import React from 'react';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 
 const TeamCard = ({ imageSrc, name, profession }) => {
-    return (
-      <>
-        <div className="w-full px-4 md:w-1/2 xl:w-1/4">
-          <div className="mx-auto mb-10 w-full max-w-[370px]">
-            <div className="relative overflow-hidden rounded-lg">
-              <img src={imageSrc} alt="" className="w-full" />
-              <div className="absolute bottom-5 left-0 w-full text-center">
-                <div className="relative mx-5 overflow-hidden rounded-lg bg-white px-3 py-5 dark:bg-dark-2">
-                  <h3 className="text-base font-semibold text-dark dark:text-white">
-                    {name}
-                  </h3>
-                  <p className="text-xs text-body-color dark:text-dark-6">
-                    {profession}
-                  </p>
-                  <div>
-                    <span className="absolute bottom-0 left-0">
-                      <svg
-                        width={61}
-                        height={30}
-                        viewBox="0 0 61 30"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <circle
-                          cx={16}
-                          cy={45}
-                          r={45}
-                          fill="#13C296"
-                          fillOpacity="0.11"
-                        />
-                      </svg>
-                    </span>
-                    <span className="absolute right-0 top-0">
-                      <svg
-                        width={20}
-                        height={25}
-                        viewBox="0 0 20 25"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <circle
-                          cx="0.706257"
-                          cy="24.3533"
-                          r="0.646687"
-                          transform="rotate(-90 0.706257 24.3533)"
-                          fill="#3056D3"
-                        />
-                        <circle
-                          cx="6.39669"
-                          cy="24.3533"
-                          r="0.646687"
-                          transform="rotate(-90 6.39669 24.3533)"
-                          fill="#3056D3"
-                        />
-                        <circle
-                          cx="12.0881"
-                          cy="24.3533"
-                          r="0.646687"
-                          transform="rotate(-90 12.0881 24.3533)"
-                          fill="#3056D3"
-                        />
-                        <circle
-                          cx="17.7785"
-                          cy="24.3533"
-                          r="0.646687"
-                          transform="rotate(-90 17.7785 24.3533)"
-                          fill="#3056D3"
-                        />
-                        <circle
-                          cx="0.706257"
-                          cy="18.6624"
-                          r="0.646687"
-                          transform="rotate(-90 0.706257 18.6624)"
-                          fill="#3056D3"
-                        />
-                        <circle
-                          cx="6.39669"
-                          cy="18.6624"
-                          r="0.646687"
-                          transform="rotate(-90 6.39669 18.6624)"
-                          fill="#3056D3"
-                        />
-                        <circle
-                          cx="12.0881"
-                          cy="18.6624"
-                          r="0.646687"
-                          transform="rotate(-90 12.0881 18.6624)"
-                          fill="#3056D3"
-                        />
-                        <circle
-                          cx="17.7785"
-                          cy="18.6624"
-                          r="0.646687"
-                          transform="rotate(-90 17.7785 18.6624)"
-                          fill="#3056D3"
-                        />
-                        <circle
-                          cx="0.706257"
-                          cy="12.9717"
-                          r="0.646687"
-                          transform="rotate(-90 0.706257 12.9717)"
-                          fill="#3056D3"
-                        />
-                        <circle
-                          cx="6.39669"
-                          cy="12.9717"
-                          r="0.646687"
-                          transform="rotate(-90 6.39669 12.9717)"
-                          fill="#3056D3"
-                        />
-                        <circle
-                          cx="12.0881"
-                          cy="12.9717"
-                          r="0.646687"
-                          transform="rotate(-90 12.0881 12.9717)"
-                          fill="#3056D3"
-                        />
-                        <circle
-                          cx="17.7785"
-                          cy="12.9717"
-                          r="0.646687"
-                          transform="rotate(-90 17.7785 12.9717)"
-                          fill="#3056D3"
-                        />
-                        <circle
-                          cx="0.706257"
-                          cy="7.28077"
-                          r="0.646687"
-                          transform="rotate(-90 0.706257 7.28077)"
-                          fill="#3056D3"
-                        />
-                        <circle
-                          cx="6.39669"
-                          cy="7.28077"
-                          r="0.646687"
-                          transform="rotate(-90 6.39669 7.28077)"
-                          fill="#3056D3"
-                        />
-                        <circle
-                          cx="12.0881"
-                          cy="7.28077"
-                          r="0.646687"
-                          transform="rotate(-90 12.0881 7.28077)"
-                          fill="#3056D3"
-                        />
-                        <circle
-                          cx="17.7785"
-                          cy="7.28077"
-                          r="0.646687"
-                          transform="rotate(-90 17.7785 7.28077)"
-                          fill="#3056D3"
-                        />
-                        <circle
-                          cx="0.706257"
-                          cy="1.58989"
-                          r="0.646687"
-                          transform="rotate(-90 0.706257 1.58989)"
-                          fill="#3056D3"
-                        />
-                        <circle
-                          cx="6.39669"
-                          cy="1.58989"
-                          r="0.646687"
-                          transform="rotate(-90 6.39669 1.58989)"
-                          fill="#3056D3"
-                        />
-                        <circle
-                          cx="12.0881"
-                          cy="1.58989"
-                          r="0.646687"
-                          transform="rotate(-90 12.0881 1.58989)"
-                          fill="#3056D3"
-                        />
-                        <circle
-                          cx="17.7785"
-                          cy="1.58989"
-                          r="0.646687"
-                          transform="rotate(-90 17.7785 1.58989)"
-                          fill="#3056D3"
-                        />
-                      </svg>
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </>
-    );
+  // Motion values to track mouse position
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  // Springs for smoother animation (optional)
+  const xSpring = useSpring(mouseX, { stiffness: 150, damping: 20 });
+  const ySpring = useSpring(mouseY, { stiffness: 150, damping: 20 });
+
+  // Convert mouse x/y to rotation angles
+  // Adjust [0, 300] to match the width/height of the card for best effect
+  const rotateX = useTransform(ySpring, [0, 300], [15, -15]);
+  const rotateY = useTransform(xSpring, [0, 300], [-15, 15]);
+
+  // Handle mouse movement within the card
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    // Get x/y relative to the card
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    mouseX.set(x);
+    mouseY.set(y);
   };
+
+  // Reset to center on mouse leave
+  const handleMouseLeave = () => {
+    // Choose the "center" of your [0, 300] range (150 here)
+    mouseX.set(150);
+    mouseY.set(150);
+  };
+
+  return (
+    <div className="w-full px-4 md:w-1/2 xl:w-1/4" style={{ perspective: 1000 }}>
+      <motion.div
+        className="mx-auto mb-10 w-full max-w-[370px] bg-white dark:bg-dark rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          rotateX,
+          rotateY,
+          transformStyle: 'preserve-3d',
+        }}
+      >
+        <div className="relative">
+          <img
+            src={imageSrc}
+            alt={`${name}'s photo`}
+            className="w-full h-60 object-cover"
+          />
+          {/* Optional overlay for a subtle gradient effect */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent opacity-40"></div>
+        </div>
+        <div className="p-5 text-center">
+          <h3 className="text-xl font-semibold text-dark dark:text-white mb-1">
+            {name}
+          </h3>
+          <p className="text-sm text-body-color dark:text-dark-6">
+            {profession}
+          </p>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
 
 export default TeamCard;

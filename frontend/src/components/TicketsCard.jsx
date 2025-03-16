@@ -28,7 +28,7 @@ import {
 } from 'lucide-react';
 import FilterTicketsDropdown from './FilterTicketsDropdown';
 import GenericDropdown from './GenericDropdown';
-import { playSound } from '../utils/SoundUtils';
+
 
 const TicketsCard = ({
 	user,
@@ -41,6 +41,7 @@ const TicketsCard = ({
 	setSelectedTicket,
 	fetchTickets,
 }) => {
+
 	const [showingTickets, setShowingTickets] = useState(tickets);
 	const [isChatOpen, setIsChatOpen] = useState(false);
 	const [selectedOfficers, setSelectedOfficers] = useState({});

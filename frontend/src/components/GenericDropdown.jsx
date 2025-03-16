@@ -7,7 +7,7 @@ const GenericDropdown = ({
   buttonName,
   className = '',
   children,
-  maxHeight = 100,        // numeric: in pixels
+  maxHeight = 150,        // numeric: in pixels
   showArrow = true,
 }) => {
   const [isOpen, setIsOpen] = useState(false);

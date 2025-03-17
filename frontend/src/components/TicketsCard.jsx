@@ -28,13 +28,13 @@ import {
 } from 'lucide-react';
 import FilterTicketsDropdown from './FilterTicketsDropdown';
 import GenericDropdown from './GenericDropdown';
+import TicketDetails from './TicketDetails';
 import { playSound } from '../utils/SoundUtils';
 
 const TicketsCard = ({
 	user,
 	officers,
 	admin,
-	openPopup,
 	tickets,
 	setTickets,
 	selectedTicket,
@@ -47,6 +47,7 @@ const TicketsCard = ({
 	const [isChangeDateOpen, setChangeDateOpen] = useState(null);
 	const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 	const [isPathOpen, setIsPathOpen] = useState(false);
+	const [isDetailOpen, setIsDetailOpen] = useState(false);
 	const [selectedDepartments, setSelectedDepartments] = useState({});
 	const [suggestedDepartments, setSuggestedDepartments] = useState({});
 	const [suggestedGrouping, setSuggestedGrouping] = useState({});
@@ -173,6 +174,18 @@ const TicketsCard = ({
 							/>
 						</PopUp>
 
+						<PopUp
+							isOpen={isDetailOpen}
+							onClose={() => {
+								setSelectedTicket(null);
+								setIsDetailOpen(false);
+							}}
+							width="w-fit min-w-[30%] max-w-[60%]"
+							height="h-fit"
+						>
+							<TicketDetails ticket={selectedTicket} />
+						</PopUp>
+
 						{/* Change Due Date Pop-up */}
 						<PopUp
 							isOpen={isChangeDateOpen}
@@ -237,7 +250,7 @@ const TicketsCard = ({
 							{user.is_staff &&
 								(user.is_superuser || user.is_department_head) && (
 									<GenericDropdown
-										className="inline-flex items-center justify-center gap-2 text-white hover:bg-customOrange-light transition-colors duration-500 bg-customOrange-dark rounded-md px-3 py-1"
+										className="inline-flex items-center justify-center gap-2 text-white hover:bg-customOrange-light transition-colors duration-500 bg-customOrange-dark rounded-md px-3 py-1 h-10"
 										showArrow={false}
 										buttonName={
 											<div className="flex items-center gap-2">
@@ -331,7 +344,7 @@ const TicketsCard = ({
 										className={`px-6 py-4 whitespace-nowrap text-sm text-gray-800 ${key === 'subject' ? 'max-w-52 truncate' : ''}`}
 										onClick={() => {
 											setSelectedTicket(ticket);
-											openPopup('viewTicket');
+											setIsDetailOpen(true);
 										}}
 									>
 										{key === 'status' ? (
@@ -402,7 +415,7 @@ const TicketsCard = ({
 												className="flex items-center justify-center px-1 py-1 gap-1"
 												showArrow={false}
 												dataTestId="more-actions-dropdown"
-										>
+											>
 												<div className="flex flex-col space-y-2 p-2">
 													{/* Change Due Date */}
 													<GenericButton

@@ -13,10 +13,8 @@ const Dashboard = () => {
 	const [current_user, setCurrent_user] = useState(null);
 	const [officers, setOfficers] = useState([]);
 	const [admin, setAdmin] = useState(null);
-	const [popupType, setPopupType] = useState(null);
 	const [tickets, setTickets] = useState([]);
 	const [selectedTicket, setSelectedTicket] = useState(null);
-	const [isPopupOpen, setPopupOpen] = useState(false);
 
 	const fetchCurrentUser = async () => {
 		try {
@@ -135,10 +133,6 @@ const Dashboard = () => {
 				setSelectedTicket={setSelectedTicket}
 				fetchTickets={fetchTickets}
 			/>
-
-			<Popup isOpen={isPopupOpen} onClose={closePopup}>
-				{popupType === 'addTicket' && <AddTicketPopup />}
-			</Popup>
 		</div>
 	);
 };

@@ -32,9 +32,10 @@ const DepartmentsDropdown = ({ setSelectedDepartment }) => {
 	}, []);
 
 	const handleSelect = (department) => {
-		setSelectedDepartment(department);
-		setSelectedDeptState(department);
-	};
+		selectedDept && selectedDept.id === department.id
+		  ? null 
+		  : (setSelectedDepartment(department), setSelectedDeptState(department)); 
+	  };
 
 	if (loading) {
 		return <p>Loading departments...</p>;

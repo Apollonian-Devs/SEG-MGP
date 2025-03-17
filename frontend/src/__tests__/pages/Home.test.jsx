@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import Home from '../../pages/Home';
 
 // Mocking child components since we are only testing if Home renders them

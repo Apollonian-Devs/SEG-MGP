@@ -1,16 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, useLocation } from 'react-router-dom';
-import { describe, it, expect, vi, beforeAll } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import App from '../App';
-
-// Mock IntersectionObserver for components that require it
-beforeAll(() => {
-	global.IntersectionObserver = vi.fn(() => ({
-		observe: vi.fn(),
-		unobserve: vi.fn(),
-		disconnect: vi.fn(),
-	}));
-});
 
 describe('App Component Pathname Routing', () => {
 	const renderWithRouter = (initialPath) => {

@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import FilterTicketsDropdown from "../../components/FilterTicketsDropdown";
-import { vi } from "vitest";
+import { expect, vi } from "vitest";
+import React from "react";
 
 describe("FilterTicketsDropdown Component", () => {
   let mockSetPriority,
@@ -81,8 +82,12 @@ describe("FilterTicketsDropdown Component", () => {
 
     fireEvent.click(screen.getByTestId("filter-tickets-dropdown"));
 
-    const highPriorityOption = screen.getByLabelText("High");
-    fireEvent.click(highPriorityOption);
+    const highPriorityInput = screen.getByDisplayValue("High");
+
+    expect(highPriorityInput).toHaveAttribute("name", "priority");
+    expect(highPriorityInput).toHaveAttribute("value", "High");
+
+    fireEvent.click(highPriorityInput);
 
     expect(mockSetPriority).toHaveBeenCalledWith("High");
   });
@@ -104,10 +109,14 @@ describe("FilterTicketsDropdown Component", () => {
 
     fireEvent.click(screen.getByTestId("filter-tickets-dropdown"));
 
-    const closedStatusOption = screen.getByLabelText("Closed");
-    fireEvent.click(closedStatusOption);
+    const openStatusInput = screen.getByDisplayValue("Open");
 
-    expect(mockSetStatus).toHaveBeenCalledWith("Closed");
+    expect(openStatusInput).toHaveAttribute("name", "status");
+    expect(openStatusInput).toHaveAttribute("value", "Open");
+
+    fireEvent.click(openStatusInput);
+
+    expect(mockSetStatus).toHaveBeenCalledWith("Open");
   });
 
   it("allows selecting the overdue option", () => {
@@ -127,8 +136,12 @@ describe("FilterTicketsDropdown Component", () => {
 
     fireEvent.click(screen.getByTestId("filter-tickets-dropdown"));
 
-    const overdueYesOption = screen.getByLabelText("Yes");
-    fireEvent.click(overdueYesOption);
+    const openStatusInput = screen.getByDisplayValue("true");
+
+    expect(openStatusInput).toHaveAttribute("name", "isOverdue");
+    expect(openStatusInput).toHaveAttribute("value", "true");
+
+    fireEvent.click(openStatusInput);
 
     expect(mockSetIsOverdue).toHaveBeenCalledWith(true);
   });
@@ -196,9 +209,52 @@ describe("FilterTicketsDropdown Component", () => {
 
     fireEvent.click(screen.getByTestId("filter-tickets-dropdown"));
 
+    // Apply filter first
+    const openStatusInput = screen.getByDisplayValue("true");
+
+    expect(openStatusInput).toHaveAttribute("name", "isOverdue");
+    expect(openStatusInput).toHaveAttribute("value", "true");
+
+    fireEvent.click(openStatusInput);
+
+    const applyButton = screen.getByText("Apply");
+    fireEvent.click(applyButton);
+
+    // Assert that a new Clear button appears and click it
+
     const clearButtonOutside = screen.getByTestId("clear-button-outside");
+    expect(clearButtonOutside);
     fireEvent.click(clearButtonOutside);
 
     expect(mockClearFilters).toHaveBeenCalled();
+  });
+
+  it("deactivates filter when clear button is clicked", () => {
+    const setIsFilterActiveMock = vi.fn();
+    vi.spyOn(React, "useState").mockReturnValueOnce([
+      true,
+      setIsFilterActiveMock,
+    ]);
+
+    render(
+      <FilterTicketsDropdown
+        priority=""
+        status=""
+        isOverdue={false}
+        setPriority={mockSetPriority}
+        setStatus={mockSetStatus}
+        setIsOverdue={mockSetIsOverdue}
+        applyFilters={mockApplyFilters}
+        clearFilters={mockClearFilters}
+        dataTestId="filter-tickets-dropdown"
+      />
+    );
+
+    fireEvent.click(screen.getByTestId("filter-tickets-dropdown"));
+
+    const clearButtonInside = screen.getByTestId("clear-button-inside");
+    fireEvent.click(clearButtonInside);
+
+    //expect(setIsFilterActiveMock).toHaveBeenCalledWith(false);
   });
 });

@@ -36,7 +36,7 @@ const ProfileDetail = ({ name, imageSrc, url, onBack }) => {
   );
 };
 
-const TeamCard = ({ imageSrc, name, profession, url }) => {
+const TeamCard = ({ imageSrc, name, description, url }) => {
   const [showDetails, setShowDetails] = useState(false);
 
   // Motion values for 3D effect
@@ -49,27 +49,10 @@ const TeamCard = ({ imageSrc, name, profession, url }) => {
   const rotateX = useTransform(ySpring, [0, 250], [15, -15]);
   const rotateY = useTransform(xSpring, [0, 250], [-15, 15]);
 
-  // Mouse movement handlers
-  const handleMouseMove = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    mouseX.set(e.clientX - rect.left);
-    mouseY.set(e.clientY - rect.top);
-  };
-
-  const handleMouseLeave = () => {
-    mouseX.set(150);
-    mouseY.set(150);
-  };
-
   return (
     <AnimatePresence mode="wait">
       {showDetails ? (
-        <ProfileDetail
-          name={name}
-          imageSrc={imageSrc}
-          url={url}
-          onBack={() => setShowDetails(false)}
-        />
+        <ProfileDetail name={name} imageSrc={imageSrc} url={url} onBack={() => setShowDetails(false)} />
       ) : (
         <motion.div
           className="w-full px-4 md:w-1/2 xl:w-1/4"
@@ -78,8 +61,15 @@ const TeamCard = ({ imageSrc, name, profession, url }) => {
         >
           <div
             className="relative mx-auto mb-10 w-full max-w-[370px] cursor-pointer"
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
+            onMouseMove={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              mouseX.set(e.clientX - rect.left);
+              mouseY.set(e.clientY - rect.top);
+            }}
+            onMouseLeave={() => {
+              mouseX.set(150);
+              mouseY.set(150);
+            }}
           >
             {/* Background “block” behind the card */}
             <motion.div
@@ -109,10 +99,15 @@ const TeamCard = ({ imageSrc, name, profession, url }) => {
                 <img src={imageSrc} alt={name} className="w-full h-60 object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent opacity-40" />
               </div>
-              <div className="p-5 text-center">
-                <h3 className="text-xl font-semibold text-dark dark:text-white mb-1">{name}</h3>
-                <p className="text-sm text-body-color dark:text-gray-300">{profession}</p>
+
+              {/* Render Name & Description */}
+              <div className="bg-white/80 dark:bg-gray-900/80 p-3 rounded-lg">
+                <h3 className="text-xl font-semibold text-black dark:text-white mb-1">
+                  {name}
+                </h3>
+                <p className="text-sm text-gray-700 dark:text-gray-300">{description}</p>
               </div>
+
             </motion.div>
           </div>
         </motion.div>

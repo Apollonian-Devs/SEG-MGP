@@ -5,7 +5,7 @@ import KCLImage from "../assets/kclFaculty.png";
 
 const Departments = () => {
 
-  
+
   const [lightMode, setLightMode] = useState(false);
 
 
@@ -23,7 +23,7 @@ const Departments = () => {
     { 
       name: 'Faculty of Arts & Humanities', 
       description: 'Covers literature, history, philosophy, and creative industries.', 
-      url: 'https://www.kcl.ac.uk/artshums' 
+      url: 'https://www.kcl.ac.uk/artshums',
     },
     { 
       name: 'Faculty of Social Science & Public Policy', 

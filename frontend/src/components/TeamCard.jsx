@@ -1,9 +1,7 @@
-
-
 import React, { useState } from 'react';
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
 
-const ProfileDetail = ({ name, profession, imageSrc, onBack }) => {
+const ProfileDetail = ({ name, imageSrc, url, onBack }) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
@@ -14,7 +12,20 @@ const ProfileDetail = ({ name, profession, imageSrc, onBack }) => {
     >
       <img src={imageSrc} alt={name} className="w-40 h-40 mx-auto rounded-full mb-4" />
       <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">{name}</h2>
-      <p className="text-lg text-gray-600 dark:text-gray-300">{profession}</p>
+
+      {/* Dynamic URL for each department */}
+      <p className="text-lg text-gray-600 dark:text-gray-300">
+        Find out more about {name} at{' '}
+        <a 
+          href={url}  
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="text-blue-500 hover:underline"
+        >
+          {url}
+        </a>
+      </p>
+
       <button
         onClick={onBack}
         className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
@@ -25,17 +36,20 @@ const ProfileDetail = ({ name, profession, imageSrc, onBack }) => {
   );
 };
 
-const TeamCard = ({ imageSrc, name, profession }) => {
+const TeamCard = ({ imageSrc, name, profession, url }) => {
   const [showDetails, setShowDetails] = useState(false);
 
   // Motion values for 3D effect
   const mouseX = useMotionValue(150);
   const mouseY = useMotionValue(150);
-  const xSpring = useSpring(mouseX, { stiffness: 150, damping: 10 });
-  const ySpring = useSpring(mouseY, { stiffness: 150, damping: 20 });
-  const rotateX = useTransform(ySpring, [0, 250], [20, -20]);
-  const rotateY = useTransform(xSpring, [0, 250], [-20, 20]);
+  const xSpring = useSpring(mouseX, { stiffness: 120, damping: 15 });
+  const ySpring = useSpring(mouseY, { stiffness: 120, damping: 15 });
 
+  // Convert mouse x/y to rotation angles for 3D effect
+  const rotateX = useTransform(ySpring, [0, 250], [15, -15]);
+  const rotateY = useTransform(xSpring, [0, 250], [-15, 15]);
+
+  // Mouse movement handlers
   const handleMouseMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
     mouseX.set(e.clientX - rect.left);
@@ -52,8 +66,8 @@ const TeamCard = ({ imageSrc, name, profession }) => {
       {showDetails ? (
         <ProfileDetail
           name={name}
-          profession={profession}
           imageSrc={imageSrc}
+          url={url}
           onBack={() => setShowDetails(false)}
         />
       ) : (
@@ -67,19 +81,21 @@ const TeamCard = ({ imageSrc, name, profession }) => {
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
           >
+            {/* Background “block” behind the card */}
             <motion.div
               className="absolute top-0 left-0 w-full h-full rounded-xl bg-gray-300 shadow-xl"
               style={{
                 rotateX,
                 rotateY,
                 transformStyle: 'preserve-3d',
-                scale: 1.05,
-                y: '10px',
-                x: '10px',
+                scale: 1.05,   
+                y: '10px',    
+                x: '10px',    
                 zIndex: 0,
               }}
             />
 
+            {/* Foreground “main card” */}
             <motion.div
               className="relative w-full h-full rounded-xl overflow-hidden bg-white dark:bg-dark shadow-lg"
               style={{
@@ -106,4 +122,3 @@ const TeamCard = ({ imageSrc, name, profession }) => {
 };
 
 export default TeamCard;
-

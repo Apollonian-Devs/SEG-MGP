@@ -31,14 +31,14 @@ describe('DepartmentsDropdown', () => {
     vi.clearAllMocks();
   });
 
-  test('shows loading state initially', () => {
+  it('shows loading state initially', () => {
     api.get.mockImplementation(() => new Promise(() => {})); 
     
     render(<DepartmentsDropdown setSelectedDepartment={mockSetSelectedDepartment} />);
     expect(screen.getByText('Loading departments...')).toBeInTheDocument();
   });
 
-  test('displays departments after successful fetch', async () => {
+  it('displays departments after successful fetch', async () => {
     api.get.mockResolvedValue({ data: mockDepartments });
     
     render(<DepartmentsDropdown setSelectedDepartment={mockSetSelectedDepartment} />);
@@ -54,7 +54,7 @@ describe('DepartmentsDropdown', () => {
     });
   });
 
-  test('handles API error', async () => {
+  it('handles API error', async () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     api.get.mockRejectedValue({ response: { data: 'Error' }, message: 'API Error' });
     
@@ -71,7 +71,7 @@ describe('DepartmentsDropdown', () => {
     consoleErrorSpy.mockRestore();
   });
 
-  test('selects department and updates state', async () => {
+  it('selects department and updates state', async () => {
     api.get.mockResolvedValue({ data: mockDepartments });
     
     render(<DepartmentsDropdown setSelectedDepartment={mockSetSelectedDepartment} />);
@@ -97,7 +97,7 @@ describe('DepartmentsDropdown', () => {
     expect(displayedText).toBeInTheDocument();
   });
 
-  test('uses correct API headers', async () => {
+  it('uses correct API headers', async () => {
     api.get.mockResolvedValue({ data: mockDepartments });
     
     render(<DepartmentsDropdown setSelectedDepartment={mockSetSelectedDepartment} />);
@@ -109,7 +109,7 @@ describe('DepartmentsDropdown', () => {
     });
   });
 
-  test('handles missing access token', async () => {
+  it('handles missing access token', async () => {
     localStorage.getItem.mockImplementation(() => null);
     api.get.mockResolvedValue({ data: mockDepartments });
     

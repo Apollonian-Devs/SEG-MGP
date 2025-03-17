@@ -476,12 +476,8 @@ const TicketsCard = ({
 											<div className="flex items-center gap-2">
 												{user.is_superuser ? (
 													<DepartmentsDropdown
-														setSelectedDepartment={(dept) =>
-															setSelectedDepartments((prev) => ({
-																...prev,
-																[ticket.id]: dept,
-															}))
-														}
+														ticketId={ticket.id}
+														setSelectedDepartments={setSelectedDepartments}
 													/>
 												) : (
 													<OfficersDropdown

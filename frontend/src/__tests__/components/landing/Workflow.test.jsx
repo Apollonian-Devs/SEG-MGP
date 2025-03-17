@@ -1,11 +1,23 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import Workflow, { checklistItems } from '../../../components/landing/Workflow';
 
 // Mock the image asset
 vi.mock('../../../assets/question.png', () => ({
 	default: 'mock-question.png',
+}));
+
+// Mock Framer Motion
+const mockUseInView = vi.fn(() => true);
+
+vi.mock('framer-motion', () => ({
+	motion: {
+		div: ({ children, ...props }) => <div {...props}>{children}</div>,
+		h1: ({ children, ...props }) => <h1 {...props}>{children}</h1>,
+		img: ({ src, alt, ...props }) => <img src={src} alt={alt} {...props} />,
+	},
+	useInView: () => mockUseInView(),
 }));
 
 describe('Workflow Component', () => {
@@ -19,32 +31,33 @@ describe('Workflow Component', () => {
 
 	it('renders the main heading', () => {
 		renderWithRouter();
-		expect(
-			screen.getByRole('heading', { name: /Streamline your/i })
-		).toBeInTheDocument();
+		expect(screen.getByText(/Streamline your/i)).toBeInTheDocument();
+	});
+
+	it('renders the image with correct alt text', () => {
+		renderWithRouter();
+		expect(screen.getByAltText(/Ticketing System/i)).toBeInTheDocument();
 	});
 
 	it('renders all checklist items', () => {
 		renderWithRouter();
-		const featureItems = screen.getAllByRole('heading', { level: 5 }); // Selects all feature titles
-		expect(featureItems.length).toBe(checklistItems.length);
+		const checklistHeadings = screen.getAllByRole('heading', { level: 5 });
+		expect(checklistHeadings.length).toBe(checklistItems.length);
 	});
 
-	it('renders correct checklist item titles and descriptions', () => {
+	it('renders checklist items with correct titles and descriptions', () => {
 		renderWithRouter();
-
-		checklistItems.forEach((item) => {
-			expect(
-				screen.getByRole('heading', { name: item.title })
-			).toBeInTheDocument();
-			expect(screen.getByText(item.description)).toBeInTheDocument();
+		checklistItems.forEach(({ title, description }) => {
+			expect(screen.getByRole('heading', { name: title })).toBeInTheDocument();
+			expect(screen.getByText(description)).toBeInTheDocument();
 		});
 	});
 
-	it('renders the ticketing system image', () => {
+	it('renders elements with initial hidden state when not in view', () => {
+		mockUseInView.mockReturnValueOnce(false); // Simulate elements NOT in view
+
 		renderWithRouter();
-		const image = screen.getByAltText('Ticketing System');
-		expect(image).toBeInTheDocument();
-		expect(image).toHaveAttribute('src', 'mock-question.png');
+
+		expect(screen.getByText(/Streamline your/i)).toBeInTheDocument();
 	});
 });

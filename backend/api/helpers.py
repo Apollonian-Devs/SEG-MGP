@@ -9,21 +9,6 @@ import random
 from api.MessagesGroupingAI import *
 import yagmail
 
-"""
-STATUS_CHOICES = [
-        ("Open", "Open"),
-        ("In Progress", "In Progress"),
-        ("Awaiting Student", "Awaiting Student"),
-        ("Closed", "Closed"),
-    ]
-    
-PRIORITY_CHOICES = [
-    ("Low", "Low"),
-    ("Medium", "Medium"),
-    ("High", "High"),
-]
-
-"""
 
 def send_query(student_user, subject, description, message_body, attachments=None):
     """
@@ -166,9 +151,6 @@ def validate_redirection(from_user, to_user):
 
 
 
-
-
-
 def redirect_query(ticket, from_user, to_user, reason=None, new_status=None, new_priority=None):
     """
     Redirect ticket' from one user to another.
@@ -215,7 +197,6 @@ def redirect_query(ticket, from_user, to_user, reason=None, new_status=None, new
 
 
     return ticket
-
 
 
 
@@ -536,14 +517,14 @@ def changeTicketDueDate(ticket, user, new_due_date):
         raise PermissionDenied("Only officers or admins can change ticket due date.")
 
 
-def get_random_department():
+'''def get_random_department():
     """
     get all the officers with is_department_head as True and their corresponding departments
     return a random department from that list. you use import random for this
     """
     department_heads = Officer.objects.filter(is_department_head=True)
     department = random.choice(department_heads).department
-    return department
+    return department'''
 
 def get_department_head(department_id):
     try:

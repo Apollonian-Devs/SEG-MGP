@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import api from "../api";
 import { ACCESS_TOKEN } from "../constants";
 import GenericButton from "./GenericButton";
@@ -55,11 +55,14 @@ const Chat = ({ ticket, onClose, user }) => {
       //setError(null);
       fetchMessages();
       setMessage_body("");
-      setAttachments(undefined);
+      //setAttachments(undefined);
+      setAttachments([]);
+
       
 
       alert("Your message has been sent. Please reload the page to see the new status of your ticket.");
     } catch (err) {
+      console.error("Full error object:", err);
       setError(err.response?.data || "Failed to send text");
     }
   };

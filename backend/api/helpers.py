@@ -19,6 +19,15 @@ def send_query(student_user, subject, description, message_body, attachments=Non
     if student_user is None or student_user.is_staff or student_user.is_superuser:
         raise PermissionDenied("Only student users can create tickets.")
 
+
+    if not subject:
+        raise ValueError("Subject is required")
+    if not description:
+        raise ValueError("Description is required")
+    if not message_body:
+        raise ValueError("Message body is required")
+    
+    
     ticket = Ticket(
         subject=subject,
         description=description,

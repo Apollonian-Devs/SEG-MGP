@@ -9,57 +9,6 @@ from django.utils import timezone
 from django.core.exceptions import PermissionDenied
 from api.helpers import send_query
 
-
-'''
-def send_query(student_user, subject, description, message_body, attachments=None):
-    """
-    Creates a new ticket for 'student' user.
-    Also creates an initial TicketMessage and handles file attachments.
-    """
-
-    if student_user is None or student_user.is_staff or student_user.is_superuser:
-        raise PermissionDenied("Only student users can create tickets.")
-
-    ticket = Ticket(
-        subject=subject,
-        description=description,
-        created_by=student_user,  
-        status="Open", 
-        priority=None,  
-        due_date=None,   
-    )
-    ticket.save()
-
-    msg = TicketMessage.objects.create(
-        ticket=ticket,
-        sender_profile=student_user,
-        message_body=message_body,
-        is_internal=False
-    )
-
-    if attachments:
-        for att in attachments:
-            if "file_name" in att and "file_path" in att:
-                TicketAttachment.objects.create(
-                    message=msg,
-                    file_name=att["file_name"],
-                    file_path=att["file_path"],
-                    mime_type=att.get("mime_type", "application/octet-stream"),
-                )
-
-    TicketStatusHistory.objects.create(
-        ticket=ticket,
-        old_status=None,
-        new_status="Open",
-        changed_by_profile=student_user,
-        notes="Ticket created by student."
-    )
-
-    return ticket
-
-
-'''
-
 class TestSendQuery(TestCase):
     def setUp(self):
         self.student_user = User.objects.create_user(username="student", email="username@gmail.com", password="password")
@@ -98,3 +47,85 @@ class TestSendQuery(TestCase):
 
         mock_send_query.assert_called_once_with(self.student_user, self.subject, self.description, self.message_body, self.attachments)
 
+
+    '''
+    raise permission denied if student_user is None 
+    '''
+    def test_send_query_student_user_is_none(self):
+        with self.assertRaises(PermissionDenied):
+            send_query(None, self.subject, self.description, self.message_body, self.attachments)
+
+    '''
+    raise permission denied if student_user.is_staff
+    '''
+
+    def test_send_query_student_user_is_staff(self):
+        self.student_user.is_staff = True
+        with self.assertRaises(PermissionDenied):
+            send_query(self.student_user, self.subject, self.description, self.message_body, self.attachments)
+    '''
+    raise permission denied if student_user.is_superuser
+    '''
+    def test_send_query_student_user_is_superuser(self):
+        self.student_user.is_superuser = True
+        with self.assertRaises(PermissionDenied):
+            send_query(self.student_user, self.subject, self.description, self.message_body, self.attachments)
+
+    #(student_user, subject, description, message_body, attachments=None)
+    '''
+    test if ticket is created when subject is not provided 
+    '''
+
+    def test_send_query_subject_is_none(self):
+        with self.assertRaises(ValueError):
+            send_query(self.student_user, None, self.description, self.message_body, self.attachments)
+
+    '''
+    test if ticket is created when decscription is not provided
+    '''
+
+    def test_send_query_description_is_none(self):
+        with self.assertRaises(ValueError):
+            send_query(self.student_user, self.subject, None, self.message_body, self.attachments)
+
+    '''
+    test if ticket is created when message_body is not provided
+    '''
+
+    def test_send_query_message_body_is_none(self):
+        with self.assertRaises(ValueError):
+            send_query(self.student_user, self.subject, self.description, None
+            , self.attachments)
+    '''
+    test if ticket is created when attachments is not provided
+    '''
+
+    def test_send_query_attachments_is_none(self):
+        ticket = send_query(self.student_user, self.subject, self.description, self.message_body)
+        self.assertEqual(ticket.created_by, self.student_user)
+        self.assertEqual(ticket.subject, self.subject)
+        self.assertEqual(ticket.description, self.description)
+        self.assertEqual(ticket.status, "Open")
+        self.assertEqual(ticket.priority, None)
+        self.assertEqual(ticket.due_date, None)
+
+    '''
+    test if ticket is created when student_user, subject, description, message_body, attachments are provided
+    '''
+    def test_send_query_all_parameters_provided(self):
+        ticket = send_query(self.student_user, self.subject, self.description, self.message_body, self.attachments)
+        self.assertEqual(ticket.created_by, self.student_user)
+        self.assertEqual(ticket.subject, self.subject)
+        self.assertEqual(ticket.description, self.description)
+        self.assertEqual(ticket.status, "Open")
+        self.assertEqual(ticket.priority, None)
+        self.assertEqual(ticket.due_date, None)
+        self.assertEqual(ticket.ticketmessage_set.first().message_body, self.message_body)
+        self.assertEqual(ticket.ticketattachment_set.first().file_name, "test.txt")
+        self.assertEqual(ticket.ticketattachment_set.first().file_path, "/path/to/test.txt")
+        self.assertEqual(ticket.ticketattachment_set.first().mime_type, "text/plain")
+        self.assertEqual(ticket.ticketstatushistory_set.first().old_status, None)
+        self.assertEqual(ticket.ticketstatushistory_set.first().new_status, "Open")
+        self.assertEqual(ticket.ticketstatushistory_set.first().changed_by_profile, self.student_user)
+
+    

@@ -129,7 +129,6 @@ const Dashboard = () => {
 					current_user.is_staff && !current_user.is_superuser ? officers : []
 				}
 				admin={admin}
-				openPopup={openPopup}
 				tickets={tickets}
 				setTickets={setTickets}
 				selectedTicket={selectedTicket}
@@ -139,9 +138,6 @@ const Dashboard = () => {
 
 			<Popup isOpen={isPopupOpen} onClose={closePopup}>
 				{popupType === 'addTicket' && <AddTicketPopup />}
-				{popupType === 'viewTicket' && selectedTicket && (
-					<TicketDetails ticket={selectedTicket} />
-				)}
 			</Popup>
 		</div>
 	);

@@ -29,18 +29,19 @@ import {
 import FilterTicketsDropdown from './FilterTicketsDropdown';
 import GenericDropdown from './GenericDropdown';
 import { playSound } from '../utils/SoundUtils';
+import TicketDetails from './TicketDetails';
 
 const TicketsCard = ({
 	user,
 	officers,
 	admin,
-	openPopup,
 	tickets,
 	setTickets,
 	selectedTicket,
 	setSelectedTicket,
 	fetchTickets,
 }) => {
+	const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 	const [showingTickets, setShowingTickets] = useState(tickets);
 	const [isChatOpen, setIsChatOpen] = useState(false);
 	const [selectedOfficers, setSelectedOfficers] = useState({});
@@ -159,6 +160,17 @@ const TicketsCard = ({
 			<div className="relative">
 				{selectedTicket && (
 					<>
+						{/* Ticket Details Pop-up */}
+						<PopUp
+							isOpen={isDetailsOpen}
+							onClose={() => {
+								setSelectedTicket(null)
+								setIsDetailsOpen(false)
+							}}
+						>
+							<TicketDetails ticket={selectedTicket}/>
+						</PopUp>
+
 						{/* Chat Pop-up */}
 						<PopUp
 							isOpen={isChatOpen}
@@ -331,7 +343,7 @@ const TicketsCard = ({
 										className={`px-6 py-4 whitespace-nowrap text-sm text-gray-800 ${key === 'subject' ? 'max-w-52 truncate' : ''}`}
 										onClick={() => {
 											setSelectedTicket(ticket);
-											openPopup('viewTicket');
+											setIsDetailsOpen(true);
 										}}
 									>
 										{key === 'status' ? (

@@ -15,7 +15,8 @@ const GenericTable = ({
 	const totalPages = Math.ceil(data.length / rowsPerPage);
 
 	useEffect(() => {
-		setCurrentPage(totalPages > 0 ? totalPages : 1);
+		const currentTotalPages = Math.ceil(data.length / rowsPerPage);
+		setCurrentPage(currentTotalPages < currentPage ? currentTotalPages : currentPage);
 	}, [data]);
 
 	const startIndex = (currentPage - 1) * rowsPerPage;

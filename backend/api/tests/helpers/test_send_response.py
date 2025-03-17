@@ -118,3 +118,11 @@ class TestSendResponse(TestCase):
             subject="Message Recieved",
             contents=f"Student replied on Ticket #{ticket.id}",
         )
+
+
+
+
+
+
+
+        

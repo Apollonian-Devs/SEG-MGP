@@ -330,6 +330,8 @@ class OverdueTicketsView(views.APIView):
         except Exception:
             return Response({"error": "An error has occurred"}, status=500)        
     
+
+'''
 class UnansweredTicketsView(views.APIView):
     permission_classes = [IsAuthenticated]
 
@@ -341,7 +343,7 @@ class UnansweredTicketsView(views.APIView):
             return Response({"tickets": serializer.data})  
         except Exception:
             return Response({"error": "An error has occurred"}, status=500)        
-
+'''
 
 class ChangeTicketDateView(views.APIView):
     permission_classes = [IsAuthenticated]

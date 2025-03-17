@@ -10,6 +10,24 @@ from api.MessagesGroupingAI import *
 import yagmail
 
 
+
+STATUS_CHOICES = [
+        ("Open", "Open"),
+        ("In Progress", "In Progress"),
+        ("Awaiting Student", "Awaiting Student"),
+        ("Closed", "Closed"),
+    ]
+    
+PRIORITY_CHOICES = [
+    ("Low", "Low"),
+    ("Medium", "Medium"),
+    ("High", "High"),
+]
+
+
+
+
+
 def send_query(student_user, subject, description, message_body, attachments=None):
     """
     Creates a new ticket for 'student' user.
@@ -27,7 +45,7 @@ def send_query(student_user, subject, description, message_body, attachments=Non
     if not message_body:
         raise ValueError("Message body is required")
     
-    
+
     ticket = Ticket(
         subject=subject,
         description=description,
@@ -116,7 +134,10 @@ def send_response(sender_profile, ticket, message_body, is_internal=False, attac
     
     
 
-    let_expected_status = "Awaiting Student" if sender_profile.is_staff else "Open"
+    AWAITING_STUDENT = next(status[0] for status in STATUS_CHOICES if status[0] == "Awaiting Student")
+    OPEN = next(status[0] for status in STATUS_CHOICES if status[0] == "Open")
+
+    let_expected_status = AWAITING_STUDENT if sender_profile.is_staff else OPEN
 
     if ticket.status != let_expected_status:
         old_status = ticket.status
@@ -181,13 +202,6 @@ def redirect_query(ticket, from_user, to_user, reason=None, new_status=None, new
     ticket.updated_at = timezone.now()
     ticket.save()
 
-    '''TicketStatusHistory.objects.create(
-        ticket=ticket,
-        old_status=old_status,
-        new_status=ticket.status,
-        changed_by_profile=from_user,
-        notes=f"Redirected by {from_user.username}. {reason or ''}",
-    )'''
 
     TicketRedirect.objects.create(
         ticket=ticket,
@@ -208,31 +222,6 @@ def redirect_query(ticket, from_user, to_user, reason=None, new_status=None, new
     return ticket
 
 
-
-#---------------------------------------------------------
-#written by gpt
-'''def view_ticket_details(ticket):
-    """
-    This returns dictionary containing the key details about ticket.
-    """
-    details = {
-        "ticket_id": ticket.id,
-        "subject": ticket.subject,
-        "description": ticket.description,
-        "created_by": ticket.created_by.username,
-        "assigned_to": ticket.assigned_to.username if ticket.assigned_to else None,
-        "status": ticket.status,
-        "priority": ticket.priority,
-        "created_at": ticket.created_at,
-        "updated_at": ticket.updated_at,
-        "closed_at": ticket.closed_at,
-        "due_date": ticket.due_date,
-        "is_overdue": ticket.is_overdue,
-    }
-
-    print(details)
-    return details'''
-#---------------------------------------------------------
 
 
 def get_message_history(ticket):
@@ -425,15 +414,7 @@ def changeTicketStatus(ticket, user):
         raise PermissionDenied("Only officers or admins can change ticket status.")
     
 
-'''def get_overdue_tickets(user):
-    """Returns queryset of overdue tickets based on user role."""
-    
-    queryset = Ticket.objects.filter(due_date__lt=timezone.now()) 
 
-    if user.is_superuser or user.is_staff:
-        return queryset.filter(assigned_to=user) 
-    else:
-        return queryset.filter(created_by=user) '''
 
 def get_overdue_tickets(user):
     """
@@ -458,6 +439,7 @@ def get_overdue_tickets(user):
 
   
 
+'''
 def get_unanswered_tickets(user):
     """Returns queryset of tickets which haven't been replied to yet based on user role."""
 
@@ -466,7 +448,8 @@ def get_unanswered_tickets(user):
         return queryset
     else:
          queryset = Ticket.objects.filter(created_by=user, status = "Awaiting Student")
-         return queryset 
+         return queryset '''
+
 
 
 def changeTicketDueDate(ticket, user, new_due_date):

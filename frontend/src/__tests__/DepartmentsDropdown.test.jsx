@@ -74,6 +74,29 @@ describe('DepartmentsDropdown', () => {
   });
 
 
+  it('does not close the dropdown when a department is selected', async () => {
+    api.get.mockResolvedValue({ data: mockDepartments });
+
+    render(<DepartmentsDropdown setSelectedDepartment={() => {}} />);
+
+    await waitFor(() => {
+      expect(screen.queryByText('Loading departments...')).not.toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText('Select a department'));
+
+    mockDepartments.forEach(dept => {
+      expect(screen.getByText(dept.name)).toBeInTheDocument();
+    });
+
+    const menuItem = screen.getByRole('button', { name: 'IT' });
+    fireEvent.click(menuItem);
+
+    const departmentInOptions = screen.getAllByText('IT');
+    expect(departmentInOptions).toHaveLength(2); 
+  });
+
+
   it('shows "Select a department" when no department is selected', async () => {
     render(<DepartmentsDropdown setSelectedDepartment={mockSetSelectedDepartment} />);
 

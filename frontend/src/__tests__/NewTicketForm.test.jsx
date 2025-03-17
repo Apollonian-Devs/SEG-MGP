@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { act } from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { vi } from 'vitest'; // Vitest for mocking
+import { expect, vi } from 'vitest'; // Vitest for mocking
 import NewTicketForm from '../components/NewTicketForm';
 import api from '../api';
 import { toast } from 'sonner';
@@ -75,6 +75,12 @@ describe('NewTicketForm Component', () => {
 
 			expect(toast.promise).toHaveBeenCalled();
 		});
+
+		act(() => {
+			const successCallback = toast.promise.mock.calls[0][1].success;	
+			expect(successCallback()).toBe('Ticket Submitted successfully');
+		})
+		
 	});
 
 	it('handles file upload correctly', async () => {
@@ -103,5 +109,33 @@ describe('NewTicketForm Component', () => {
 		await waitFor(() => {
 			expect(toast.promise).toHaveBeenCalled();
 		});
+
+		/// FAILS !!! ///
+		
+		// act(() => {
+		// 	const failureCallback = toast.promise.mock.calls[0][1].error;	
+		// 	expect(failureCallback()).toBe('Error submitting ticket: Network error');
+		// })
+
+	});
+
+	it('shows generic error toast when API call fails with an undefined error', async() => {
+		api.post.mockRejectedValue({response: {status: 400}})
+
+		render(<NewTicketForm togglePopup={vi.fn()} />);
+
+		// Submit the form
+		fireEvent.submit(screen.getByTestId('generic-form'));
+
+		// Wait for error toast to be displayed
+		await waitFor(() => {
+			expect(toast.promise).toHaveBeenCalled();
+		});
+
+		act(() => {
+			const failureCallback = toast.promise.mock.calls[0][1].error;	
+			expect(failureCallback()).toBe('Error submitting ticket: An unknown error occurred');
+		})
+
 	});
 });

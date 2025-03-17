@@ -8,11 +8,11 @@ import {
 } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
-import RegisterForm from '../components/RegisterForm';
-import api from '../api';
+import RegisterForm from '../../components/RegisterForm';
+import api from '../../api';
 import '@testing-library/jest-dom/vitest';
 
-vi.mock('../api', () => ({
+vi.mock('../../api', () => ({
 	__esModule: true,
 	default: {
 		post: vi.fn(),

@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import GenericForm from '../components/GenericForm';
+import GenericForm from '../../components/GenericForm'; 
 
 describe('GenericForm Component', () => {
   it('renders with default button label', () => {
@@ -22,14 +22,14 @@ describe('GenericForm Component', () => {
     expect(screen.getByText('Component Two')).toBeInTheDocument();
   });
 
-  it ('calls function when submit buttom pressed', () => {
+  it ('calls function when submit buttom pressed', async () => {
     const mockOnSubmit = vi.fn();
 
     render (<GenericForm onSubmit={mockOnSubmit}> Test Form </GenericForm>);
 
     const form = screen.getByTestId('generic-form');
 
-    fireEvent.submit(form);
+    await fireEvent.submit(form);
 
     expect(mockOnSubmit).toHaveBeenCalledTimes(1);
 

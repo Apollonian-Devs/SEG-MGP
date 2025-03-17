@@ -1,18 +1,18 @@
-import ChangeDate from "../components/ChangeDate";
+import ChangeDate from "../../components/ChangeDate";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { expect, it, vi } from "vitest";
-import api from "../api";
+import api from "../../api";
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from "react-router-dom";
 
-describe(ChangeDate, () => {
+describe("ChangeDate Component", () => {
 
     beforeEach(() => {
         vi.spyOn(Storage.prototype, "getItem").mockReturnValue("mockAccessToken");
       });
       
 
-    vi.mock("../api", () => ({
+    vi.mock("../../api", () => ({
         default: {
             post: vi.fn(),
         }

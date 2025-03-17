@@ -31,7 +31,7 @@ const NewTicketForm = ({ togglePopup }) => {
                 return 'Ticket Submitted successfully';
             },
             error: (error) => {
-                return `Error submitting ticket: ${error.message}`;
+                return `Error submitting ticket: ${error?.message || "An unknown error occurred"}`;
             },
         });
     };

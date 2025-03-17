@@ -35,6 +35,7 @@ const DepartmentsDropdown = ({ setSelectedDepartment }) => {
 		selectedDept && selectedDept.id === department.id
 		  ? null 
 		  : (setSelectedDepartment(department), setSelectedDeptState(department)); 
+		  
 	  };
 
 	if (loading) {

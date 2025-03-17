@@ -162,6 +162,27 @@ describe('DepartmentsDropdown', () => {
   });
 
 
+  it('displays the university icon next to each department name', async () => {
+    api.get.mockResolvedValue({ data: mockDepartments });
+  
+    render(<DepartmentsDropdown setSelectedDepartment={mockSetSelectedDepartment} />);
+    
+    await waitFor(() => {
+      expect(screen.queryByText('Loading departments...')).not.toBeInTheDocument();
+    });
+  
+    fireEvent.click(screen.getByText('Select a department'));
+
+    mockDepartments.forEach((dept) => {
+
+      const departmentItem = screen.getByText(dept.name);
+      const button = departmentItem.closest('button');
+      const icon = button.querySelector('svg');
+      expect(icon).toBeInTheDocument(); 
+      expect(icon).toHaveClass('lucide-university'); 
+    });
+  });
+
   it('handles missing access token', async () => {
     localStorage.getItem.mockImplementation(() => null);
     api.get.mockResolvedValue({ data: mockDepartments });

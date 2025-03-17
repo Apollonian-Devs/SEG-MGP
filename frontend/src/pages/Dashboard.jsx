@@ -119,7 +119,7 @@ const Dashboard = () => {
 				</GenericDropdown>
 
 				<div className="flex justify-between items-center gap-x-5">
-					{!current_user.is_staff && <NewTicketButton />}
+					{!current_user.is_staff && <NewTicketButton fetchTickets={fetchTickets}/>}
 					<NotificationsTab user={current_user} />
 				</div>
 			</div>

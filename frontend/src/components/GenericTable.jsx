@@ -12,26 +12,31 @@ const GenericTable = ({
 }) => {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [rowsPerPage, setRowsPerPage] = useState(5);
-	const totalPages = Math.ceil(data.length / rowsPerPage);
-
+	const [totalPages,setTotalPages] = useState(Math.ceil(data.length / rowsPerPage));
+	const [startIndex, setStartIndex] = useState((currentPage - 1) * rowsPerPage);
+	const [paginatedData,setPaginatedData] = useState(data.slice(startIndex, startIndex + rowsPerPage));
 	useEffect(() => {
 		const currentTotalPages = Math.ceil(data.length / rowsPerPage);
-		setCurrentPage(currentTotalPages < currentPage ? currentTotalPages : currentPage);
-	}, [data]);
-
-	const startIndex = (currentPage - 1) * rowsPerPage;
-	const paginatedData = data.slice(startIndex, startIndex + rowsPerPage);
+		const realCurrentPage = currentTotalPages < currentPage ? currentTotalPages : currentPage;
+		const currentStartIndex = (realCurrentPage - 1) * rowsPerPage ;
+		setTotalPages(currentTotalPages);
+		setCurrentPage(realCurrentPage);
+		setStartIndex(currentStartIndex);
+		setPaginatedData(data.slice(currentStartIndex, currentStartIndex + rowsPerPage));
+	}, [data.length,rowsPerPage,currentPage]);
+	
+	
 	const options = [5, 10, 20, 50];
 
 	const handleRowsPerPageChange = (option) => {
 		setRowsPerPage(option);
-		const currentTotalPages = Math.ceil(data.length / option);
-		setCurrentPage(currentTotalPages < currentPage ? currentTotalPages : currentPage);
+		
 	};
 	return (
 		<>
 			<div className="flex justify-between w-full items-center gap-2 mb-2 text-gray-400">
 				<div className="flex items-center gap-2">
+				{data.length > 0 && (
 					<p className=" font-medium">
 						Showing:{' '}
 						<span className="font-normal">
@@ -39,6 +44,7 @@ const GenericTable = ({
 						</span>{' '}
 						of <span className="font-normal">{data.length}</span>
 					</p>
+				)}
 				</div>
 				<div className="flex items-center gap-2">
 					<label className="mr-2 font-medium">Rows per page:</label>

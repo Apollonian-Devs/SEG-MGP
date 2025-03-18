@@ -17,8 +17,6 @@ const LoginForm = () => {
 		e.preventDefault(); // Prevent the default form submission
 		setLoading(true);
 		try {
-			// const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-			// await pause(3000); // Simulate a network delay
 			const response = await api.post('/api/token/', { username, password });
 			localStorage.setItem(ACCESS_TOKEN, response.data.access);
 			localStorage.setItem(REFRESH_TOKEN, response.data.refresh);

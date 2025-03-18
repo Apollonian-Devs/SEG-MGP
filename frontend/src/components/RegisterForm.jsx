@@ -78,7 +78,7 @@ const RegisterForm = () => {
 				<GenericInput
 					id="email"
 					label="Email"
-					type="text"
+					type="email"
 					required={true}
 					onChange={(e) => setEmail(e.target.value)}
 					placeholder="Enter your email"
@@ -87,7 +87,7 @@ const RegisterForm = () => {
 				<GenericInput
 					id="password"
 					label="Password"
-					type="text"
+					type="password"
 					required={true}
 					onChange={(e) => setPassword(e.target.value)}
 					placeholder="Enter your password"

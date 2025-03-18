@@ -30,6 +30,7 @@ import FilterTicketsDropdown from './FilterTicketsDropdown';
 import GenericDropdown from './GenericDropdown';
 import TicketDetails from './TicketDetails';
 import { playSound } from '../utils/SoundUtils';
+import { toast } from 'sonner';
 
 const TicketsCard = ({
 	user,
@@ -80,21 +81,21 @@ const TicketsCard = ({
 	}, [tickets]);
 
 	const toggleChange = async (type, ticket_id) => {
-		try {
-			const access = localStorage.getItem(ACCESS_TOKEN);
-			const path = type === 'priority' ? 'change-priority' : 'change-status';
-			const response = await api.get(`/api/tickets/${path}/${ticket_id}/`, {
-				headers: { Authorization: `Bearer ${access}` },
-			});
-			console.log('Response: ', response.data);
-		} catch (error) {
-			console.error(
-				'Error changing status:',
-				error.response?.data || error.message
-			);
-		} finally {
-			fetchTickets();
-		}
+		const access = localStorage.getItem(ACCESS_TOKEN);
+		const path = type === 'priority' ? 'change-priority' : 'change-status';
+		const toggleChangePromise = api.get(`/api/tickets/${path}/${ticket_id}/`, {
+			headers: { Authorization: `Bearer ${access}` },
+		});
+		toast.promise(toggleChangePromise, {
+			loading: 'Changing...',
+			success: async () => {
+				await fetchTickets();
+				return `${type} changed successfully!`;
+			},
+			error: (error) => {
+				return `Error changing ${type}: ${error.response?.data || error.message}`;
+			},
+		});
 	};
 
 	// Sorting Function
@@ -367,7 +368,7 @@ const TicketsCard = ({
 												{ticket[key] || 'Not Set'}
 											</div>
 										) : (
-											ticket[key] || (key === 'priority' ? 'Not Set' : '')
+											ticket[key]
 										)}
 									</td>
 								))}
@@ -509,11 +510,7 @@ const TicketsCard = ({
 													<RedirectButton
 														ticketid={ticket.id}
 														selectedOfficer={selectedOfficers[ticket.id]}
-														departmentId={
-															user.is_superuser
-																? suggestedDepartments[ticket.id]?.id
-																: null
-														}
+														departmentId={suggestedDepartments[ticket.id]?.id}
 														fetchTickets={fetchTickets}
 														setShowingTickets={setShowingTickets}
 														dataTestId="suggested-redirect-button"
@@ -529,9 +526,7 @@ const TicketsCard = ({
 										{/* Suggested Grouping & Accept the grouping Column */}
 										<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
 											<div className="flex item-center gap-2">
-												{suggestedGrouping[ticket.id] !== undefined
-													? suggestedGrouping[ticket.id]
-													: 'No suggestion'}
+												{suggestedGrouping[ticket.id] || 'No suggestion'}
 											</div>
 										</td>
 									</>

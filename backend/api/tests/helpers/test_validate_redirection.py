@@ -8,7 +8,11 @@ class TestValidateRedirection(TestCase):
     def setUp(self):
         self.student_user = User.objects.create_user(username="student", email="student@gmail.com", password="password")
         self.staff_user = User.objects.create_user(username="staff", email="staff@gmail.com", password="password", is_staff=True)
-        self.admin_user = User.objects.create_user(username="admin", email="admin@gmail.com", password="password", is_superuser=True)
+        self.admin_user = User.objects.create_superuser(
+            username="admin",
+            email="admin@gmail.com",
+            password="password"
+        )
 
     def test_validate_redirection_permission_denied_for_student(self):
         """
@@ -57,7 +61,7 @@ class TestValidateRedirection(TestCase):
         """
         Test redirection between two superusers.
         """
-        admin_user2 = User.objects.create_user(username="admin2", email="admin2@gmail.com", password="password", is_superuser=True)
+        admin_user2 = User.objects.create_superuser(username="admin2", email="admin2@gmail.com", password="password")
         validate_redirection(self.admin_user, admin_user2)
         validate_redirection(admin_user2, self.admin_user)
 

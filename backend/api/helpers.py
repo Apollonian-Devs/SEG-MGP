@@ -176,7 +176,7 @@ def validate_redirection(from_user, to_user):
     if from_user is None or to_user is None:
         raise PermissionDenied("Invalid redirection: Users cannot be None.")
     
-    if not (from_user.is_staff or from_user.is_superuser):
+    if not (from_user.is_staff):
         raise PermissionDenied("Only officers or admins can redirect tickets.")
 
     if from_user == to_user:
@@ -229,17 +229,20 @@ def get_message_history(ticket):
     Return a list of all messages for a given ticket sorted by creation date ascending.
     Only include messages where is_internal is False.
     """
+    if ticket is None:
+        raise ValueError("Ticket is None")
     messages = TicketMessage.objects.filter(ticket=ticket, is_internal=False).order_by("created_at")
 
     msg_list = []
     for m in messages:
         # Determine the sender role
-        if not m.sender_profile.is_staff:
-            sender_role = "Student"
-        elif m.sender_profile.is_superuser:
+        if m.sender_profile.is_superuser:
             sender_role = "Admin"
-        else:
+        elif m.sender_profile.is_staff:
             sender_role = "Officer"
+        else:
+            sender_role = "Student"
+
         
         msg_list.append({
             "message_id": m.id,

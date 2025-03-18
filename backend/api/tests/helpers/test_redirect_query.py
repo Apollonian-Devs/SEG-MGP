@@ -16,7 +16,7 @@ class TestRedirectQuery(TestCase):
         self.student_user = User.objects.create_user(username="student", email="student@gmail.com", password="password")
         self.staff_user = User.objects.create_user(username="staff", email="staff@gmail.com", password="password", is_staff=True)
         self.staff_user2 = User.objects.create_user(username="staff2", email="staff2@gmail.com", password="password", is_staff=True)
-        self.admin_user = User.objects.create_user(username="admin", email="admin@gmail.com", password="password", is_superuser=True)
+        self.admin_user = User.objects.create_superuser(username="admin", email="admin@gmail.com", password="password", is_superuser=True)
 
         self.ticket = Ticket.objects.create(
             subject="Test Subject",

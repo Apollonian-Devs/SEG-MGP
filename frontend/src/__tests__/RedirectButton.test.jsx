@@ -30,6 +30,10 @@ vi.stubGlobal('localStorage', {
 
 describe('RedirectButton Component', () => {
 
+	beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
 	it('renders the button correctly', () => {
 		render(
 			<RedirectButton
@@ -75,6 +79,7 @@ describe('RedirectButton Component', () => {
 		});
 	});
 
+
 	it('calls the API when the button is clicked and the department is selected', async () => {
 		api.post.mockResolvedValue({ status: 200 });
 		const mockFetchTickets = vi.fn();
@@ -105,6 +110,34 @@ describe('RedirectButton Component', () => {
 
 			expect(toast.promise).toHaveBeenCalled(); 
 		});
+	});
+
+
+	it('enables the button if officer is selected', () => {
+		render(
+			<RedirectButton
+				ticketid={1}
+				selectedOfficer={{ id: 2, is_superuser: true }}
+				departmentId={null}
+			/>
+		);
+
+		const button = screen.getByText(/Redirect/i);
+		expect(button).toBeEnabled();
+	});
+
+
+	it('enables the button if department is selected', () => {
+		render(
+			<RedirectButton
+				ticketid={1}
+				selectedOfficer={null}
+				departmentId={{id: 2}}
+			/>
+		);
+
+		const button = screen.getByText(/Redirect/i);
+		expect(button).toBeEnabled();
 	});
 
 

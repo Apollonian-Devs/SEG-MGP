@@ -171,8 +171,6 @@ def send_response(sender_profile, ticket, message_body, is_internal=False, attac
 
     return new_msg
 
-
-
 def validate_redirection(from_user, to_user):
 
     if from_user is None or to_user is None:

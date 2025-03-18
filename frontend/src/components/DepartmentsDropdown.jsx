@@ -4,6 +4,7 @@ import GenericButton from './GenericButton';
 import api from '../api';
 import { ACCESS_TOKEN } from '../constants';
 import { University } from 'lucide-react';
+import { toast } from "sonner";
 
 const DepartmentsDropdown = ({ setSelectedDepartment }) => {
 	const [departments, setDepartments] = useState([]);
@@ -23,6 +24,7 @@ const DepartmentsDropdown = ({ setSelectedDepartment }) => {
 					'Error fetching departments:',
 					error.response?.data || error.message
 				);
+				toast.error("Error fetching deparments")
 			} finally {
 				setLoading(false);
 			}

@@ -108,7 +108,7 @@ describe('RegisterForm', () => {
 		fireEvent.submit(screen.getByRole('button', { name: /Register/i }));
 
 		await waitFor(() => {
-			expect(toast.error).toHaveBeenCalledWith("Username must have @ at the start")
+			expect(toast.error).toHaveBeenCalledWith("❌ Username must have @ at the start")
 		})
 
 	})
@@ -137,7 +137,7 @@ describe('RegisterForm', () => {
 		fireEvent.submit(screen.getByRole('button', { name: /Register/i }));
 
 		await waitFor(() => {
-			expect(toast.error).toHaveBeenCalledWith("Email is not the correct format")
+			expect(toast.error).toHaveBeenCalledWith("❌ Email is not the correct format")
 		})
 	})
 

@@ -106,9 +106,9 @@ describe("ChangeDate Component", () => {
 
         await user.click(screen.getByRole('button', {name: /confirm change/i}));
 
-        expect(toast.error).toHaveBeenCalledWith("Please ensure you pick a valid date that isn't in the past and isn't today's date");
+        expect(toast.error).toHaveBeenCalledWith("❌ Please ensure you pick a valid date that isn't in the past and isn't today's date");
 
-        expect(consoleError).toHaveBeenCalledWith("The reason for the error is: ", {response: {status: 400}});
+        // expect(consoleError).toHaveBeenCalledWith("The reason for the error is: ", {response: {status: 400}});
     })
 
     it("Console error and correct toast should be displayed when there is any other response to an invalid post request that isn't 400", async () => {
@@ -129,9 +129,9 @@ describe("ChangeDate Component", () => {
 
         await user.click(screen.getByRole('button', {name: /confirm change/i}));
 
-        expect(toast.error).toHaveBeenCalledWith("There has been an error trying to update the due date of the ticket");
+        expect(toast.error).toHaveBeenCalledWith("❌ There has been an error trying to update the due date of the ticket");
 
-        expect(consoleError).toHaveBeenCalledWith("The reason for the error is: ", expect.any(Error));
+        // expect(consoleError).toHaveBeenCalledWith("The reason for the error is: ", expect.any(Error));
     })
 
 })

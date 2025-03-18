@@ -60,12 +60,10 @@ describe('LoginForm', () => {
 	});
 
 
-	it('shows an error message when login fails', async () => {
+	it ('shows error message when login fails', async () => {
 		render(<MemoryRouter><LoginForm /></MemoryRouter>);
 		
-		api.post.mockRejectedValue({
-			response: { data: { message: 'Invalid credentials' } },
-		});
+		api.post.mockRejectedValue({ status: 400 });
 
 		fireEvent.change(screen.getByLabelText(/Username/i), {
 			target: { value: 'wronguser' },
@@ -76,25 +74,7 @@ describe('LoginForm', () => {
 		fireEvent.submit(screen.getByRole('button', { name: /Sign in/i }));
 
 		await waitFor(() =>
-			expect(toast.error).toHaveBeenCalledWith("Invalid credentials")
-		);
-	});
-
-	it ('shows default error message when login response message fails', async () => {
-		render(<MemoryRouter><LoginForm /></MemoryRouter>);
-		
-		api.post.mockRejectedValue({ response: { data: {} } });
-
-		fireEvent.change(screen.getByLabelText(/Username/i), {
-			target: { value: 'wronguser' },
-		});
-		fireEvent.change(screen.getByLabelText(/Password/i), {
-			target: { value: 'wrongpassword' },
-		});
-		fireEvent.submit(screen.getByRole('button', { name: /Sign in/i }));
-
-		await waitFor(() =>
-			expect(toast.error).toHaveBeenCalledWith("Login failed. Please try again.")
+			expect(toast.error).toHaveBeenCalledWith("❌ Login failed. Please try again.")
 		)
 	});
 

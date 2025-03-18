@@ -5,6 +5,7 @@ import api from '../api';
 import GenericForm from './GenericForm';
 import GenericInput from './GenericInput';
 import { toast } from 'sonner';
+import handleApiError from '../utils/errorHandler';
 
 const RegisterForm = () => {
 	const [username, setUsername] = useState('');
@@ -35,16 +36,15 @@ const RegisterForm = () => {
 				navigate('/');
 			}
 		} catch (error) {
-			console.error("The reason for the error is: ", error.response?.data)
 
 			if (error.response?.data?.username) {
-				toast.error(error.response?.data?.username)
+				handleApiError(error, error.response?.data?.username)
 			}
 			else if (error.response?.data?.email) {
-				toast.error(error.response?.data?.email)
+				handleApiError(error, error.response?.data?.email)
 			}
 			else {
-				toast.error("An unexpected error has occurred. Please try again with different credentials")
+				handleApiError(error)
 			}
 		
 		} finally {

@@ -8,12 +8,13 @@ import {
 } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
-import LoginForm from '../components/LoginForm';
-import api from '../api';
-import { ACCESS_TOKEN, REFRESH_TOKEN } from '../constants';
+import LoginForm from '../../components/LoginForm';
+import api from '../../api';
+import { ACCESS_TOKEN, REFRESH_TOKEN } from '../../constants';
 import '@testing-library/jest-dom/vitest';
+import { toast } from 'sonner';
 
-vi.mock('../api', () => ({
+vi.mock('../../api', () => ({
 	__esModule: true,
 	default: {
 		post: vi.fn(),
@@ -31,21 +32,26 @@ vi.mock('react-router-dom', async () => {
 	};
 });
 
+vi.mock('sonner', () => ({
+	toast: {
+		error: vi.fn(),
+		success: vi.fn()
+	},
+}));
+
 afterEach(() => {
-	cleanup();
+	localStorage.clear()
+	navigateMock.mockClear();
 });
 
 describe('LoginForm', () => {
 	beforeEach(() => {
 		vi.spyOn(Storage.prototype, 'setItem');
-		render(
-			<MemoryRouter>
-				<LoginForm />
-			</MemoryRouter>
-		);
 	});
 
 	it('renders the form correctly', () => {
+		render(<MemoryRouter><LoginForm /></MemoryRouter>);
+		
 		expect(screen.getByLabelText(/Username/i)).toBeInTheDocument();
 		expect(screen.getByLabelText(/Password/i)).toBeInTheDocument();
 		expect(
@@ -54,10 +60,10 @@ describe('LoginForm', () => {
 	});
 
 
-	it('shows an error message when login fails', async () => {
-		api.post.mockRejectedValue({
-			response: { data: { message: 'Invalid credentials' } },
-		});
+	it ('shows error message when login fails', async () => {
+		render(<MemoryRouter><LoginForm /></MemoryRouter>);
+		
+		api.post.mockRejectedValue({ status: 400 });
 
 		fireEvent.change(screen.getByLabelText(/Username/i), {
 			target: { value: 'wronguser' },
@@ -68,27 +74,13 @@ describe('LoginForm', () => {
 		fireEvent.submit(screen.getByRole('button', { name: /Sign in/i }));
 
 		await waitFor(() =>
-			expect(screen.getByText('Invalid credentials')).toBeInTheDocument()
-		);
-	});
-
-	it ('shows default error message when login response message fails', async () => {
-		api.post.mockRejectedValue({ response: { data: {} } });
-
-		fireEvent.change(screen.getByLabelText(/Username/i), {
-			target: { value: 'wronguser' },
-		});
-		fireEvent.change(screen.getByLabelText(/Password/i), {
-			target: { value: 'wrongpassword' },
-		});
-		fireEvent.submit(screen.getByRole('button', { name: /Sign in/i }));
-
-		await waitFor(() =>
-			expect(screen.getByText('Login failed. Please try again.')).toBeInTheDocument()
+			expect(toast.error).toHaveBeenCalledWith("❌ Login failed. Please try again.")
 		)
 	});
 
 	it('redirects to dashboard on successful login', async () => {
+		render(<MemoryRouter><LoginForm /></MemoryRouter>);
+		
 		const mockResponse = {
 			data: { access: 'access_token', refresh: 'refresh_token' },
 			status: 200,
@@ -115,4 +107,14 @@ describe('LoginForm', () => {
 			expect(navigateMock).toHaveBeenCalledWith('/dashboard');
 		});
 	});
+
+	it('redirects to dashboard automatically if the user is already logged in', async () => {		
+		localStorage.setItem(ACCESS_TOKEN, 'access_token')
+		
+		render(<MemoryRouter><LoginForm /></MemoryRouter>);
+		
+		expect(navigateMock).toHaveBeenCalledWith('/dashboard');
+		
+	});
+
 });

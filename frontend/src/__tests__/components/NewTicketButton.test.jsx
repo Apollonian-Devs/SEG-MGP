@@ -1,5 +1,5 @@
 import { MemoryRouter } from 'react-router-dom';
-import NewTicketButton from '../components/NewTicketButton';
+import NewTicketButton from '../../components/NewTicketButton';
 import { render, fireEvent, screen } from "@testing-library/react";
 
 describe(NewTicketButton, () => {
@@ -30,6 +30,7 @@ describe(NewTicketButton, () => {
         const closeButton = screen.getByRole("button", {name: '✕'} );
         fireEvent.click(closeButton);
         expect(screen.queryByText(/send query/i)).not.toBeInTheDocument();
+        expect(screen.getByRole("button", {name: /new/i})).toBeInTheDocument();
     }); 
     
 });

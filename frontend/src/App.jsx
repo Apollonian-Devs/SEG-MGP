@@ -29,7 +29,6 @@ function App() {
 						path="/dashboard"
 						element={
 							<ProtectedRoute>
-								<Toaster richColors position="bottom-center" />
 								<Dashboard />
 							</ProtectedRoute>
 						}

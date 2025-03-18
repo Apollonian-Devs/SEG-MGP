@@ -8,6 +8,11 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ["id", "username", "first_name", "last_name", "email", "password", "is_staff", "is_superuser"]
         extra_kwargs = {"password": {"write_only": True}}
+    
+    def validate_username(self, value):
+        if not value.startswith("@"):
+            raise serializers.ValidationError("Please ensure your username starts with '@'.")
+        return value
 
     def create(self, validated_data):
         print(validated_data)
@@ -27,6 +32,7 @@ class UserSerializer(serializers.ModelSerializer):
             user = None
         return user
 
+
 class DepartmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Department
@@ -44,7 +50,7 @@ class OfficerSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')  # This will now be an actual User instance
-        user, created = User.objects.get_or_create(**user_data) # Suggested by ChatGPT
+        user, created = User.objects.get_or_create(**user_data) 
         officer = Officer.objects.create(user=user, **validated_data)
         return officer
 

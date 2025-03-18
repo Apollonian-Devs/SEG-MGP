@@ -17,7 +17,7 @@ const GenericTable = ({
 	useEffect(() => {
 		const currentTotalPages = Math.ceil(data.length / rowsPerPage);
 		setCurrentPage(currentTotalPages < currentPage ? currentTotalPages : currentPage);
-	}, [data]);
+	}, [data.length]);
 
 	const startIndex = (currentPage - 1) * rowsPerPage;
 	const paginatedData = data.slice(startIndex, startIndex + rowsPerPage);

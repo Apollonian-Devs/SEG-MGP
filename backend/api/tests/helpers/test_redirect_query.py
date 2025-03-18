@@ -33,76 +33,6 @@ def redirect_query(ticket, from_user, to_user):
 
 
     return ticket
-
-
-
-    
-
-
-
-
-
-class Ticket(models.Model):
-    
-    subject = models.CharField(max_length=255)
-    description = models.TextField()
-
-    created_by = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='tickets_created'
-    )
-    assigned_to = models.ForeignKey(
-        User,
-        on_delete=models.SET_NULL,
-        default=get_default_superuser,
-        null=True,
-        blank=True,
-        related_name='tickets_assigned'
-    )
-
-    #category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
-    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default="Open")
-    priority = models.CharField(max_length=50, choices=PRIORITY_CHOICES, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    closed_at = models.DateTimeField(null=True, blank=True)
-    due_date = models.DateTimeField(null=True, blank=True)
-    is_overdue = models.BooleanField(default=False)
-
-    def save(self, *args, **kwargs):
-        # 1) Enforce only students can create tickets
-        if self.created_by.is_staff or self.created_by.is_superuser:
-            raise ValidationError("Only student users can create tickets.")
-        
-        # 2) If status is "Closed" but closed_at not set, set closed_at to now
-        if self.status == "Closed" and self.closed_at is None:
-            self.closed_at = timezone.now()
-
-        # 3) If due_date is in the past, set is_overdue to True, else False
-        if self.due_date and self.due_date < timezone.now():
-            self.is_overdue = True
-        else:
-            self.is_overdue = False
-
-        super().save(*args, **kwargs)
-
-
-    def __str__(self):
-        return self.subject
-    
-    class Meta:
-        constraints = [
-            models.CheckConstraint(
-                check=models.Q(status__in=[choice[0] for choice in STATUS_CHOICES]),
-                name="valid_ticket_status"
-            ),
-            models.CheckConstraint(
-                check=models.Q(priority__in=[choice[0] for choice in PRIORITY_CHOICES]) | models.Q(priority__isnull=True),
-                name="valid_ticket_priority"
-            )
-        ]
-
 """
 
 from django.test import TestCase
@@ -131,5 +61,32 @@ class TestValidateRedirection(TestCase):
             priority="Medium", 
             due_date=timezone.now() + timezone.timedelta(days=3) 
         )
+
+    def test_redirection_if_ticket_is_closed():
+        pass
+
+
+    @patch("api.helpers.yagmail.SMTP")
+    def test_send_response_create_notification_for_staff(self, mock_yagmail):
+        """ Test email sending for staff responses. """
+        ticket = Ticket.objects.create(
+            created_by=self.student_user, subject="Test Subject", description="Test Description", status="Open"
+        )
+
+        mock_smtp_instance = MagicMock()
+        mock_yagmail.return_value = mock_smtp_instance 
+
+        redirect_query(self.staff_user, ticket, "Test Message Body")
+
+ 
+        self.assertEqual(Notification.objects.count(), 1)
+
+    
+        mock_smtp_instance.send.assert_called_once_with(
+            to=self.student_user.email,
+            subject="Message Recieved",
+            contents=f"Staff replied on Ticket #{ticket.id}",
+        )
+
 
 

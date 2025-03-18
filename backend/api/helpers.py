@@ -210,13 +210,15 @@ def redirect_query(ticket, from_user, to_user):
     )
 
 
+    msg=f"Ticket #{ticket.id} has been redirected to you by {from_user.username}."
+
     Notification.objects.create(
         user_profile=to_user,
         ticket=ticket,
-        message=f"Ticket #{ticket.id} has been redirected to you by {from_user.username}.",
+        message=msg,
     )
 
-    send_email(to_user, 'Testing Redirection', 'Body message test')
+    send_email(to_user, 'Redirection of ticket', msg)
 
 
     return ticket
@@ -478,19 +480,18 @@ def changeTicketDueDate(ticket, user, new_due_date):
             ticket.status = "Awaiting Student"
             ticket.save()
 
+        msg = (
+                f"Due date has been set/updated to {new_due_date.strftime('%Y-%m-%d %H:%M:%S')} "
+                f"by {user.username}."
+            )
+        
         Notification.objects.create(
             user_profile=ticket.created_by,
             ticket=ticket,
-            message=(
-                f"Due date has been set/updated to {new_due_date.strftime('%Y-%m-%d %H:%M:%S')} "
-                f"by {user.username}."
-            ),
+            message=msg,
         )
 
-        send_email(ticket.created_by, 'Test change due date', (
-                f"Due date has been set/updated to {new_due_date.strftime('%Y-%m-%d %H:%M:%S')} "
-                f"by {user.username}."
-            ),)
+        send_email(ticket.created_by, 'Your due date of the ticket', (msg),)
 
 
         TicketStatusHistory.objects.create(

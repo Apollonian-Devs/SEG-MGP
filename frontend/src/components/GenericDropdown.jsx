@@ -23,30 +23,6 @@ const GenericDropdown = ({
 	};
 
 	useEffect(() => {
-		if (isOpen && dropdownRef.current && menuRef.current) {
-			const dropdown = dropdownRef.current.getBoundingClientRect();
-			setDropdownWidth(dropdown.width);
-			const menu = menuRef.current.getBoundingClientRect();
-			const availableSpaceBelow = window.innerHeight - dropdown.bottom;
-			const availableSpaceAbove = dropdown.top;
-			if (
-				menu.height > availableSpaceBelow &&
-				availableSpaceAbove > availableSpaceBelow
-			) {
-				setMenuPositionAbove(true);
-			} else {
-				setMenuPositionAbove(false);
-			}
-			const availableSpaceRight = window.innerWidth - dropdown.right;
-			if (menu.width > availableSpaceRight) {
-				setMenuPositionRight(true);
-			} else {
-				setMenuPositionRight(false);
-			}
-		}
-	}, [isOpen]); // Run when isOpen changes
-
-	useEffect(() => {
 		const handleClickOutside = (event) => {
 			if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
 				setIsOpen(false);

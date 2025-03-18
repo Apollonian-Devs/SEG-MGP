@@ -5,7 +5,7 @@ import api from '../api';
 import { ACCESS_TOKEN } from '../constants';
 import { University } from 'lucide-react';
 
-const DepartmentsDropdown = ({ setSelectedDepartment }) => {
+const DepartmentsDropdown = ({ ticketId, setSelectedDepartments }) => {
 	const [departments, setDepartments] = useState([]);
 	const [selectedDept, setSelectedDeptState] = useState(null);
 	const [loading, setLoading] = useState(true);
@@ -32,7 +32,10 @@ const DepartmentsDropdown = ({ setSelectedDepartment }) => {
 	}, []);
 
 	const handleSelect = (department) => {
-		setSelectedDepartment(department);
+		setSelectedDepartments((prev) => ({
+			...prev,
+			[ticketId]: department,
+		}))
 		setSelectedDeptState(department);
 	};
 

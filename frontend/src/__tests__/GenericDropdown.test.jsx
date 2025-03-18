@@ -154,6 +154,7 @@ describe('GenericDropdown Component', () => {
 
 
     it('closes the dropdown when clicking outside', () => {
+      
       render(
         <GenericDropdown buttonName="Select TestButton">
           <button>Option 1</button>
@@ -171,6 +172,7 @@ describe('GenericDropdown Component', () => {
       expect(screen.queryByText('Option 1')).not.toBeInTheDocument();
       expect(screen.queryByText('Option 2')).not.toBeInTheDocument();
     });
+
   
     it('sets minWidth to auto when dropdownWidth is 0', () => {
       // Mock the dropdownWidth to be 0

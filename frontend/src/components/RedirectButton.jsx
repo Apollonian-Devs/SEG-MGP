@@ -10,8 +10,6 @@ const RedirectButton = ({
 	selectedOfficer,
 	departmentId,
 	fetchTickets,
-	setShowingTickets,
-	setTickets,
 	dataTestId,
 }) => {
 	const handleRedirect = () => {

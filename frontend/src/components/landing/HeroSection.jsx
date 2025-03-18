@@ -2,6 +2,8 @@ import React from 'react';
 import gif1 from '../../assets/feel-me-think-about-it.gif';
 import gif2 from '../../assets/coding.gif';
 import { motion } from 'framer-motion';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGithub } from '@fortawesome/free-brands-svg-icons';
 
 const HeroSection = () => {
 	return (
@@ -11,7 +13,7 @@ const HeroSection = () => {
 			animate={{ opacity: 1 }}
 			transition={{ duration: 0.8 }}
 		>
-			<h1 className="text-4xl sm:text-6xl lg:text-7xl text-center tracking-wide">
+			<h1 className="text-4xl sm:text-7xl lg:text-8xl text-center tracking-wide">
 				Student Support Hub: <br />
 				<span className="bg-gradient-to-r from-customOrange-dark to-slate-700 text-transparent bg-clip-text">
 					Apollonian Devs
@@ -36,9 +38,16 @@ const HeroSection = () => {
 				</a>
 				<a
 					href="/helpfaq"
-					className="py-2 px-3 border-2 border-gray-900 rounded-md bg-customGray-light font-medium hover:bg-customGray-dark/80 transition-colors duration-500"
+					className="py-2 px-3 border-2 border-gray-900 rounded-md bg-customGray-light font-medium hover:bg-customGray-dark/80 transition-colors duration-500 items-center flex"
 				>
 					Help & FAQs
+				</a>
+				<a
+					href="https://github.com/Lluc4s/SEG-MGP"
+					className="py-2 px-3 border-2 border-gray-900 rounded-md bg-neutral-300 font-medium hover:bg-neutral-400/70 transition-colors duration-500 items-center flex gap-2"
+				>
+					<FontAwesomeIcon icon={faGithub} className="h-6 w-6" />
+					<p className="max-sm:hidden block">Github Repository</p>
 				</a>
 			</motion.div>
 			<motion.div

@@ -1,10 +1,11 @@
 import { Navigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 
-import api from '../api';
-import { REFRESH_TOKEN, ACCESS_TOKEN } from '../constants';
+import api from './api';
+import { REFRESH_TOKEN, ACCESS_TOKEN } from './constants';
 import React, { useState, useEffect } from 'react';
 import { Loader } from 'lucide-react';
+import { toast } from 'sonner';
 
 function ProtectedRoute({ children }) {
 	const [isAuthorized, setIsAuthorized] = useState(null);
@@ -26,7 +27,7 @@ function ProtectedRoute({ children }) {
 				setIsAuthorized(false);
 			}
 		} catch (error) {
-			console.log(error);
+			toast.error('Error refreshing token', { description: error.message });
 			setIsAuthorized(false);
 		}
 	};

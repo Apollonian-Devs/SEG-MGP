@@ -5,18 +5,15 @@ import TicketsCard from '../components/TicketsCard';
 import NewTicketButton from '../components/NewTicketButton';
 import GenericDropdown from '../components/GenericDropdown';
 import NotificationsTab from '../components/Notification';
-import TicketDetails from '../components/TicketDetails';
-import Popup from '../components/Popup';
 import { CircleUserRound } from 'lucide-react';
+import { toast } from 'sonner';
 
 const Dashboard = () => {
 	const [current_user, setCurrent_user] = useState(null);
 	const [officers, setOfficers] = useState([]);
 	const [admin, setAdmin] = useState(null);
-	const [popupType, setPopupType] = useState(null);
 	const [tickets, setTickets] = useState([]);
 	const [selectedTicket, setSelectedTicket] = useState(null);
-	const [isPopupOpen, setPopupOpen] = useState(false);
 
 	const fetchCurrentUser = async () => {
 		try {
@@ -26,13 +23,13 @@ const Dashboard = () => {
 					Authorization: `Bearer ${access}`,
 				},
 			});
-			console.log('Current User:', response.data);
+			// console.log('Current User:', response.data);
 			setCurrent_user(response.data); // No need to manually restructure the object
 		} catch (error) {
-			console.error(
-				'Error fetching current user:',
-				error.response?.data || error.message
-			);
+			toast.error('Error fetching current user', {
+				description: error.response?.data || error.message,
+			});
+			setCurrent_user(null);
 		}
 	};
 
@@ -44,14 +41,15 @@ const Dashboard = () => {
 					Authorization: `Bearer ${access}`,
 				},
 			});
-			console.log('All Officers', response.data);
+			// console.log('All Officers', response.data);
 			setOfficers(response.data.officers); // No need to manually restructure the object
 			setAdmin(response.data.admin);
 		} catch (error) {
-			console.error(
-				'Error fetching officers',
-				error.response?.data || error.message
-			);
+			toast.error('Error fetching officers', {
+				description: error.response?.data || error.message,
+			});
+			setOfficers(null);
+			setAdmin(null);
 		}
 	};
 
@@ -62,25 +60,13 @@ const Dashboard = () => {
 				headers: { Authorization: `Bearer ${access}` },
 			});
 			setTickets(response.data.tickets);
-			console.log('Tickets:', response.data.tickets);
+			// console.log('Tickets:', response.data.tickets);
 		} catch (error) {
-			console.error(
-				'Error fetching tickets:',
-				error.response?.data || error.message
-			);
+			toast.error('Error fetching tickets', {
+				description: error.response?.data || error.message,
+			});
+			setTickets(null);
 		}
-	};
-
-	const openPopup = (type, ticket = null) => {
-		setPopupType(type);
-		// setSelectedTicket(ticket);
-		setPopupOpen(true);
-	};
-
-	const closePopup = () => {
-		setPopupOpen(false);
-		setPopupType(null);
-		setSelectedTicket(null);
 	};
 
 	useEffect(() => {
@@ -119,7 +105,9 @@ const Dashboard = () => {
 				</GenericDropdown>
 
 				<div className="flex justify-between items-center gap-x-5">
-					{!current_user.is_staff && <NewTicketButton fetchTickets={fetchTickets}/>}
+					{!current_user.is_staff && (
+						<NewTicketButton fetchTickets={fetchTickets} />
+					)}
 					<NotificationsTab user={current_user} />
 				</div>
 			</div>
@@ -129,20 +117,12 @@ const Dashboard = () => {
 					current_user.is_staff && !current_user.is_superuser ? officers : []
 				}
 				admin={admin}
-				openPopup={openPopup}
 				tickets={tickets}
 				setTickets={setTickets}
 				selectedTicket={selectedTicket}
 				setSelectedTicket={setSelectedTicket}
 				fetchTickets={fetchTickets}
 			/>
-
-			<Popup isOpen={isPopupOpen} onClose={closePopup}>
-				{popupType === 'addTicket' && <AddTicketPopup />}
-				{popupType === 'viewTicket' && selectedTicket && (
-					<TicketDetails ticket={selectedTicket} />
-				)}
-			</Popup>
 		</div>
 	);
 };

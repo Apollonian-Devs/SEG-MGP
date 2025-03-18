@@ -13,14 +13,55 @@ import { MemoryRouter } from "react-router-dom";
 import { useState } from "react";
 import { ACCESS_TOKEN } from "../../constants";
 import React from "react";
+import { toast } from "sonner";
 
-vi.mock("../../api");
+vi.mock('sonner', () => ({
+	toast: {
+		promise: vi.fn(),
+		success: vi.fn(),
+		error: vi.fn(),
+	},
+}));
+
+vi.mock('../../api', () => ({
+	__esModule: true,
+	default: {
+		get: vi.fn(),
+	},
+}));
 
 describe("TicketsCard - rendering", () => {
+  // const mockDepartments = [
+  //   {
+  //     id: 1,
+  //     name: "Department1",
+  //     description: "Description1",
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Department2",
+  //     description: "Description2",
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "Department3",
+  //     description: "Description3",
+  //   }
+  // ];
   beforeEach(() => {
-    vi.clearAllMocks();
-    localStorage.setItem(ACCESS_TOKEN, "mock_access_token");
-  });
+		vi.resetAllMocks();
+		localStorage.setItem(ACCESS_TOKEN, 'mock_access_token');
+		// api.get.mockImplementation((url) => {
+		// 	if (url.startsWith('/api/departments/')) {
+		// 		return Promise.resolve({ response: { data:  mockDepartments} });
+		// 	}
+		// 	return Promise.reject(new Error('Unknown API call'));
+		// });
+	});
+
+	afterEach(() => {
+		vi.clearAllMocks();
+	});
 
   it("Tickets Card - render default elements", () => {
     render(
@@ -111,9 +152,9 @@ describe("TicketsCard - rendering", () => {
     fireEvent.click(AISuggestionButton);
 
     expect(screen.getByRole("button", { name: /suggest departments/i }))
-      .toBeInTheDocument;
+      .toBeInTheDocument();
     expect(screen.getByRole("button", { name: /suggest ticket grouping/i }))
-      .toBeInTheDocument;
+      .toBeInTheDocument();
 
     // Close AI Suggestion dropdown
     fireEvent.click(AISuggestionButton);
@@ -145,14 +186,14 @@ describe("TicketsCard - rendering", () => {
     expect(suggestionCell).toBeInTheDocument();
   });
 
-  it("Ticket status should be changed when toggled", async () => {
-    const mockOfficer = {
-      user: {
-        id: 101,
-        username: "@officer1",
-      },
-      department: "IT",
-    };
+	it('Correct API should be changed when status toggled', async () => {
+		const mockOfficer = {
+			user: {
+				id: 101,
+				username: '@officer1',
+			},
+			department: 'IT',
+		};
 
     const mockFetchTickets = vi.fn();
 
@@ -172,26 +213,24 @@ describe("TicketsCard - rendering", () => {
     const toggleStatusButton = screen.getByTestId("toggle-status");
     fireEvent.click(toggleStatusButton);
 
-    await waitFor(() => {
-      expect(api.get).toHaveBeenCalledWith(
-        "/api/tickets/change-status/1/",
-        expect.objectContaining({
-          headers: { Authorization: "Bearer mock_access_token" },
-        })
-      );
-    });
+		await waitFor(() => {
+			expect(api.get).toHaveBeenCalledWith(
+				'/api/tickets/change-status/1/',
+				expect.objectContaining({
+					headers: { Authorization: 'Bearer mock_access_token' },
+				})
+			);
+		});
+	});
 
-    expect(mockFetchTickets).toHaveBeenCalled();
-  });
-
-  it("Ticket priority should be changed when toggled", async () => {
-    const mockOfficer = {
-      user: {
-        id: 101,
-        username: "@officer1",
-      },
-      department: "IT",
-    };
+	it('Correct API should be changed when proiority toggled', async () => {
+		const mockOfficer = {
+			user: {
+				id: 101,
+				username: '@officer1',
+			},
+			department: 'IT',
+		};
 
     const mockFetchTickets = vi.fn();
 
@@ -211,108 +250,153 @@ describe("TicketsCard - rendering", () => {
     const togglePriorityButton = screen.getByTestId("toggle-priority");
     fireEvent.click(togglePriorityButton);
 
-    await waitFor(() => {
-      expect(api.get).toHaveBeenCalledWith(
-        "/api/tickets/change-priority/1/",
-        expect.objectContaining({
-          headers: { Authorization: "Bearer mock_access_token" },
-        })
-      );
-    });
-
-    expect(mockFetchTickets).toHaveBeenCalled();
-  });
+		await waitFor(() => {
+			expect(api.get).toHaveBeenCalledWith(
+				'/api/tickets/change-priority/1/',
+				expect.objectContaining({
+					headers: { Authorization: 'Bearer mock_access_token' },
+				})
+			);
+		});
+	});
 });
 
-describe("TicketsCard - Error Handling", () => {
+describe('TicketsCard - Toggle Change', () => {
+	beforeEach(() => {
+		vi.resetAllMocks();
+		localStorage.setItem(ACCESS_TOKEN, 'mock_access_token');
+		api.get.mockImplementation((url) => {
+			if (url.startsWith('/api/tickets/change-priority/')) {
+				return Promise.resolve({ response: { data: 'Priority changed' } });
+			}
+			if (url.startsWith('/api/tickets/change-status/')) {
+				return Promise.resolve({ response: { data: 'Status changed' } });
+			}
+			return Promise.reject(new Error('Unknown API call'));
+		});
+	});
+
+	afterEach(() => {
+		vi.clearAllMocks();
+	});
+
+	it('toast.promise should works correctly when toggling status', async () => {
+		const mockFetchTickets = vi.fn();
+
+		render(
+			<TicketsCard
+				user={{ is_staff: true }}
+				officers={[]}
+				tickets={[{ id: 1, subject: 'ticket 1', status: 'testStatus' }]}
+				fetchTickets={mockFetchTickets}
+			/>
+		);
+
+		await waitFor(() => screen.getByText('ticket 1'));
+
+		const toggleStatusButton = screen.getByTestId('toggle-status');
+		fireEvent.click(toggleStatusButton);
+
+		await waitFor(() => {
+			expect(toast.promise).toHaveBeenCalledWith(
+				expect.any(Promise),
+				expect.objectContaining({
+					loading: 'Changing...',
+					success: expect.any(Function),
+					error: expect.any(Function),
+				})
+			);
+			expect(mockFetchTickets).not.toHaveBeenCalled();
+		});
+
+		// Now, test the behavior of the success function separately
+		const toastCallArgs = toast.promise.mock.calls[0]; // Get first call arguments
+		const toastOptions = toastCallArgs[1]; // Second argument (options object)
+
+		expect(await toastOptions.success()).toMatch(/changed successfully!/);
+
+		// Test error function with a mock error response
+		const mockError = { response: { data: 'Something went wrong' } };
+		expect(toastOptions.error(mockError)).toBe(
+			'Error changing status: Something went wrong'
+		);
+
+		// Test error function with a standard error
+		const standardError = new Error('Network failure');
+		expect(toastOptions.error(standardError)).toBe(
+			'Error changing status: Network failure'
+		);
+	});
+
+	it('toast.promise should works correctly when toggling priority', async () => {
+		const mockFetchTickets = vi.fn();
+
+		render(
+			<TicketsCard
+				user={{ is_staff: true }}
+				officers={[]}
+				tickets={[{ id: 1, subject: 'ticket 1', priority: 'testPriority' }]}
+				fetchTickets={mockFetchTickets}
+			/>
+		);
+
+		await waitFor(() => screen.getByText('ticket 1'));
+
+		const togglePriorityButton = screen.getByTestId('toggle-priority');
+		fireEvent.click(togglePriorityButton);
+
+		await waitFor(() => {
+			expect(toast.promise).toHaveBeenCalledWith(
+				expect.any(Promise),
+				expect.objectContaining({
+					loading: 'Changing...',
+					success: expect.any(Function),
+					error: expect.any(Function),
+				})
+			);
+			expect(mockFetchTickets).not.toHaveBeenCalled();
+		});
+
+		// Now, test the behavior of the success function separately
+		const toastCallArgs = toast.promise.mock.calls[0]; // Get first call arguments
+		const toastOptions = toastCallArgs[1]; // Second argument (options object)
+
+		expect(await toastOptions.success()).toMatch(/changed successfully!/);
+
+		// Test error function with a mock error response
+		const mockError = { response: { data: 'Something went wrong' } };
+		expect(toastOptions.error(mockError)).toBe(
+			'Error changing priority: Something went wrong'
+		);
+
+		// Test error function with a standard error
+		const standardError = new Error('Network failure');
+		expect(toastOptions.error(standardError)).toBe(
+			'Error changing priority: Network failure'
+		);
+	});
+});
+
+describe('TicketsCard - Popup', () => {
+
   beforeEach(() => {
-    vi.clearAllMocks();
-    localStorage.setItem(ACCESS_TOKEN, "mock_access_token");
-  });
+		vi.resetAllMocks();
+		localStorage.setItem(ACCESS_TOKEN, 'mock_access_token');
+	});
 
-  it("handles API error when toggling status", async () => {
-    const mockFetchTickets = vi.fn();
+	afterEach(() => {
+		vi.clearAllMocks();
+	});
 
-    api.get.mockRejectedValue(new Error("Network Error"));
-
-    const consoleErrorSpy = vi
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
-
-    render(
-      <TicketsCard
-        user={{ is_staff: true }}
-        officers={[]}
-        tickets={[{ id: 1, subject: "ticket 1", status: "testStatus" }]}
-        fetchTickets={mockFetchTickets}
-      />
-    );
-
-    await waitFor(() => screen.getByText("ticket 1"));
-
-    const toggleStatusButton = screen.getByTestId("toggle-status");
-    fireEvent.click(toggleStatusButton);
-
-    await waitFor(() => {
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "Error changing status:",
-        "Network Error"
-      );
-    });
-
-    expect(mockFetchTickets).toHaveBeenCalled();
-
-    consoleErrorSpy.mockRestore();
-  });
-
-  it("handles API error when toggling priority", async () => {
-    const mockFetchTickets = vi.fn();
-
-    api.get.mockRejectedValue({
-      response: { data: "Priority update failed" },
-    });
-
-    const consoleErrorSpy = vi
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
-
-    render(
-      <TicketsCard
-        user={{ is_staff: true }}
-        officers={[]}
-        tickets={[{ id: 1, subject: "ticket 1", priority: "testPriority" }]}
-        fetchTickets={mockFetchTickets}
-      />
-    );
-
-    await waitFor(() => screen.getByText("ticket 1"));
-
-    const togglePriorityButton = screen.getByTestId("toggle-priority");
-    fireEvent.click(togglePriorityButton);
-
-    await waitFor(() => {
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "Error changing status:",
-        "Priority update failed"
-      );
-    });
-
-    expect(mockFetchTickets).toHaveBeenCalled();
-
-    consoleErrorSpy.mockRestore();
-  });
-});
-
-describe("Popup", () => {
-  it("Chat popup should be displayed when the chat button is pressed", async () => {
-    render(
-      <TicketsCard
-        user={{}}
-        tickets={[{ id: 1, subject: "ticket 1", status: "testStatus" }]}
-        setSelectedTicket={vi.fn()}
-        setTickets={vi.fn()}
-      />
-    );
+	it('Chat popup should be displayed when the chat button is pressed', async () => {
+		render(
+			<TicketsCard
+				user={{}}
+				tickets={[{ id: 1, subject: 'ticket 1', status: 'testStatus' }]}
+				setSelectedTicket={vi.fn()}
+				setTickets={vi.fn()}
+			/>
+		);
 
     await waitFor(() => screen.getByText("ticket 1"));
     fireEvent.click(screen.getByText("Chat").closest("button"));
@@ -449,36 +533,41 @@ describe("Popup", () => {
     expect(mockSetSelectedTicket).toHaveBeenCalledWith(null);
   });
 
-  it("Ticket details popup", async () => {
-    const mockOpenPopup = vi.fn();
-    const mockSetSelectedTicket = vi.fn();
+	it('Ticket details popup', async () => {
+		const mockSetSelectedTicket = vi.fn();
 
-    render(
-      <TicketsCard
-        user={{}}
-        tickets={[
-          {
-            id: 1,
-            subject: "ticket 1",
-            status: "testStatus",
-            due_date: "2025-12-31",
-          },
-        ]}
-        setSelectedTicket={mockSetSelectedTicket}
-        setTickets={vi.fn()}
-        openPopup={mockOpenPopup}
-      />
-    );
+		const mockOfficer = {
+			user: {
+				id: 101,
+				username: '@officer1',
+			},
+			department: 'IT',
+		};
 
-    const cell = screen.getByRole("cell", { name: /ticket 1/i });
-    fireEvent.click(cell);
+		render(
+			<MemoryRouter>
+				<TicketsCard
+					user={{ is_staff: true, is_superuser: true }}
+					officers={[mockOfficer]}
+					tickets={[{ id: 1, subject: 'ticket 1', status: 'testStatus' }]}					setSelectedTicket={mockSetSelectedTicket}
+					setTickets={vi.fn()}
+					selectedTicket={{ id: 1, subject: 'ticket 1', status: 'testStatus' }}
+				/>
+			</MemoryRouter>
+		);
 
-    expect(mockSetSelectedTicket).toHaveBeenCalled();
-    expect(mockOpenPopup).toHaveBeenCalled();
+		const cell = screen.getByRole('cell', { name: /ticket 1/i });
+		fireEvent.click(cell);
 
-    //const closeButton = screen.getByRole("button", { name: "✕" });
-    //fireEvent.click(closeButton);
-  });
+		expect(
+			screen.getByRole('heading', { name: /ticket 1/i })
+		).toBeInTheDocument();
+
+		const closeButton = screen.getByRole('button', { name: '✕' });
+		fireEvent.click(closeButton);
+
+		expect(mockSetSelectedTicket).toHaveBeenCalledWith(null);
+	});
 });
 
 // Wrapper written by GPT
@@ -497,9 +586,9 @@ const SubjectAndSameStatusTest = () => {
     />
   );
 };
-describe("Sorting", () => {
-  it("Tickets are correctly sorted by subject when subject is clicked", async () => {
-    render(<SubjectAndSameStatusTest />);
+describe('TicketsCard - Sorting', () => {
+	it('Tickets are correctly sorted by subject when subject is clicked', async () => {
+		render(<SubjectAndSameStatusTest />);
 
     await waitFor(() => screen.getByText("ticket 1"));
     await waitFor(() => screen.getByText("ticket 2"));
@@ -727,35 +816,35 @@ describe("TicketsCard - Filtering", () => {
     expect(screen.queryByText("Ticket 4")).not.toBeInTheDocument();
   });
 
-  //  it("applies overdue filter correctly", async () => {
-  //    render(<TicketsCard user={user} tickets={tickets} officers={officers} />);
-  //
-  //    // Open Filter dropdown
-  //    const filterTicketsDropdown = screen.getByTestId("filter-tickets-dropdown");
-  //    fireEvent.click(filterTicketsDropdown);
-  //
-  //    // Select "Overdue" status
-  //    const yesOverdueInput = screen.getByDisplayValue("Yes");
-  //    expect(yesOverdueInput).toHaveAttribute("name", "isOverdue");
-  //    expect(yesOverdueInput).toHaveAttribute("value", "true");
-  //
-  //    fireEvent.click(yesOverdueInput);
-  //
-  //    const applyButton = screen.getByText("Apply");
-  //    fireEvent.click(applyButton);
-  //
-  //    // Close dropdown
-  //    fireEvent.click(filterTicketsDropdown);
-  //
-  //    await waitFor(() => {
-  //      expect(screen.getByText("Ticket 1")).toBeInTheDocument();
-  //      expect(screen.getByText("Ticket 4")).toBeInTheDocument();
-  //    });
-  //
-  //    // Ensure non-overdue tickets are filtered out
-  //    expect(screen.queryByText("Ticket 2")).not.toBeInTheDocument();
-  //    expect(screen.queryByText("Ticket 3")).not.toBeInTheDocument();
-  //  });
+	it('applies overdue filter correctly', async () => {
+		render(<TicketsCard user={user} tickets={tickets} officers={officers} />);
+
+		// Open Filter dropdown
+		const filterTicketsDropdown = screen.getByTestId('filter-tickets-dropdown');
+		fireEvent.click(filterTicketsDropdown);
+
+		// Select "Overdue" status
+		const yesOverdueInput = screen.getByDisplayValue(true);
+		expect(yesOverdueInput).toHaveAttribute('name', 'isOverdue');
+		expect(yesOverdueInput).toHaveAttribute('value', 'true');
+
+		fireEvent.click(yesOverdueInput);
+
+		const applyButton = screen.getByText('Apply');
+		fireEvent.click(applyButton);
+
+		// Close dropdown
+		fireEvent.click(filterTicketsDropdown);
+
+		await waitFor(() => {
+			expect(screen.getByText('Ticket 1')).toBeInTheDocument();
+			expect(screen.getByText('Ticket 4')).toBeInTheDocument();
+		});
+
+		// Ensure non-overdue tickets are filtered out
+		expect(screen.queryByText('Ticket 2')).not.toBeInTheDocument();
+		expect(screen.queryByText('Ticket 3')).not.toBeInTheDocument();
+	});
 
   it("clears filters correctly and restores all tickets", async () => {
     render(<TicketsCard user={user} tickets={tickets} officers={officers} />);
@@ -846,10 +935,6 @@ describe("TicketsCard - Filtering", () => {
 
     const applyButton = screen.getByText("Apply");
     fireEvent.click(applyButton);
-
-    //await waitFor(() => {
-    //  expect(setShowingTickets).toHaveBeenCalledWith([]);
-    //});
   });
 });
 

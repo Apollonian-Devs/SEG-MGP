@@ -15,8 +15,11 @@ const GenericTable = ({
 	const totalPages = Math.ceil(data.length / rowsPerPage);
 
 	useEffect(() => {
-		const currentTotalPages = Math.ceil(data.length / rowsPerPage);
-		setCurrentPage(currentTotalPages < currentPage ? currentTotalPages : currentPage);
+		if (data.length === 0) {
+			setCurrentPage(1);
+			return;
+		}
+		setCurrentPage(currentPage > totalPages ? totalPages : currentPage);
 	}, [data.length]);
 
 	const startIndex = (currentPage - 1) * rowsPerPage;
@@ -25,8 +28,7 @@ const GenericTable = ({
 
 	const handleRowsPerPageChange = (option) => {
 		setRowsPerPage(option);
-		const currentTotalPages = Math.ceil(data.length / option);
-		setCurrentPage(currentTotalPages < currentPage ? currentTotalPages : currentPage);
+		setCurrentPage(currentPage > totalPages ? totalPages : currentPage);
 	};
 	return (
 		<>
@@ -35,7 +37,7 @@ const GenericTable = ({
 					<p className=" font-medium">
 						Showing:{' '}
 						<span className="font-normal">
-							{startIndex + 1} - {startIndex + paginatedData.length}
+							{data.length > 0 ? `${startIndex + 1} - ${startIndex + paginatedData.length}` : 0} 
 						</span>{' '}
 						of <span className="font-normal">{data.length}</span>
 					</p>

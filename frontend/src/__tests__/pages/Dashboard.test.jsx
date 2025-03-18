@@ -1,9 +1,16 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import Dashboard from '../../pages/Dashboard';
 import { ACCESS_TOKEN } from '../../constants';
 import api from '../../api';
+import { toast } from 'sonner';
+
+vi.mock('sonner', () => ({
+	toast: {
+		error: vi.fn(),
+	},
+}));
 
 // Mock API and LocalStorage
 vi.mock('../../api', () => ({
@@ -36,12 +43,6 @@ vi.mock('../../components/Notification', () => ({
 	default: () => <div data-testid="notifications-tab">Notifications</div>,
 }));
 
-vi.mock('../../components/Popup', () => ({
-	__esModule: true,
-	default: ({ isOpen }) =>
-		isOpen ? <div data-testid="popup">Popup</div> : null,
-}));
-
 vi.mock('../../components/TicketDetails', () => ({
 	__esModule: true,
 	default: () => <div data-testid="ticket-details">TicketDetails</div>,
@@ -59,6 +60,7 @@ beforeEach(() => {
 
 describe('Dashboard Component', () => {
 	beforeEach(() => {
+		vi.spyOn(console, 'error').mockImplementation(() => {});
 		// Mock API Responses
 		api.get.mockImplementation((url) => {
 			if (url === '/api/current_user/') {
@@ -78,6 +80,10 @@ describe('Dashboard Component', () => {
 			}
 			return Promise.reject(new Error('Unknown API call'));
 		});
+	});
+
+	afterEach(() => {
+		vi.restoreAllMocks();
 	});
 
 	it('renders the Dashboard component', async () => {
@@ -102,6 +108,34 @@ describe('Dashboard Component', () => {
 		await waitFor(() =>
 			expect(screen.getByText('testUser')).toBeInTheDocument()
 		);
+	});
+
+	it('fetches and displays officers and admin', async () => {
+		api.get.mockImplementationOnce((url) => {
+			if (url === '/api/current_user/') {
+				return Promise.resolve({
+					data: { username: 'StaffUser', is_staff: true, is_superuser: false },
+				});
+			}
+			return Promise.reject(new Error('Unknown API call'));
+		});
+
+		render(
+			<MemoryRouter>
+				<Dashboard />
+			</MemoryRouter>
+		);
+
+		await waitFor(() => {
+			expect(api.get).toHaveBeenCalledWith(
+				'/api/all-officers/',
+				expect.any(Object)
+			);
+			expect(api.get).toHaveBeenCalledWith(
+				'/api/user-tickets/',
+				expect.any(Object)
+			);
+		});
 	});
 
 	it('renders the TicketsCard component', async () => {
@@ -160,21 +194,82 @@ describe('Dashboard Component', () => {
 			expect(screen.queryByTestId('new-ticket-button')).not.toBeInTheDocument()
 		);
 	});
+});
 
-	it('opens and renders the Popup when triggered', async () => {
-		render(
-			<MemoryRouter>
-				<Dashboard />
-			</MemoryRouter>
-		);
+describe('Dashboard API error handling', () => {
+	test('shows toast error(response) when fetching current user fails', async () => {
+		vi.spyOn(api, 'get').mockRejectedValueOnce({
+			response: { data: 'Server error while fetching current user' },
+		});
 
-		// Simulate opening the popup
-		api.get.mockImplementationOnce(() =>
-			Promise.resolve({ data: { username: 'testUser', is_staff: false } })
-		);
+		render(<Dashboard />);
 
-		await waitFor(() =>
-			expect(screen.queryByTestId('popup')).not.toBeInTheDocument()
-		);
+		await waitFor(() => {
+			expect(toast.error).toHaveBeenCalledWith('Error fetching current user', {
+				description: 'Server error while fetching current user',
+			});
+		});
+	});
+
+	test('shows toast error(message) when fetching current user fails', async () => {
+		vi.spyOn(api, 'get').mockRejectedValueOnce({
+			message: 'Server error while fetching current user',
+		});
+
+		render(<Dashboard />);
+
+		await waitFor(() => {
+			expect(toast.error).toHaveBeenCalledWith('Error fetching current user', {
+				description: 'Server error while fetching current user',
+			});
+		});
+	});
+
+	test('logs an error(response) when fetching officers & tickets fails', async () => {
+		vi.spyOn(api, 'get')
+			.mockResolvedValueOnce({
+				data: { username: 'test_user', is_staff: true, is_superuser: false },
+			}) // Mock current user
+			.mockRejectedValueOnce({
+				response: { data: 'Server error while fetching tickets' },
+			}) // Mock ticket fetch failure
+			.mockRejectedValueOnce({
+				response: { data: 'Unable to fetch officers' },
+			}); // Mock officers fetch failure
+
+		render(<Dashboard />);
+
+		await waitFor(() => {
+			expect(toast.error).toHaveBeenCalledWith('Error fetching tickets', {
+				description: 'Server error while fetching tickets',
+			});
+			expect(toast.error).toHaveBeenCalledWith('Error fetching officers', {
+				description: 'Unable to fetch officers',
+			});
+		});
+	});
+
+	test('logs an error(message) when fetching officers & tickets fails', async () => {
+		vi.spyOn(api, 'get')
+			.mockResolvedValueOnce({
+				data: { username: 'test_user', is_staff: true, is_superuser: false },
+			}) // Mock current user
+			.mockRejectedValueOnce({
+				message: 'Server error while fetching tickets',
+			}) // Mock ticket fetch failure
+			.mockRejectedValueOnce({
+				message: 'Unable to fetch officers',
+			}); // Mock officers fetch failure
+
+		render(<Dashboard />);
+
+		await waitFor(() => {
+			expect(toast.error).toHaveBeenCalledWith('Error fetching tickets', {
+				description: 'Server error while fetching tickets',
+			});
+			expect(toast.error).toHaveBeenCalledWith('Error fetching officers', {
+				description: 'Unable to fetch officers',
+			});
+		});
 	});
 });

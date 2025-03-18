@@ -9,6 +9,9 @@ vi.mock('../../components/LoginForm', () => ({
 	default: () => <form data-testid="login-form">Login Form</form>,
 }));
 
+// Mocking the logo image
+vi.mock('../../assets/logo.png', () => ({ default: 'mock-logo.png' }));
+
 describe('Login Component', () => {
 	const renderWithRouter = () => {
 		render(
@@ -20,7 +23,9 @@ describe('Login Component', () => {
 
 	it('renders the company logo', () => {
 		renderWithRouter();
-		expect(screen.getByAltText('Logo')).toBeInTheDocument();
+		const logo = screen.getByAltText('Logo');
+		expect(logo).toBeInTheDocument();
+		expect(logo).toHaveAttribute('src', 'mock-logo.png');
 	});
 
 	it('renders the brand name Apollonian Devs', () => {

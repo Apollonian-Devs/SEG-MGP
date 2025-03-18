@@ -174,21 +174,19 @@ def send_response(sender_profile, ticket, message_body, is_internal=False, attac
 
 
 def validate_redirection(from_user, to_user):
-    # Ensure from_user and to_user are not None
+
     if from_user is None or to_user is None:
         raise PermissionDenied("Invalid redirection: Users cannot be None.")
-
-    # Ensure from_user is either staff OR superuser
+    
     if not (from_user.is_staff or from_user.is_superuser):
         raise PermissionDenied("Only officers or admins can redirect tickets.")
 
-    # Prevent redirecting a ticket to the same user
     if from_user == to_user:
         raise ValidationError("Redirection failed: Cannot redirect the ticket to the same user.")
 
-    
 
-def redirect_query(ticket, from_user, to_user, reason=None, new_status=None, new_priority=None):
+
+def redirect_query(ticket, from_user, to_user):
     """
     Redirect ticket' from one user to another.
     Officers can redirect within the same department
@@ -200,12 +198,7 @@ def redirect_query(ticket, from_user, to_user, reason=None, new_status=None, new
     
     validate_redirection(from_user, to_user)
 
-
-    #old_status = ticket.status
-
     ticket.assigned_to = to_user
-    #ticket.status = new_status or old_status
-    #ticket.priority = new_priority or ticket.priority
     ticket.updated_at = timezone.now()
     ticket.save()
 

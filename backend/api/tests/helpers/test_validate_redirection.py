@@ -71,3 +71,4 @@ class TestValidateRedirection(TestCase):
             validate_redirection(self.staff_user, None)
         with self.assertRaises(PermissionDenied):
             validate_redirection(None, None)
+        

@@ -26,6 +26,7 @@ const Departments = () => {
   }, [lightMode]);
 
   // Team members data with unique images
+  
   const teamMembers = [
     { name: "Josiah", profession: "Full Stack Developer", imageSrc: JosiahImage1 },
     { name: "Rahat", profession: "Web Developer", imageSrc: JosiahImage2 },

@@ -36,8 +36,8 @@ class TestRedirectQuery(TestCase):
         with self.assertRaises(ValidationError) as context:
             redirect_query(self.ticket, self.staff_user, self.staff_user2)
         
-        self.assertEqual(str(context.exception), "Redirection failed: Closed tickets cannot be redirected.")
-
+        self.assertEqual(context.exception.messages[0], "Redirection failed: Closed tickets cannot be redirected.")
+        
     def test_officer_can_redirect_within_same_department(self):
         """ Test that a staff member can redirect a ticket to another staff member. """
         redirect_query(self.ticket, self.staff_user, self.staff_user2)
@@ -54,8 +54,9 @@ class TestRedirectQuery(TestCase):
         """ Test that a ticket cannot be redirected to the same user. """
         with self.assertRaises(ValidationError) as context:
             redirect_query(self.ticket, self.staff_user, self.staff_user)
+        
+        self.assertEqual(context.exception.messages[0], "Redirection failed: Cannot redirect the ticket to the same user.")
 
-        self.assertEqual(str(context.exception), "Redirection failed: Cannot redirect the ticket to the same user.")
 
     def test_ticket_redirect_object_created(self):
         """ Ensure a TicketRedirect object is created after redirection. """

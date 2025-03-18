@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api';
 import GenericForm from './GenericForm';
 import GenericInput from './GenericInput';
+import { toast } from 'sonner';
 
 const RegisterForm = () => {
 	const [username, setUsername] = useState('');
@@ -30,11 +31,22 @@ const RegisterForm = () => {
 			});
 
 			if (response.status === 201) {
-				alert('Registration successful. Please login to continue.');
+				toast.success("Registration successful. Please login with your details.")
 				navigate('/');
 			}
-		} catch (err) {
-			alert('Username or email is already registered. Please try again.');
+		} catch (error) {
+			console.error("The reason for the error is: ", error.response?.data)
+
+			if (error.response?.data?.username) {
+				toast.error(error.response?.data?.username)
+			}
+			else if (error.response?.data?.email) {
+				toast.error(error.response?.data?.email)
+			}
+			else {
+				toast.error("An unexpected error has occurred. Please try again with different credentials")
+			}
+		
 		} finally {
 			setLoading(false);
 		}

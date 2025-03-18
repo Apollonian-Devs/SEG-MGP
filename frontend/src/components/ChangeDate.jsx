@@ -30,8 +30,6 @@ const ChangeDate = ({ ticket, setSelectedTicket, setTickets }) => {
                 });
             
                 if (response.status === 201) {
-                    // alert("The due date for the ticket has been successfully updated")
-
                     toast.success("The due date for the ticket has been successfully updated")
 
                     console.log(`updated ticket: ${response.data.ticket.id}`);
@@ -53,11 +51,9 @@ const ChangeDate = ({ ticket, setSelectedTicket, setTickets }) => {
         catch (error) {
             console.error("The reason for the error is: ", error);
             if (error.response?.status === 400) {
-                // alert("Please ensure you pick a valid date that isn't in the past and isn't today's date")
                 toast.error("Please ensure you pick a valid date that isn't in the past and isn't today's date");
             }
             else {
-                //alert("There has been an error trying to update the due date of the ticket");
                 toast.error("There has been an error trying to update the due date of the ticket");
             }
         }

@@ -11,6 +11,7 @@ import { MemoryRouter } from 'react-router-dom';
 import RegisterForm from '../../components/RegisterForm';
 import api from '../../api';
 import '@testing-library/jest-dom/vitest';
+import { toast } from 'sonner';
 
 vi.mock('../../api', () => ({
 	__esModule: true,
@@ -30,6 +31,13 @@ vi.mock('react-router-dom', async () => {
 	};
 });
 
+vi.mock('sonner', () => ({
+	toast: {
+		error: vi.fn(),
+		success: vi.fn()
+	},
+}));
+
 afterEach(() => {
 	cleanup();
 	vi.clearAllMocks(); // Clear all mocks after each test
@@ -37,7 +45,6 @@ afterEach(() => {
 
 describe('RegisterForm', () => {
 	beforeEach(() => {
-		vi.spyOn(window, 'alert').mockImplementation(() => {});
 		render(
 			<MemoryRouter>
 				<RegisterForm />
@@ -77,10 +84,12 @@ describe('RegisterForm', () => {
 		expect(screen.getByText(/Loading.../i)).toBeInTheDocument();
 	});
 
-	it('shows an error message when registration fails', async () => {
-		api.post.mockRejectedValue(
-			new Error('Username or email is already registered. Please try again.')
-		);
+	it('shows username error message if the username doesnt have @ at the start', async() => {
+		api.post.mockRejectedValue({
+			response: {
+				data: { username: 'Username must have @ at the start'}
+		}})
+
 		fireEvent.change(screen.getByLabelText(/Username/i), {
 			target: { value: 'johndoe' },
 		});
@@ -99,11 +108,38 @@ describe('RegisterForm', () => {
 		fireEvent.submit(screen.getByRole('button', { name: /Register/i }));
 
 		await waitFor(() => {
-			expect(window.alert).toHaveBeenCalledWith(
-				'Username or email is already registered. Please try again.'
-			);
+			expect(toast.error).toHaveBeenCalledWith("Username must have @ at the start")
+		})
+
+	})
+
+	it('shows email error message if the email is not the correct format', async () => {
+		api.post.mockRejectedValue({
+			response: {
+				data: { email: 'Email is not the correct format'}
+		}})
+
+		fireEvent.change(screen.getByLabelText(/Username/i), {
+			target: { value: '@johndoe' },
 		});
-	});
+		fireEvent.change(screen.getByLabelText(/First Name/i), {
+			target: { value: 'John' },
+		});
+		fireEvent.change(screen.getByLabelText(/Last Name/i), {
+			target: { value: 'Doe' },
+		});
+		fireEvent.change(screen.getByLabelText(/Email/i), {
+			target: { value: 'johndoe@example' },
+		});
+		fireEvent.change(screen.getByLabelText(/Password/i), {
+			target: { value: 'password' },
+		});
+		fireEvent.submit(screen.getByRole('button', { name: /Register/i }));
+
+		await waitFor(() => {
+			expect(toast.error).toHaveBeenCalledWith("Email is not the correct format")
+		})
+	})
 
 	it('redirects to home on successful registration', async () => {
 		const mockResponse = {
@@ -128,9 +164,7 @@ describe('RegisterForm', () => {
 		fireEvent.submit(screen.getByRole('button', { name: /Register/i }));
 
 		await waitFor(() => {
-			expect(window.alert).toHaveBeenCalledWith(
-				'Registration successful. Please login to continue.'
-			);
+			expect(toast.success).toHaveBeenCalledWith("Registration successful. Please login with your details.")
 			expect(navigateMock).toHaveBeenCalledWith('/');
 		});
 	});

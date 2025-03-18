@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from unittest.mock import patch
 from django.contrib.auth.models import User
@@ -10,7 +11,7 @@ class UserSerializerTestCase(TestCase):
     def test_serialization(self):
 
         user = User.objects.create_user(
-            username='TestUsername',
+            username='@TestUsername',
             first_name='TestFirstName',
             last_name='TestLastName',
             email='TestEmail@example.com',
@@ -35,7 +36,7 @@ class UserSerializerTestCase(TestCase):
         mock_create_user.side_effect = Exception("Database error")
 
         valid_data = {
-            "username": "UniqueUser",  # Must be unique to pass serializer validation
+            "username": "@UniqueUser",  # Must be unique to pass serializer validation
             "first_name": "First",
             "last_name": "Last",
             "email": "unique@example.com",
@@ -53,7 +54,7 @@ class UserSerializerTestCase(TestCase):
     def test_deserialization_valid_data(self):
 
         valid_data = {
-            'username': 'TestUsername',
+            'username': '@TestUsername',
             'first_name': 'TestFirstName',
             'last_name': 'TestLastName',
             'email': 'TestEmail@example.com',
@@ -91,6 +92,7 @@ class UserSerializerTestCase(TestCase):
         self.assertFalse(serializer.is_valid())
 
         self.assertIn('email', serializer.errors)
+        self.assertIn('username', serializer.errors)
 
 
 
@@ -107,7 +109,7 @@ class OfficerSerializerTestCase(TestCase):
         )
         # Create users
         self.userOne = User.objects.create(
-            username="john_doe", 
+            username="@john_doe", 
             email="john.doe@example.com",
             password="testpassword123",
             is_staff=True,
@@ -183,7 +185,7 @@ class TicketSerializerTestCase(TestCase):
     def setUp(self):
         """Create the necessary users to test the TicketSerializer."""
         self.superuser = User.objects.create_user(
-            username="admin",
+            username="@admin",
             email="admin@example.com",
             password="adminpass",
             is_superuser=True,
@@ -191,7 +193,7 @@ class TicketSerializerTestCase(TestCase):
         )
         
         self.student_user = User.objects.create_user(
-            username="student",
+            username="@student",
             email="student@example.com",
             password="studentpass"
         )
@@ -316,10 +318,10 @@ class DepartmentSerializerTestCase(TestCase):
 class TicketRedirectSerializerTestCase(TestCase):
     def setUp(self):
         self.user_one = User.objects.create_user(
-            username="john_doe", email="john.doe@example.com", password="password123"
+            username="@john_doe", email="john.doe@example.com", password="password123"
         )
         self.user_two = User.objects.create_user(
-            username="jane_doe", email="jane.doe@example.com", password="password123"
+            username="@jane_doe", email="jane.doe@example.com", password="password123"
         )
         
         self.ticket = Ticket.objects.create(
@@ -378,10 +380,10 @@ class TicketRedirectSerializerTestCase(TestCase):
 class TicketMessageSerializerTestCase(TestCase):
     def setUp(self):
         self.sender_profile = User.objects.create_user(
-            username="john_doe", email="john.doe@example.com", password="password123"
+            username="@john_doe", email="john.doe@example.com", password="password123"
         )
         self.user_two = User.objects.create_user(
-            username="jane_doe", email="jane.doe@example.com", password="password123"
+            username="@jane_doe", email="jane.doe@example.com", password="password123"
         )
         
         self.ticket = Ticket.objects.create(
@@ -443,7 +445,7 @@ class TicketMessageSerializerTestCase(TestCase):
 class NotificationSerializerTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create(
-            username="john_doe", 
+            username="@john_doe", 
             email="john.doe@example.com", 
             password="password123"
         )

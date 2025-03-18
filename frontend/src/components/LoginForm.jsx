@@ -5,6 +5,7 @@ import api from '../api';
 import GenericForm from './GenericForm';
 import GenericInput from './GenericInput';
 import { Loader } from 'lucide-react';
+import { toast } from 'sonner';
 
 const LoginForm = () => {
 	const [username, setUsername] = useState('');
@@ -24,11 +25,13 @@ const LoginForm = () => {
 			if (response.status === 200) {
 				navigate('/dashboard');
 				setUsername('');
+				toast.success("Successful Login. Welcome to your homepage.")
 			}
 		} catch (err) {
-			setError(
-				err.response?.data?.message || 'Login failed. Please try again.'
-			);
+			// setError(
+			// 	err.response?.data?.message || 'Login failed. Please try again.'
+			// );
+			toast.error(err.response?.data?.message || 'Login failed. Please try again.')
 		} finally {
 			setPassword('');
 			setLoading(false);
@@ -72,7 +75,7 @@ const LoginForm = () => {
 					placeholder="Enter your password"
 				/>
 
-				{error && <p className="text-red-500">{error}</p>}
+				{/* {error && <p className="text-red-500">{error}</p>} */}
 				{isLoading && (
 					<div className="flex w-full items-center justify-center space-x-2">
 						<Loader size={20} className="animate-spin" />

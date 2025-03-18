@@ -6,7 +6,6 @@ import Login from './pages/Login';
 import HelpQA from './pages/HelpQ&A';
 import NotFound from './pages/NotFound';
 import ProtectedRoute from './components/ProtectedRoute';
-import { Toaster } from 'sonner';
 import Layout from './Layout';
 
 function Logout() {
@@ -30,7 +29,6 @@ function App() {
 						path="/dashboard"
 						element={
 							<ProtectedRoute>
-								<Toaster richColors position="bottom-center" />
 								<Dashboard />
 							</ProtectedRoute>
 						}

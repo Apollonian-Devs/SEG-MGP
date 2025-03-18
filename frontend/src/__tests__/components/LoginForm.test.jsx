@@ -12,6 +12,7 @@ import LoginForm from '../../components/LoginForm';
 import api from '../../api';
 import { ACCESS_TOKEN, REFRESH_TOKEN } from '../../constants';
 import '@testing-library/jest-dom/vitest';
+import { toast } from 'sonner';
 
 vi.mock('../../api', () => ({
 	__esModule: true,
@@ -30,6 +31,13 @@ vi.mock('react-router-dom', async () => {
 		useNavigate: () => navigateMock,
 	};
 });
+
+vi.mock('sonner', () => ({
+	toast: {
+		error: vi.fn(),
+		success: vi.fn()
+	},
+}));
 
 afterEach(() => {
 	localStorage.clear()
@@ -68,7 +76,7 @@ describe('LoginForm', () => {
 		fireEvent.submit(screen.getByRole('button', { name: /Sign in/i }));
 
 		await waitFor(() =>
-			expect(screen.getByText('Invalid credentials')).toBeInTheDocument()
+			expect(toast.error).toHaveBeenCalledWith("Invalid credentials")
 		);
 	});
 
@@ -86,7 +94,7 @@ describe('LoginForm', () => {
 		fireEvent.submit(screen.getByRole('button', { name: /Sign in/i }));
 
 		await waitFor(() =>
-			expect(screen.getByText('Login failed. Please try again.')).toBeInTheDocument()
+			expect(toast.error).toHaveBeenCalledWith("Login failed. Please try again.")
 		)
 	});
 

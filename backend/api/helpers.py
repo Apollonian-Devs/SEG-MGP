@@ -194,6 +194,9 @@ def redirect_query(ticket, from_user, to_user):
     if ticket.status == "Closed":
         raise ValidationError("Redirection failed: Closed tickets cannot be redirected.")
     
+    if ticket is None:
+        raise ValidationError("Invalid ticket provided.")
+    
     validate_redirection(from_user, to_user)
 
     ticket.assigned_to = to_user
@@ -222,8 +225,6 @@ def redirect_query(ticket, from_user, to_user):
     return ticket
 
 
-
-
 def get_message_history(ticket):
     """
     Return a list of all messages for a given ticket sorted by creation date ascending.
@@ -231,6 +232,7 @@ def get_message_history(ticket):
     """
     if ticket is None:
         raise ValueError("Ticket is None")
+    
     messages = TicketMessage.objects.filter(ticket=ticket, is_internal=False).order_by("created_at")
 
     msg_list = []
@@ -257,22 +259,32 @@ def get_message_history(ticket):
 
 def get_ticket_history(admin_user, ticket):
     """
-    Return list of all status changes for a given ticket sorted by change date descending.
+    Return a list of all status changes for a given ticket sorted by change date descending.
     """
-    if not admin_user.is_staff and not admin_user.is_superuser:
-        raise PermissionDenied("Only officers or admins can view ticket history.")
+    if not admin_user.is_superuser:
+        raise PermissionDenied("Only admins can view ticket history.")
+    
+    if ticket is None:
+        raise ValueError("Invalid ticket provided.")  # Changed to ValueError
 
     history = TicketStatusHistory.objects.filter(ticket=ticket).order_by("-changed_at")
 
-
     return history
+
+
+
+
 
 def get_ticket_path(admin_user, ticket):
     """
     Return list of all path changes for a given ticket.
     """
-    if not admin_user.is_staff and not admin_user.is_superuser:
-        raise PermissionDenied("Only officers or admins can view ticket path.")
+    if not admin_user.is_superuser:
+        raise PermissionDenied("Only admins can view ticket path.")
+
+    if ticket is None:
+        raise ValueError("Invalid ticket provided.")
+
 
     path = TicketRedirect.objects.filter(ticket=ticket)
 

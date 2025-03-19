@@ -37,7 +37,7 @@ class TestGetMessageHistory(TestCase):
         """Set up users and a ticket for testing"""
         self.student = User.objects.create_user(username="student", email="student@gmail.com", password="password")
         self.officer = User.objects.create_user(username="officer", email="officer@gmail.com", password="password", is_staff=True)
-        self.admin = User.objects.create_user(username="admin", email="admin@gmail.com", password="password", is_superuser=True)
+        self.admin = User.objects.create_superuser(username="admin", email="admin@gmail.com", password="password")
 
         self.ticket = Ticket.objects.create(
             subject="Test Ticket",
@@ -59,7 +59,7 @@ class TestGetMessageHistory(TestCase):
         """Test with a ticket that does not exist"""
         fake_ticket = Ticket(id=999) 
         messages = get_message_history(fake_ticket)
-        
+
         self.assertEqual(messages, [])
 
     def test_ticket_with_one_message(self):

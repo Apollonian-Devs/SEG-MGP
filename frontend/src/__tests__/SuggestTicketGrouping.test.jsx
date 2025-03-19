@@ -90,7 +90,7 @@ describe("SuggestTicketGroupingButton", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
-  
+
 
   test("renders the button correctly", () => {
     render(
@@ -181,12 +181,6 @@ describe("SuggestTicketGroupingButton", () => {
 
     consoleErrorSpy.mockRestore();
 });
-
-
-
-
-
-
 
 
 

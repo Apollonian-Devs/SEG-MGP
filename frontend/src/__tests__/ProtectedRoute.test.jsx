@@ -69,7 +69,7 @@ describe('ProtectedRoute', () => {
 			</MemoryRouter>
 		);
 
-		// Ensure Protected Content is displayed
+		
 		await waitFor(() => {
 			expect(screen.getByText(/protected content/i)).toBeInTheDocument();
 		});

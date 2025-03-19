@@ -12,20 +12,17 @@ const ProfileDetail = ({ name, imageSrc, url, onBack }) => {
     >
       <img src={imageSrc} alt={name} className="w-40 h-40 mx-auto rounded-full mb-4" />
       <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">{name}</h2>
-
-      {/* Dynamic URL for each department */}
       <p className="text-lg text-gray-600 dark:text-gray-300">
         Find out more about {name} at{' '}
-        <a 
-          href={url}  
-          target="_blank" 
-          rel="noopener noreferrer" 
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
           className="text-blue-500 hover:underline"
         >
           {url}
         </a>
       </p>
-
       <button
         onClick={onBack}
         className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
@@ -45,7 +42,8 @@ const TeamCard = ({ imageSrc, name, description, url }) => {
   const xSpring = useSpring(mouseX, { stiffness: 120, damping: 15 });
   const ySpring = useSpring(mouseY, { stiffness: 120, damping: 15 });
 
-  // Convert mouse x/y to rotation angles for 3D effect
+  // Convert mouse x/y to rotation angles for 3D effect.
+  // With our default mouse values (150,150), these will produce our "default" rotation.
   const rotateX = useTransform(ySpring, [0, 250], [15, -15]);
   const rotateY = useTransform(xSpring, [0, 250], [-15, 15]);
 
@@ -55,6 +53,7 @@ const TeamCard = ({ imageSrc, name, description, url }) => {
         <ProfileDetail name={name} imageSrc={imageSrc} url={url} onBack={() => setShowDetails(false)} />
       ) : (
         <motion.div
+          data-testid="team-card"
           className="w-full px-4 md:w-1/2 xl:w-1/4"
           style={{ perspective: 1000 }}
           onClick={() => setShowDetails(true)}
@@ -73,20 +72,21 @@ const TeamCard = ({ imageSrc, name, description, url }) => {
           >
             {/* Background “block” behind the card */}
             <motion.div
+              data-testid="team-card-background"
               className="absolute top-0 left-0 w-full h-full rounded-xl bg-gray-300 shadow-xl"
               style={{
                 rotateX,
                 rotateY,
                 transformStyle: 'preserve-3d',
-                scale: 1.05,   
-                y: '10px',    
-                x: '10px',    
+                scale: 1.05,
+                y: '10px',
+                x: '10px',
                 zIndex: 0,
               }}
             />
-
-            {/* Foreground “main card” */}
+            {/* Foreground “main card” – add data-testid for testing */}
             <motion.div
+              data-testid="team-card-inner"
               className="relative w-full h-full rounded-xl overflow-hidden bg-white dark:bg-dark shadow-lg"
               style={{
                 rotateX,
@@ -99,15 +99,12 @@ const TeamCard = ({ imageSrc, name, description, url }) => {
                 <img src={imageSrc} alt={name} className="w-full h-60 object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent opacity-40" />
               </div>
-
-              {/* Render Name & Description */}
               <div className="bg-white/80 dark:bg-gray-900/80 p-3 rounded-lg">
                 <h3 className="text-xl font-semibold text-black dark:text-white mb-1">
                   {name}
                 </h3>
                 <p className="text-sm text-gray-700 dark:text-gray-300">{description}</p>
               </div>
-
             </motion.div>
           </div>
         </motion.div>

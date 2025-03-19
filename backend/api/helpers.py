@@ -365,65 +365,63 @@ def get_officers_same_department(user):
 
 
 def changeTicketPriority(ticket, user):
-    '''
-    if user is an admin or an officer, then change ticket prirority
-    it gets the current priority of the ticket and changes it to the next priority in the list like a circular queue
-    if user is a student, then raise permission denied
-    '''
+    """
+    If user is an admin or an officer, then change the ticket priority.
+    It cycles the priority like a circular queue: Low → Medium → High → Low.
+    If user is a student, raise PermissionDenied.
+    """
+    if not user.is_staff:
+        raise PermissionDenied("Only officers or admins can change ticket priority.")
 
     old_priority = ticket.priority
-    if user.is_staff:
-        if ticket.priority == None:
-            ticket.priority = PRIORITY_CHOICES[0][0]
-        else:
-            for i in range(len(PRIORITY_CHOICES)):
-                if ticket.priority == PRIORITY_CHOICES[i][0]:
-                    ticket.priority = PRIORITY_CHOICES[(i+1)%len(PRIORITY_CHOICES)][0]
-                    break
-        ticket.save()
 
-        TicketStatusHistory.objects.create(
-            ticket=ticket,
-            old_status=ticket.status,
-            new_status=ticket.status,
-            changed_by_profile=user,
-            notes=f"Priority changed from {old_priority} to {ticket.priority}"
-        )
-
+    if old_priority is None:
+        ticket.priority = PRIORITY_CHOICES[0][0]
     else:
-        raise PermissionDenied("Only officers or admins can change ticket priority.")
-    
+        priority_list = [p[0] for p in PRIORITY_CHOICES]
+        current_index = priority_list.index(old_priority)
+        ticket.priority = priority_list[(current_index + 1) % len(priority_list)]  # Circular shift
+
+    ticket.save()
+
+    TicketStatusHistory.objects.create(
+        ticket=ticket,
+        old_status=ticket.status,
+        new_status=ticket.status, 
+        changed_by_profile=user,
+        notes=f"Priority changed from {old_priority} to {ticket.priority}"
+    )
+
 
 def changeTicketStatus(ticket, user):
-    '''
-    if user is an admin or an officer, then change ticket status
-    it gets the current status of the ticket and changes it to the next status in the list like a circular queue
-    if user is a student, then raise permission denied
-    '''
+    """
+    If user is an admin or an officer, change the ticket status.
+    It cycles through statuses like a circular queue: 
+    Open → In Progress → Awaiting Student → Closed → Open.
+    If user is a student, raise PermissionDenied.
+    """
+    if not user.is_staff:
+        raise PermissionDenied("Only officers or admins can change ticket status.")
 
     old_status = ticket.status
 
-    if user.is_staff:
-        if ticket.status == None:
-            ticket.status = STATUS_CHOICES[0][0]
-        else:
-            for i in range(len(STATUS_CHOICES)):
-                if ticket.status == STATUS_CHOICES[i][0]:
-                    ticket.status = STATUS_CHOICES[(i+1)%len(STATUS_CHOICES)][0]
-                    break
-        ticket.save()
 
-        TicketStatusHistory.objects.create(
-            ticket=ticket,
-            old_status=old_status,
-            new_status=ticket.status,
-            changed_by_profile=user,
-            notes="Status changed via changeTicketStatus()"
-        )
-        
+    status_list = [s[0] for s in STATUS_CHOICES]
+    if old_status is None:
+        ticket.status = status_list[0]
     else:
-        raise PermissionDenied("Only officers or admins can change ticket status.")
-    
+        current_index = status_list.index(old_status)
+        ticket.status = status_list[(current_index + 1) % len(status_list)] 
+
+    ticket.save()
+
+    TicketStatusHistory.objects.create(
+        ticket=ticket,
+        old_status=old_status,
+        new_status=ticket.status,
+        changed_by_profile=user,
+        notes=f"Status changed from {old_status} to {ticket.status}"
+    )  
 
 
 

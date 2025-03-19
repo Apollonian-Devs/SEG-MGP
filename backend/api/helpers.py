@@ -337,8 +337,6 @@ def get_tickets_for_user(user):
     else:
         tickets = Ticket.objects.filter(created_by=user) 
 
-
-
     return [
         {
             "id": ticket.id,
@@ -465,7 +463,7 @@ def changeTicketDueDate(ticket, user, new_due_date):
     Also notify the ticket owner (student) that a new due date is set.
     """
     if user.is_staff:
-        if new_due_date < timezone.now():
+        if new_due_date <= timezone.now():
             raise ValueError("You cannot change the due date to be in the past.") 
         ticket.due_date = new_due_date
         ticket.save()
@@ -497,16 +495,6 @@ def changeTicketDueDate(ticket, user, new_due_date):
 
         send_email(ticket.created_by, 'Your due date of the ticket', (msg),)
 
-
-        TicketStatusHistory.objects.create(
-            ticket=ticket,
-            old_status=ticket.status,
-            new_status=ticket.status,
-            changed_by_profile=user,
-            notes=f"Due date changed to {new_due_date}"
-        )
-
-
         return ticket
     
 
@@ -514,14 +502,6 @@ def changeTicketDueDate(ticket, user, new_due_date):
         raise PermissionDenied("Only officers or admins can change ticket due date.")
 
 
-'''def get_random_department():
-    """
-    get all the officers with is_department_head as True and their corresponding departments
-    return a random department from that list. you use import random for this
-    """
-    department_heads = Officer.objects.filter(is_department_head=True)
-    department = random.choice(department_heads).department
-    return department'''
 
 def get_department_head(department_id):
     try:

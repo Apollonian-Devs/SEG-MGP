@@ -61,3 +61,4 @@ const faqData = [
     );
   };
 export default HelpQA;  
+export {faqData};

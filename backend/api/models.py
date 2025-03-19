@@ -21,10 +21,8 @@ PRIORITY_CHOICES = [
 
 
 def get_default_superuser():
-    try:
-        return User.objects.filter(is_superuser=True).first()
-    except ObjectDoesNotExist:
-        return None
+    return User.objects.filter(is_superuser=True).first()
+
 
 class Department(models.Model):
     name = models.CharField(max_length=50, unique=True)

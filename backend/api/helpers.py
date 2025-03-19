@@ -39,7 +39,7 @@ def send_query(student_user, subject, description, message_body, attachments=Non
     Also creates an initial TicketMessage and handles file attachments.
     """
 
-    if student_user is None or student_user.is_staff or student_user.is_superuser:
+    if student_user is None or student_user.is_staff:
         raise PermissionDenied("Only student users can create tickets.")
 
 
@@ -434,6 +434,11 @@ def get_overdue_tickets(user):
     Updates the is_overdue field for all tickets (only those with a due_date)
     and returns a queryset of overdue tickets based on the user's role.
     """
+
+    if user is None:
+        raise PermissionDenied("Invalid type of user")
+
+
     now = timezone.now()
     
     # Update tickets that have a due_date set:
@@ -445,7 +450,7 @@ def get_overdue_tickets(user):
     # Retrieve tickets that are overdue (due_date is not null by definition)
     queryset = Ticket.objects.filter(is_overdue=True)
     
-    if user.is_superuser or user.is_staff:
+    if user.is_staff:
         return queryset.filter(assigned_to=user)
     else:
         return queryset.filter(created_by=user)

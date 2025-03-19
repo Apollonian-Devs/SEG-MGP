@@ -613,7 +613,7 @@ class TestUserTicketsView(TestCase):
         self.assertEqual(response.data["tickets"][0]["subject"], "Test ticket assigned to an authorized staff")
 
         self.assertEqual(response.data["tickets"][1]["id"], 2)
-        self.assertEqual(response.data["tickets"][1]["subject"], "Another test ticket assigned to an authorized staff")
+        self.assertEqual(response.data["tickets"][1] ["subject"], "Another test ticket assigned to an authorized staff")
 
 
     @patch("api.views.get_tickets_for_user")

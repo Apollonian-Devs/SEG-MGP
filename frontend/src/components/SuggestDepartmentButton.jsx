@@ -36,6 +36,7 @@ const SuggestDepartmentButton = ({ setSuggestedDepartments, tickets }) => {
 	};
 
 	const assignSuggestedDepartments = async () => {
+		if (tickets.length === 0) return;
 		const updatedDepartments = {};
 		for (const ticket of tickets) {
 			const response = await fetchSuggestedDepartment(

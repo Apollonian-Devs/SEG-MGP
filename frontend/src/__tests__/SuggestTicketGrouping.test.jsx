@@ -62,8 +62,7 @@ import { vi } from "vitest";
 import SuggestTicketGroupingButton from "../components/SuggestTicketGroupingButton";
 import api from "../api";
 import { toast } from "sonner";
-import handleApiError from "../utils/errorHandler";
-import { playSound } from "../utils/SoundUtils";  // ✅ Import playSound
+
 
 vi.mock("../api");
 vi.mock("sonner", () => ({
@@ -73,10 +72,13 @@ vi.mock("sonner", () => ({
   },
 }));
 
+
 // ✅ Mock playSound() to prevent the jsdom error
 vi.mock("../utils/SoundUtils", () => ({
   playSound: vi.fn(),
 }));
+
+  
 
 describe("SuggestTicketGroupingButton", () => {
   const mockSetSuggestedGrouping = vi.fn();
@@ -88,6 +90,7 @@ describe("SuggestTicketGroupingButton", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
+  
 
   test("renders the button correctly", () => {
     render(
@@ -122,6 +125,23 @@ describe("SuggestTicketGroupingButton", () => {
     });
   });
 
+
+  test("✅ Handles API success but returns an error message", async () => {
+  
+    api.get.mockResolvedValueOnce({
+        data: { error: "No valid ticket groupings found" }
+    });
+
+    render(<SuggestTicketGroupingButton setSuggestedGrouping={mockSetSuggestedGrouping} tickets={mockTickets} />);
+    fireEvent.click(screen.getByRole("button", { name: /Suggest Ticket Grouping/i }));
+
+    await waitFor(() => {
+        expect(api.get).toHaveBeenCalledTimes(1);
+        expect(mockSetSuggestedGrouping).not.toHaveBeenCalled(); 
+        expect(toast.error).toHaveBeenCalledWith("❌ Unable to group tickets. Please try again.")
+    });
+   
+});
 
 
 
@@ -161,6 +181,14 @@ describe("SuggestTicketGroupingButton", () => {
 
     consoleErrorSpy.mockRestore();
 });
+
+
+
+
+
+
+
+
 
 
   test("handles network errors when `error.response` is undefined", async () => {

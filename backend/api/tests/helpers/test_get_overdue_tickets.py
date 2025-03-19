@@ -35,7 +35,7 @@ class OverdueTicketsTests(TestCase):
         self.staff_overdue_ticket = Ticket.objects.create(
             subject="Overdue Staff Ticket",
             description="...",
-            created_by=self.staff,
+            created_by=self.student,
             assigned_to=self.staff,  # or assigned_to some other staff
             due_date=timezone.now() - timedelta(days=1),
             is_overdue=False,
@@ -43,7 +43,7 @@ class OverdueTicketsTests(TestCase):
         self.staff_future_ticket = Ticket.objects.create(
             subject="Future Staff Ticket",
             description="...",
-            created_by=self.staff,
+            created_by=self.student,
             assigned_to=self.staff,  # or assigned_to some other staff
             due_date=timezone.now() + timedelta(days=4),
             is_overdue=False,
@@ -73,6 +73,7 @@ class OverdueTicketsTests(TestCase):
         self.assertEqual(qs.count(), 2)
         self.assertIn(self.staff_overdue_ticket, qs)
         self.assertIn(self.staff_future_ticket, qs)
+
 
     @freeze_time(lambda: timezone.now() + timedelta(days=5))
     def test_admin_sees_no_overdue_tickets_if_none_assigned(self):

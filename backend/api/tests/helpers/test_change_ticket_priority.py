@@ -1,6 +1,5 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from django.utils import timezone
 from django.core.exceptions import PermissionDenied
 from api.models import Ticket, TicketStatusHistory
 from api.helpers import changeTicketPriority  

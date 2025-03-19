@@ -5,9 +5,10 @@ from api.models import (
     Ticket, TicketMessage, TicketStatusHistory, TicketRedirect, 
     TicketAttachment, Notification, Officer, STATUS_CHOICES, PRIORITY_CHOICES, AIResponse
 )
-import random
 from api.MessagesGroupingAI import *
 import yagmail
+
+
 
 
 
@@ -25,6 +26,10 @@ PRIORITY_CHOICES = [
 ]
 
 
+STATUS_OPEN = STATUS_CHOICES[0][0]  
+STATUS_IN_PROGRESS = STATUS_CHOICES[1][0]  
+STATUS_AWAITING_STUDENT = STATUS_CHOICES[2][0]  
+STATUS_CLOSED = STATUS_CHOICES[3][0] 
 
 
 
@@ -34,7 +39,7 @@ def send_query(student_user, subject, description, message_body, attachments=Non
     Also creates an initial TicketMessage and handles file attachments.
     """
 
-    if student_user is None or student_user.is_staff or student_user.is_superuser:
+    if student_user is None or student_user.is_staff:
         raise PermissionDenied("Only student users can create tickets.")
 
 
@@ -50,7 +55,7 @@ def send_query(student_user, subject, description, message_body, attachments=Non
         subject=subject,
         description=description,
         created_by=student_user,  
-        status="Open", 
+        status=STATUS_OPEN, 
         priority=None,  
         due_date=None,   
     )
@@ -76,7 +81,7 @@ def send_query(student_user, subject, description, message_body, attachments=Non
     TicketStatusHistory.objects.create(
         ticket=ticket,
         old_status=None,
-        new_status="Open",
+        new_status=STATUS_OPEN,
         changed_by_profile=student_user,
         notes="Ticket created by student."
     )
@@ -105,7 +110,7 @@ def send_response(sender_profile, ticket, message_body, is_internal=False, attac
         raise PermissionDenied("No authenticated user to send a response.")
     if ticket is None:
         raise ValidationError("Invalid ticket provided.")
-    if ticket.status == "Closed":
+    if ticket.status == STATUS_CLOSED:
         raise ValidationError("Cannot respond to a closed ticket.")
 
     # Create the new TicketMessage.
@@ -132,12 +137,8 @@ def send_response(sender_profile, ticket, message_body, is_internal=False, attac
     ticket.save()
 
     
-    
 
-    AWAITING_STUDENT = next(status[0] for status in STATUS_CHOICES if status[0] == "Awaiting Student")
-    OPEN = next(status[0] for status in STATUS_CHOICES if status[0] == "Open")
-
-    let_expected_status = AWAITING_STUDENT if sender_profile.is_staff else OPEN
+    let_expected_status = STATUS_AWAITING_STUDENT if sender_profile.is_staff else STATUS_OPEN
 
     if ticket.status != let_expected_status:
         old_status = ticket.status
@@ -191,8 +192,11 @@ def redirect_query(ticket, from_user, to_user):
     admins can redirect across departments.
     """
 
-    if ticket.status == "Closed":
+    if ticket.status == STATUS_CLOSED:
         raise ValidationError("Redirection failed: Closed tickets cannot be redirected.")
+    
+    if ticket is None:
+        raise ValidationError("Invalid ticket provided.")
     
     validate_redirection(from_user, to_user)
 
@@ -222,8 +226,6 @@ def redirect_query(ticket, from_user, to_user):
     return ticket
 
 
-
-
 def get_message_history(ticket):
     """
     Return a list of all messages for a given ticket sorted by creation date ascending.
@@ -231,6 +233,7 @@ def get_message_history(ticket):
     """
     if ticket is None:
         raise ValueError("Ticket is None")
+    
     messages = TicketMessage.objects.filter(ticket=ticket, is_internal=False).order_by("created_at")
 
     msg_list = []
@@ -257,27 +260,36 @@ def get_message_history(ticket):
 
 def get_ticket_history(admin_user, ticket):
     """
-    Return list of all status changes for a given ticket sorted by change date descending.
+    Return a list of all status changes for a given ticket sorted by change date descending.
     """
-    if not admin_user.is_staff and not admin_user.is_superuser:
-        raise PermissionDenied("Only officers or admins can view ticket history.")
+    if not admin_user.is_superuser:
+        raise PermissionDenied("Only admins can view ticket history.")
+    
+    if ticket is None:
+        raise ValueError("Invalid ticket provided.")  # Changed to ValueError
 
     history = TicketStatusHistory.objects.filter(ticket=ticket).order_by("-changed_at")
 
-
     return history
+
+
+
+
 
 def get_ticket_path(admin_user, ticket):
     """
-    Return list of all path changes for a given ticket.
+    Return list of all path changes for a given ticket, ordered in descending order.
     """
-    if not admin_user.is_staff and not admin_user.is_superuser:
-        raise PermissionDenied("Only officers or admins can view ticket path.")
+    if not admin_user.is_superuser:
+        raise PermissionDenied("Only admins can view ticket path.")
 
-    path = TicketRedirect.objects.filter(ticket=ticket)
+    if ticket is None:
+        raise ValueError("Invalid ticket provided.")
 
+    path = TicketRedirect.objects.filter(ticket=ticket).order_by('-id')  
 
     return path
+
 
     
 
@@ -295,11 +307,11 @@ def mark_id_as_read(target):
     """
     Mark notification of id as read.
     """
-    result = Notification.objects.filter(
-        id=target,
-    ).first()
-    result.read_status = True
-    result.save()
+    result = Notification.objects.filter(id=target).first()
+    if result: 
+        result.read_status = True
+        result.save()
+
 
 def mark_all_notifications_as_read(user):
     """
@@ -307,7 +319,6 @@ def mark_all_notifications_as_read(user):
     """
     Notification.objects.filter(user_profile=user, read_status=False).update(
         read_status=True,
-        updated_at=timezone.now()
     )
 
 
@@ -321,11 +332,10 @@ def get_tickets_for_user(user):
     """
 
 
-     # Both Admin and Officers get only their assigned tickets
     if user.is_superuser or user.is_staff:
         tickets = Ticket.objects.filter(assigned_to=user)
     else:
-        tickets = Ticket.objects.filter(created_by=user)  # Students get their own tickets
+        tickets = Ticket.objects.filter(created_by=user) 
 
 
 
@@ -424,6 +434,11 @@ def get_overdue_tickets(user):
     Updates the is_overdue field for all tickets (only those with a due_date)
     and returns a queryset of overdue tickets based on the user's role.
     """
+
+    if user is None:
+        raise PermissionDenied("Invalid type of user")
+
+
     now = timezone.now()
     
     # Update tickets that have a due_date set:
@@ -435,23 +450,11 @@ def get_overdue_tickets(user):
     # Retrieve tickets that are overdue (due_date is not null by definition)
     queryset = Ticket.objects.filter(is_overdue=True)
     
-    if user.is_superuser or user.is_staff:
+    if user.is_staff:
         return queryset.filter(assigned_to=user)
     else:
         return queryset.filter(created_by=user)
 
-  
-
-'''
-def get_unanswered_tickets(user):
-    """Returns queryset of tickets which haven't been replied to yet based on user role."""
-
-    if user.is_superuser or user.is_staff:
-        queryset = Ticket.objects.filter(assigned_to=user, status = "Open") 
-        return queryset
-    else:
-         queryset = Ticket.objects.filter(created_by=user, status = "Awaiting Student")
-         return queryset '''
 
 
 
@@ -467,18 +470,18 @@ def changeTicketDueDate(ticket, user, new_due_date):
         ticket.due_date = new_due_date
         ticket.save()
 
-        if ticket.status != "Awaiting Student":
+        if ticket.status != STATUS_AWAITING_STUDENT:
             # Create a status history record for the change.
             TicketStatusHistory.objects.create(
                 ticket=ticket,
                 old_status=ticket.status,
-                new_status="Awaiting Student",
+                new_status=STATUS_AWAITING_STUDENT,
                 changed_by_profile=user,
                 notes=f"Due date changed to {new_due_date} and Ticket Status is Awaiting Student"
             )
 
             # Change the ticket status.
-            ticket.status = "Awaiting Student"
+            ticket.status = STATUS_AWAITING_STUDENT
             ticket.save()
 
         msg = (
@@ -591,7 +594,6 @@ def get_tags(user):
     try:
         clusters, probabilities = MessageGroupAI(lst)
     except Exception as e:
-        print(f"❌ Clustering Error: {e}")
         return {"error": f"Clustering error: {str(e)}"}
 
     ticket_cluster_map = {}

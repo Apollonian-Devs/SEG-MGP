@@ -86,7 +86,10 @@ const TicketsCard = ({
 			const response = await api.get(`/api/tickets/${path}/${ticket_id}/`, {
 				headers: { Authorization: `Bearer ${access}` },
 			});
+
+			//needs to be deleted
 			console.log('Response: ', response.data);
+			
 		} catch (error) {
 			console.error(
 				'Error changing status:',

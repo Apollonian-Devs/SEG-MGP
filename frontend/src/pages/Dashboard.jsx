@@ -123,7 +123,7 @@ const Dashboard = () => {
 					<NotificationsTab user={current_user} />
 				</div>
 			</div>
-			<TicketsCard
+			<TicketsCard  
 				user={current_user}
 				officers={
 					current_user.is_staff && !current_user.is_superuser ? officers : []

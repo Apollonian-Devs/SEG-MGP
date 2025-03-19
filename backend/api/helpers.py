@@ -277,7 +277,7 @@ def get_ticket_history(admin_user, ticket):
 
 def get_ticket_path(admin_user, ticket):
     """
-    Return list of all path changes for a given ticket.
+    Return list of all path changes for a given ticket, ordered in descending order.
     """
     if not admin_user.is_superuser:
         raise PermissionDenied("Only admins can view ticket path.")
@@ -285,11 +285,10 @@ def get_ticket_path(admin_user, ticket):
     if ticket is None:
         raise ValueError("Invalid ticket provided.")
 
-
-    path = TicketRedirect.objects.filter(ticket=ticket)
-
+    path = TicketRedirect.objects.filter(ticket=ticket).order_by('-id')  
 
     return path
+
 
     
 
@@ -333,11 +332,10 @@ def get_tickets_for_user(user):
     """
 
 
-     # Both Admin and Officers get only their assigned tickets
     if user.is_superuser or user.is_staff:
         tickets = Ticket.objects.filter(assigned_to=user)
     else:
-        tickets = Ticket.objects.filter(created_by=user)  # Students get their own tickets
+        tickets = Ticket.objects.filter(created_by=user) 
 
 
 
@@ -603,7 +601,6 @@ def get_tags(user):
     try:
         clusters, probabilities = MessageGroupAI(lst)
     except Exception as e:
-        print(f"❌ Clustering Error: {e}")
         return {"error": f"Clustering error: {str(e)}"}
 
     ticket_cluster_map = {}

@@ -80,8 +80,8 @@ class TicketMessageHistory(TestCase):
         """Test if an admin (superuser) can retrieve ticket history"""
         history = get_ticket_history(self.admin, self.ticket)
         
-        self.assertEqual(len(history), 3)  # Expecting 3 history records
-        self.assertEqual(history[0].new_status, "Closed")  # ✅ Fix: use new_status instead of status
+        self.assertEqual(len(history), 3) 
+        self.assertEqual(history[0].new_status, "Closed") 
 
 
     def test_if_student_can_get_ticket_history(self):

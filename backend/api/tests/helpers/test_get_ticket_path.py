@@ -42,37 +42,48 @@ class TicketPathHistory(TestCase):
             due_date=timezone.now() + timezone.timedelta(days=3)
         )
 
-        
         self.history1 = TicketRedirect.objects.create(
-
+            ticket=self.ticket,
+            from_profile=self.officer,
+            to_profile=self.admin
         )
 
         self.history2 = TicketRedirect.objects.create(
-            
+            ticket=self.ticket,
+            from_profile=self.admin,
+            to_profile=self.officer
         )
 
         self.history3 = TicketRedirect.objects.create(
-            
+            ticket=self.ticket,
+            from_profile=self.officer,
+            to_profile=self.student
         )
 
-
-
     def test_ticket_is_none(self):
-        pass
+        """Test passing None instead of a valid ticket"""
+        with self.assertRaises(ValueError):
+            get_ticket_path(self.admin, None)
 
+    def test_if_only_staff_member_cant_getTicketPath_ticket(self):
+        """Test if a staff member (not superuser) cannot view ticket path"""
+        with self.assertRaises(PermissionDenied):
+            get_ticket_path(self.officer, self.ticket)
 
-    def test_if_only_staff_member_cant_redirect_ticket(self):
-        pass
+    def test_if_superuser_can_getTicketPath_ticket(self):
+        """Test if an admin (superuser) can retrieve ticket path history"""
+        path = get_ticket_path(self.admin, self.ticket)
+        self.assertEqual(len(path), 3)
 
-    def test_if_superuser_can_redirect_ticket(self):
-        pass
+    def test_if_student_cant_get_getTicketPath_ticket(self):
+        """Test if a student (normal user) is denied access to ticket path"""
+        with self.assertRaises(PermissionDenied):
+            get_ticket_path(self.student, self.ticket)
 
-
-    def test_if_student_cant_get_redirect_ticket(self):
-        pass
-
-
-    def test_if_ticketPath_query_set_is_returned_correctly_in_descending_order(self):
-        pass
+    def test_if_ticketPath_query_set_is_returned_correctly(self):
+        """Test the returned ticket path"""
+        path = get_ticket_path(self.admin, self.ticket)
+        ids = [redirect.id for redirect in path]
+        self.assertEqual(ids, sorted(ids, reverse=True))
 
 

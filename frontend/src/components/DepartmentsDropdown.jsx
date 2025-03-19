@@ -4,6 +4,7 @@ import GenericButton from './GenericButton';
 import api from '../api';
 import { ACCESS_TOKEN } from '../constants';
 import { University } from 'lucide-react';
+import { toast } from "sonner";
 
 const DepartmentsDropdown = ({ ticketId, setSelectedDepartments }) => {
 	const [departments, setDepartments] = useState([]);
@@ -23,6 +24,7 @@ const DepartmentsDropdown = ({ ticketId, setSelectedDepartments }) => {
 					'Error fetching departments:',
 					error.response?.data || error.message
 				);
+				toast.error("Error fetching deparments")
 			} finally {
 				setLoading(false);
 			}
@@ -32,6 +34,7 @@ const DepartmentsDropdown = ({ ticketId, setSelectedDepartments }) => {
 	}, []);
 
 	const handleSelect = (department) => {
+
 		setSelectedDepartments((prev) => ({
 			...prev,
 			[ticketId]: department,
@@ -51,7 +54,7 @@ const DepartmentsDropdown = ({ ticketId, setSelectedDepartments }) => {
 						{selectedDept ? selectedDept.name : 'Select a department'}
 					</h5>
 				}
-				className="flex justify-center items-center w-48 gap-x-1.5 rounded-md bg-white px-2 py-1 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50"
+				className="flex justify-center items-center w-48 gap-x-1.5 rounded-md bg-white px-2 py-1 text-sm font-semibold text-gray-900 ring-1 ring-gray-300 ring-inset hover:bg-gray-50"
 			>
 				<div className="py-1">
 					{departments.map((department) => (

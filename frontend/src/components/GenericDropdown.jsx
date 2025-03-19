@@ -12,8 +12,6 @@ const GenericDropdown = ({
 	dataTestId,
 }) => {
 	const [isOpen, setIsOpen] = useState(false);
-	const [menuPositionAbove, setMenuPositionAbove] = useState(false);
-	const [menuPositionRight, setMenuPositionRight] = useState(false);
 	const [dropdownWidth, setDropdownWidth] = useState(0);
 	const dropdownRef = useRef(null);
 	const menuRef = useRef(null);
@@ -26,23 +24,6 @@ const GenericDropdown = ({
 		if (isOpen && dropdownRef.current && menuRef.current) {
 			const dropdown = dropdownRef.current.getBoundingClientRect();
 			setDropdownWidth(dropdown.width);
-			const menu = menuRef.current.getBoundingClientRect();
-			const availableSpaceBelow = window.innerHeight - dropdown.bottom;
-			const availableSpaceAbove = dropdown.top;
-			if (
-				menu.height > availableSpaceBelow &&
-				availableSpaceAbove > availableSpaceBelow
-			) {
-				setMenuPositionAbove(true);
-			} else {
-				setMenuPositionAbove(false);
-			}
-			const availableSpaceRight = window.innerWidth - dropdown.right;
-			if (menu.width > availableSpaceRight) {
-				setMenuPositionRight(true);
-			} else {
-				setMenuPositionRight(false);
-			}
 		}
 	}, [isOpen]); // Run when isOpen changes
 
@@ -82,12 +63,10 @@ const GenericDropdown = ({
 			{isOpen && (
 				<div
 					ref={menuRef}
-					className={`absolute flex flex-col z-10 rounded-md bg-slate-100 ring-1 shadow-lg ring-black/5 max-h-${maxHeight} overflow-y-auto ${
-						menuPositionAbove ? 'bottom-full mb-1' : 'top-full mt-1'
-					} ${menuPositionRight ? 'right-0' : 'left-0'}`}
+					className={`absolute flex flex-col z-10 rounded-md bg-slate-100 ring-1 ring-black/5 max-h-${maxHeight} overflow-y-auto top-full mt-1`}
 					style={{
-						minWidth: dropdownWidth > 0 ? `${dropdownWidth}px` : 'auto',
-						maxHeight: maxHeight === 'none' ? 'none' : `${maxHeight}px`,
+						minWidth: 'auto',
+						maxHeight:`${maxHeight}px`,
 					}}
 					role="menu"
 				>

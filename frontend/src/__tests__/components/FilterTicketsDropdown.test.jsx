@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import FilterTicketsDropdown from "../../components/FilterTicketsDropdown";
-import { expect, vi } from "vitest";
-import React from "react";
+import { expect, it, vi } from "vitest";
+import React, { useState, useRef } from "react";
 
 describe("FilterTicketsDropdown Component", () => {
   let mockSetPriority,
@@ -227,15 +227,14 @@ describe("FilterTicketsDropdown Component", () => {
     fireEvent.click(clearButtonOutside);
 
     expect(mockClearFilters).toHaveBeenCalled();
+
+    // The clear button should now be hidden
+    expect(
+      screen.queryByTestId("clear-button-outside")
+    ).not.toBeInTheDocument();
   });
 
-  it("deactivates filter when clear button is clicked", () => {
-    const setIsFilterActiveMock = vi.fn();
-    vi.spyOn(React, "useState").mockReturnValueOnce([
-      true,
-      setIsFilterActiveMock,
-    ]);
-
+  it("Clear button should not be visible when no filter is applied (outside dropdown)", () => {
     render(
       <FilterTicketsDropdown
         priority=""
@@ -250,11 +249,8 @@ describe("FilterTicketsDropdown Component", () => {
       />
     );
 
-    fireEvent.click(screen.getByTestId("filter-tickets-dropdown"));
-
-    const clearButtonInside = screen.getByTestId("clear-button-inside");
-    fireEvent.click(clearButtonInside);
-
-    //expect(setIsFilterActiveMock).toHaveBeenCalledWith(false);
+    expect(
+      screen.queryByTestId("clear-button-outside")
+    ).not.toBeInTheDocument();
   });
 });

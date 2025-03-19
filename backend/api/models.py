@@ -38,15 +38,8 @@ class Officer(models.Model):
     department = models.ForeignKey(Department, on_delete=models.PROTECT)
     is_department_head = models.BooleanField(default=False)
 
-    def save(self, *args, **kwargs):
-        if not self.user.is_staff:
-            self.user.is_staff = True
-            self.user.save()
-        super().save(*args, **kwargs)
-
     def __str__(self):
         return self.user.username
-
 
 """
 Status: Could be used later on, to categorise departments

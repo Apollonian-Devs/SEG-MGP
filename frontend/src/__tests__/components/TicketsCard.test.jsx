@@ -14,7 +14,7 @@ import { useState } from "react";
 import { ACCESS_TOKEN } from "../../constants";
 import React from "react";
 import { toast } from "sonner";
-
+import { act } from 'react';
 vi.mock('sonner', () => ({
 	toast: {
 		promise: vi.fn(),
@@ -27,6 +27,7 @@ vi.mock('../../api', () => ({
 	__esModule: true,
 	default: {
 		get: vi.fn(),
+    post:vi.fn(),
 	},
 }));
 
@@ -986,3 +987,133 @@ it("should update selectedOfficers state when an officer is selected", async () 
     expect(within(officersDropdown).getByText("@officer1")).toBeInTheDocument();
   });
 });
+
+
+  
+
+  it("Redirecting tickets causing less ticket pages should update properly", async() => {
+    const mockOfficer = {
+      user: {
+        id: 101,
+        username: "@officer1",
+      },
+      department: "IT",
+    };
+    const mockTickets = [
+    ];
+    for (let i = 0; i < 6; i++) {
+      mockTickets.push(
+        {
+        id: i, subject: `ticket ${i}`, status: `status ${i}`,
+        }
+      );
+    }
+
+    const mockRemovedTickets = [...mockTickets];
+    mockRemovedTickets.pop()
+    api.post.mockResolvedValue({ 
+      data: { 
+        success: true, 
+        ticket: mockRemovedTickets,
+      } 
+    });
+
+    render(
+      <TicketsCard
+        user={{ is_staff: true }}
+        officers={[mockOfficer]}
+        tickets={mockTickets}
+      />
+    );
+    
+    expect(screen.getByText("ticket 1")).toBeInTheDocument();
+    await act(async () => {
+    fireEvent.click((screen.getByText('Last')));
+    });
+    expect(screen.getByText("ticket 5")).toBeInTheDocument();
+    await act(async () => {
+    fireEvent.click(screen.getAllByRole("button", { name: /select an officer/i })[0]);
+  });
+    expect(screen.getByText('@officer1')).toBeInTheDocument();
+    
+    await act(async () => {
+      fireEvent.click((screen.getByText('@officer1')));
+    });
+    await act(async () => {
+      fireEvent.click(screen.getAllByRole("button", { name: /redirect/i })[0]);
+    });
+    await waitFor(() => {expect(screen.getByText("ticket 5")).toBeInTheDocument();  });
+
+  });
+
+  it("redirect to department as admin", async () => {
+    api.get.mockResolvedValue({
+      data: [
+        {
+          id: 1,
+          name: 'department 1',
+          description: 'description 1',
+        },
+      ],
+  });
+
+    render(
+      <TicketsCard
+        user={{ is_staff: true, is_superuser: true }}
+        tickets={[{ id: 1, subject: "ticket 1", status: "testStatus" }]}
+      />
+    );
+    await act(async () => {
+      fireEvent.click(screen.getAllByRole("button", { name: /redirect/i })[0]);
+    });
+    expect(screen.getByRole("button", { name: /Select a department/i })).toBeInTheDocument();
+    await act(async () => {
+    fireEvent.click(screen.getAllByRole("button", { name: /Select a department/i })[0]);
+  });
+    expect(screen.getByText('department 1')).toBeInTheDocument();
+    await act(async () => {
+      fireEvent.click(screen.getByText('department 1'));
+    });
+    await act(async () => {
+      fireEvent.click(screen.getAllByRole("button", { name: /redirect/i })[0]);
+    });
+    expect(screen.getByText('ticket 1')).toBeInTheDocument();
+  });
+
+  it("Redirect to suggested department as admin", async () => {
+    vi.spyOn(React, "useState").mockReturnValueOnce([
+      { 1: { suggested_department: 'IT' } },
+      vi.fn(),
+    ]);
+    api.get.mockResolvedValue({
+      data: [
+        {
+          suggested_department: 'IT',
+          confidence_score: 0.8,
+        },
+      ],
+  });
+    render(
+      <TicketsCard
+        user={{ is_staff: true, is_superuser: true }}
+        tickets={[{ id: 1, subject: "ticket 1", status: "testStatus" }]}
+      />
+    );
+
+    const AISuggestionButton = screen.getByRole("button", {
+      name: /ai suggestion/i,
+    });
+    await act(async () => {
+    fireEvent.click(AISuggestionButton);
+    });
+    await act(async () => {
+    fireEvent.click(screen.getByRole("button", { name: /suggest departments/i }));
+  });
+
+    expect(screen.getByText(/suggested departments/i)).toBeInTheDocument();
+    
+    expect(screen.getByTestId("suggested-redirect-button")).toBeInTheDocument();
+    await act(async () => {
+    fireEvent.click(screen.getByTestId("suggested-redirect-button"));
+    });
+  });

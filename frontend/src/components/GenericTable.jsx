@@ -28,7 +28,8 @@ const GenericTable = ({
 
 	const handleRowsPerPageChange = (option) => {
 		setRowsPerPage(option);
-		setCurrentPage(currentPage > totalPages ? totalPages : currentPage);
+		const currentTotalPages = Math.ceil(data.length / option);
+		setCurrentPage(currentPage > currentTotalPages ? currentTotalPages : currentPage);
 	};
 	return (
 		<>

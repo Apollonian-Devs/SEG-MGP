@@ -14,58 +14,59 @@ const GenericTable = ({
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const totalPages = Math.ceil(data.length / rowsPerPage);
 
-  useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(totalPages > 0 ? totalPages : 1);
-    }
-  }, [currentPage, totalPages]);
+	useEffect(() => {
+		if (data.length === 0) {
+			setCurrentPage(1);
+			return;
+		}
+		setCurrentPage(currentPage > totalPages ? totalPages : currentPage);
+	}, [data.length]);
 
   const startIndex = (currentPage - 1) * rowsPerPage;
   const paginatedData = data.slice(startIndex, startIndex + rowsPerPage);
   const options = [5, 10, 20, 50];
 
-  const handleRowsPerPageChange = (option) => {
-    setRowsPerPage(option);
-    setCurrentPage(1);
-  };
-
-  return (
-    <>
-      <div className="flex justify-between w-full items-center gap-2 mb-2 text-gray-400">
-        <div className="flex items-center gap-2">
-          <p className="font-medium">
-            Showing:{' '}
-            <span className="font-normal">
-              {startIndex + 1} - {startIndex + paginatedData.length}
-            </span>{' '}
-            of <span className="font-normal">{data.length}</span>
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <label className="mr-2 font-medium">Rows per page:</label>
-          <GenericDropdown
-            buttonName={`${rowsPerPage} rows`}
-            className="border-2 outline-none border-gray-400 focus:border-customOrange-dark focus:text-customOrange-dark hover:border-customOrange-dark hover:text-customOrange-dark rounded-md transition-colors duration-500 px-2 py-0.5 gap-2"
-            maxHeight="200" // Adjust as needed
-          >
-            <div className="flex flex-col">
-              {options.map((option) => (
-                <GenericButton
-                  key={option}
-                  value={option}
-                  onClick={() => handleRowsPerPageChange(option)}
-                  className="w-full text-left hover:bg-gray-300 transition-colors duration-200 px-4 py-2"
-                >
-                  {option}
-                </GenericButton>
-              ))}
-            </div>
-          </GenericDropdown>
-        </div>
-      </div>
+	const handleRowsPerPageChange = (option) => {
+		setRowsPerPage(option);
+		const currentTotalPages = Math.ceil(data.length / option);
+		setCurrentPage(currentPage > currentTotalPages ? currentTotalPages : currentPage);
+	};
+	return (
+		<>
+			<div className="flex justify-between w-full items-center gap-2 mb-2 text-gray-400">
+				<div className="flex items-center gap-2">
+					<p className=" font-medium">
+						Showing:{' '}
+						<span className="font-normal">
+							{data.length > 0 ? `${startIndex + 1} - ${startIndex + paginatedData.length}` : 0} 
+						</span>{' '}
+						of <span className="font-normal">{data.length}</span>
+					</p>
+				</div>
+				<div className="flex items-center gap-2">
+					<label className="mr-2 font-medium">Rows per page:</label>
+					<GenericDropdown
+						buttonName={`${rowsPerPage} rows`}
+						className="border-2 outline-none border-gray-400 focus:border-customOrange-dark focus:text-customOrange-dark hover:border-customOrange-dark hover:text-customOrange-dark rounded-md transition-colors duration-500 px-2 py-0.5 gap-2"
+						maxHeight="200" // Adjust as needed
+					>
+						<div className="flex flex-col">
+							{options.map((option) => (
+								<GenericButton
+									key={option}
+									value={option}
+									onClick={() => handleRowsPerPageChange(option)}
+									className="w-full text-left hover:bg-gray-300 transition-colors duration-200 px-4 py-2"
+								>
+									{option}
+								</GenericButton>
+							))}
+						</div>
+					</GenericDropdown>
+				</div>
+			</div>
 
       {/* Scrollable Container */}
-      <div className="max-h-[400px] overflow-y-auto border border-gray-300 rounded-lg">
         <table className={tableClass}>
           <thead>
             <tr>{columnDefinition}</tr>
@@ -85,7 +86,6 @@ const GenericTable = ({
             )}
           </tbody>
         </table>
-      </div>
 
       {totalPages > 1 && (
         <div className="flex justify-center space-x-2 mt-4">

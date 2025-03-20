@@ -38,7 +38,7 @@ def send_query(student_user, subject, description, message_body, attachments=Non
     Creates a new ticket for 'student' user.
     Also creates an initial TicketMessage and handles file attachments.
     """
-
+    
     if student_user is None or student_user.is_staff:
         raise PermissionDenied("Only student users can create tickets.")
 

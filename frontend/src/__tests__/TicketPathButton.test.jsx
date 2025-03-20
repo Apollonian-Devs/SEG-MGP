@@ -1,63 +1,61 @@
-import { render, screen,  waitFor } from '@testing-library/react';
-import { describe, it, expect} from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import TicketPathButton from '../components/TicketPathButton';
 import api from "../api";
-
+import handleApiError from "../utils/errorHandler";
 
 vi.mock("../api");
+vi.mock("../utils/errorHandler", () => ({
+  __esModule: true,
+  default: vi.fn(),
+}));
 
 describe("TicketPathButton", () => {
 
-  it("fetches Ticket Path correctly",async()=>{
+  beforeEach(() => {
+    vi.clearAllMocks();
+    localStorage.setItem("ACCESS_TOKEN", "mock-token");
+  });
+
+  it("fetches Ticket Path correctly", async () => {
     api.get.mockResolvedValue({
-        data: {
-          ticket_path:[
-              {
-                from_username:"user 1",
-                to_username:"user 2",
-              }
-            ]
-        },
+      data: {
+        ticket_path: [
+          { from_username: "user 1", to_username: "user 2" },
+        ],
+      },
     });
-    render(<TicketPathButton/>);
-    await waitFor(() => expect(screen.getByText("user 1")).toBeInTheDocument());
-    
-  })
 
-  it("fetches ticket path with console error",async()=>{
-      //console log test adapted from https://stackoverflow.com/questions/76042978/in-vitest-how-do-i-assert-that-a-console-log-happened
-      api.get.mockRejectedValue(new Error("test fetch path error"));
-      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    
-      render(<TicketPathButton/>);
-
-      
-      await waitFor(() => {
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          "Error fetching ticket path:", 
-          "test fetch path error"
-        );
-      });
-      consoleErrorSpy.mockRestore();
+    render(<TicketPathButton ticketId={1} />);
+    await waitFor(() => {
+      expect(screen.getByText("user 1")).toBeInTheDocument();
+      expect(screen.getByText("user 2")).toBeInTheDocument();
     });
-    it("fetches ticket path with error data",async()=>{
-    api.get.mockRejectedValue({ 
+  });
+
+  it("handles fetch error correctly without response data", async () => {
+    const mockError = new Error("Network error");
+    api.get.mockRejectedValue(mockError);
+
+    render(<TicketPathButton ticketId={1} />);
+
+    await waitFor(() => {
+      expect(handleApiError).toHaveBeenCalledWith(mockError, "Error fetching ticket path");
+    });
+  });
+
+  it("handles fetch error correctly with response data", async () => {
+    const mockError = {
       response: {
         data: "fetch path error data",
       },
-    });
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-  
-    render(<TicketPathButton/>);
+    };
+    api.get.mockRejectedValue(mockError);
 
-    
+    render(<TicketPathButton ticketId={1} />);
+
     await waitFor(() => {
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "Error fetching ticket path:", 
-        "fetch path error data"
-      );
+      expect(handleApiError).toHaveBeenCalledWith(mockError, "Error fetching ticket path");
     });
-    consoleErrorSpy.mockRestore();
   });
-
-})
+});

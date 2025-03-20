@@ -54,16 +54,143 @@ describe('GenericDropdown Component', () => {
         expect(screen.getByText('Click Me')).toBeInTheDocument();
     });
 
-    
 
-    it('renders children when dropdown is open', () => {
-        render(
-            <GenericDropdown buttonName="Click Me">
-                <div>Dropdown Content</div>
-            </GenericDropdown>
-        );
-        const button = screen.getByText('Click Me');
-        fireEvent.click(button);
-        expect(screen.getByText('Dropdown Content')).toBeInTheDocument();
+    it('applies the provided className', () => {
+      render(
+        <GenericDropdown buttonName="Select TestButton" className="custom-class">
+          <div>Option 1</div>
+        </GenericDropdown>
+      );
+  
+      // Ensure the custom class is applied to the dropdown button
+      const button = screen.getByText('Select TestButton');
+      expect(button).toHaveClass('custom-class');
     });
+
+  
+    it('toggles dropdown closed when clicked on while open', () => {
+      render(
+        <GenericDropdown buttonName="Select TestButton">
+          <div>Option 1</div>
+        </GenericDropdown>
+      );
+  
+      fireEvent.click(screen.getByText('Select TestButton'));
+      expect(screen.getByText('Option 1')).toBeInTheDocument();
+
+      fireEvent.click(screen.getByText('Select TestButton'));
+      expect(screen.queryByText('Option 1')).not.toBeInTheDocument();
+
+    });
+
+
+    it('shows correct children when toggled', () => {
+      render(
+        <GenericDropdown buttonName="Select TestButton">
+          <div>Option 1</div>
+          <div>Option 2</div>
+        </GenericDropdown>
+      );
+  
+      fireEvent.click(screen.getByText('Select TestButton'));
+      expect(screen.getByText('Option 1')).toBeInTheDocument();
+      expect(screen.getByText('Option 2')).toBeInTheDocument();
+    });
+
+
+    it('allows options to be clicked on', () => {
+      render(
+        <GenericDropdown buttonName="Select TestButton">
+          <div>Option 1</div>
+          <div>Option 2</div>
+          <div>Option 3</div>
+          <div>Option 4</div>
+        </GenericDropdown>
+      );
+  
+      fireEvent.click(screen.getByText('Select TestButton'));
+
+      fireEvent.click(screen.getByText('Option 1'));
+      fireEvent.click(screen.getByText('Option 2'));
+      fireEvent.click(screen.getByText('Option 3'));
+      fireEvent.click(screen.getByText('Option 4'));
+    });
+
+
+    it('has correct max height', () => {
+      render(
+        <GenericDropdown buttonName="Select TestButton" maxHeight="100">
+          <div>Option 1</div>
+          <div>Option 2</div>
+          <div>Option 3</div>
+          <div>Option 4</div>
+          <div>Option 5</div>
+          <div>Option 6</div>
+        </GenericDropdown>
+      );
+  
+      fireEvent.click(screen.getByText('Select TestButton'));
+  
+      const dropdown = screen.getByRole('menu');
+      expect(dropdown).toHaveStyle('max-height: 100px');
+    });
+
+
+    it('does not close dropdown automatically when option is selected', () => {
+      render(
+        <GenericDropdown buttonName="Select option">
+          <div>Option 1</div>
+          <div>Option 2</div>
+        </GenericDropdown>
+      );
+
+      fireEvent.click(screen.getByText('Select option'));
+      expect(screen.getByText('Option 1')).toBeInTheDocument();
+  
+      fireEvent.click(screen.getByText('Option 1'));
+      
+      expect(screen.queryByText('Option 2')).toBeInTheDocument();
+    });
+
+
+    it('closes the dropdown when clicking outside', () => {
+      
+      render(
+        <GenericDropdown buttonName="Select TestButton">
+          <button>Option 1</button>
+          <button>Option 2</button>
+        </GenericDropdown>
+      );
+  
+      fireEvent.click(screen.getByText('Select TestButton'));
+  
+      expect(screen.getByText('Option 1')).toBeInTheDocument();
+      expect(screen.getByText('Option 2')).toBeInTheDocument();
+  
+      fireEvent.mouseDown(document.body);
+  
+      expect(screen.queryByText('Option 1')).not.toBeInTheDocument();
+      expect(screen.queryByText('Option 2')).not.toBeInTheDocument();
+    });
+
+  
+    it('sets minWidth to auto when dropdownWidth is 0', () => {
+      // Mock the dropdownWidth to be 0
+      render(
+        <GenericDropdown buttonName="Select TestButton">
+          <div>Option 1</div>
+          <div>Option 2</div>
+        </GenericDropdown>
+      );
+  
+      // Simulate opening the dropdown
+      fireEvent.click(screen.getByText('Select TestButton'));
+  
+      const dropdownMenu = screen.getByRole('menu');
+  
+      // Check that minWidth is set to 'auto'
+      expect(dropdownMenu).toHaveStyle('min-width: auto');
+    });
+  
+
 });

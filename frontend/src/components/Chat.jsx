@@ -3,7 +3,7 @@ import api from "../api";
 import { ACCESS_TOKEN } from "../constants";
 import GenericButton from "./GenericButton";
 import { handleFileChange } from "../utils/attachmentUtils";
-
+import { toast } from 'sonner';
 
 const Chat = ({ ticket, onClose, user }) => {
   const [messages, setMessages] = useState([]);
@@ -57,13 +57,12 @@ const Chat = ({ ticket, onClose, user }) => {
       setMessage_body("");
       //setAttachments(undefined);
       setAttachments([]);
-
+      toast.success("Your message has been sent");
       
-
-      alert("Your message has been sent. Please reload the page to see the new status of your ticket.");
     } catch (err) {
       console.error("Full error object:", err);
       setError(err.response?.data || "Failed to send text");
+      toast.error(`Failed to send message: ${err.response?.data?.detail || err.message}`);
     }
   };
   

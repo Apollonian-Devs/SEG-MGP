@@ -5,7 +5,7 @@ import GenericInput from './GenericInput';
 import { useFileInput } from '../utils/attachmentUtils';
 import { toast } from 'sonner';
 
-const NewTicketForm = ({ togglePopup }) => {
+const NewTicketForm = ({ togglePopup, fetchTickets }) => {
     const [subject, setSubject] = useState('');
     const [description, setDescription] = useState('');
     const [message, setMessage] = useState('');
@@ -21,17 +21,18 @@ const NewTicketForm = ({ togglePopup }) => {
 
         toast.promise(newTicketPromise, {
             loading: 'Loading...',
-            success: () => {
+            success: async () =>  {
                 togglePopup();
                 setSubject('');
                 setDescription('');
                 setMessage('');
                 setAttachments([]);
                 resetFileInput();
+				await fetchTickets();
                 return 'Ticket Submitted successfully';
             },
             error: (error) => {
-                return `Error submitting ticket: ${error.message}`;
+                return `Error submitting ticket: ${error?.message || "An unknown error occurred"}`;
             },
         });
     };

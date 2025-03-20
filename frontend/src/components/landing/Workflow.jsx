@@ -50,7 +50,7 @@ const Workflow = () => {
 					support requests.
 				</span>
 			</motion.h1>
-			<div className="flex flex-wrap justify-center p-3">
+			<div className="flex justify-center items-center p-3 space-x-4">
 				<motion.div
 					className="max-sm:hidden block p-2 w-1/2"
 					initial={{ x: -50, opacity: 0 }}
@@ -60,10 +60,10 @@ const Workflow = () => {
 					<img src={question} alt="Ticketing System" />
 				</motion.div>
 				<motion.div
-					className="pt-12 w-full lg:w-1/2 h-full flex flex-col justify-between"
+					className="max-sm:w-full w-1/2 h-full flex flex-col justify-between"
 					initial={{ x: 50, opacity: 0 }}
 					animate={isInView ? { x: 0, opacity: 1 } : { x: 50, opacity: 0 }}
-					transition={{ duration: 0.7, delay: 0.2 }}
+					transition={{ duration: 0.8, delay: 1.0 }}
 				>
 					{checklistItems.map((item, index) => (
 						<motion.div
@@ -71,7 +71,7 @@ const Workflow = () => {
 							className="flex gap-4 items-center"
 							initial={{ y: 20, opacity: 0 }}
 							animate={isInView ? { y: 0, opacity: 1 } : { y: 20, opacity: 0 }}
-							transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
+							transition={{ duration: 0.6, delay: 1.0 + index * 0.2 }}
 						>
 							<div className="text-customOrange-dark bg-neutral-900 h-10 w-10 p-2 justify-center items-center rounded-full">
 								<CheckCircle2 />

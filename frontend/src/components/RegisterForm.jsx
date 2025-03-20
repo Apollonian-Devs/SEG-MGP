@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api';
 import GenericForm from './GenericForm';
 import GenericInput from './GenericInput';
+import { toast } from 'sonner';
+import handleApiError from '../utils/errorHandler';
 
 const RegisterForm = () => {
 	const [username, setUsername] = useState('');
@@ -30,11 +32,21 @@ const RegisterForm = () => {
 			});
 
 			if (response.status === 201) {
-				alert('Registration successful. Please login to continue.');
+				toast.success("Registration successful. Please login with your details.")
 				navigate('/');
 			}
-		} catch (err) {
-			alert('Username or email is already registered. Please try again.');
+		} catch (error) {
+
+			if (error.response?.data?.username) {
+				handleApiError(error, error.response?.data?.username)
+			}
+			else if (error.response?.data?.email) {
+				handleApiError(error, error.response?.data?.email)
+			}
+			else {
+				handleApiError(error)
+			}
+		
 		} finally {
 			setLoading(false);
 		}
@@ -79,7 +91,7 @@ const RegisterForm = () => {
 				<GenericInput
 					id="email"
 					label="Email"
-					type="text"
+					type="email"
 					required={true}
 					onChange={(e) => setEmail(e.target.value)}
 					placeholder="Enter your email"
@@ -88,7 +100,7 @@ const RegisterForm = () => {
 				<GenericInput
 					id="password"
 					label="Password"
-					type="text"
+					type="password"
 					required={true}
 					onChange={(e) => setPassword(e.target.value)}
 					placeholder="Enter your password"

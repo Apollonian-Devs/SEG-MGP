@@ -13,6 +13,7 @@ const FilterTicketsDropdown = ({
 	setIsOverdue,
 	applyFilters,
 	clearFilters,
+	dataTestId,
 }) => {
 	const [isFilterActive, setIsFilterActive] = useState(false);
 
@@ -25,6 +26,7 @@ const FilterTicketsDropdown = ({
 						setIsFilterActive(false);
 					}}
 					className="flex items-center justify-items-center gap-2 px-3 h-10 text-white hover:bg-red-400 transition-colors duration-500 bg-red-700 rounded-md"
+					dataTestId='clear-button-outside'
 				>
 					<FilterX size={16} />
 					Clear
@@ -33,6 +35,7 @@ const FilterTicketsDropdown = ({
 			<GenericDropdown
 				buttonName={<Filter size={16} />}
 				maxHeight={'none'}
+				dataTestId={dataTestId}
 				className="flex items-center justify-items-center h-10 px-3 w-fit gap-1 text-white font-medium hover:bg-customOrange-light transition-colors duration-500 bg-customOrange-dark rounded-md"
 			>
 				<div className="space-y-3 p-3">
@@ -175,6 +178,7 @@ const FilterTicketsDropdown = ({
 								setIsFilterActive(false);
 							}}
 							className="flex items-center justify-items-center px-3 py-1 text-white hover:bg-red-400 transition-colors duration-500 bg-red-700 rounded-md"
+							dataTestId='clear-button-inside'
 						>
 							Clear
 						</GenericButton>

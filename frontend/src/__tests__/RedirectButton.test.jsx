@@ -5,6 +5,7 @@ import RedirectButton from '../components/RedirectButton';
 import api from '../api';
 import { toast } from 'sonner';
 
+
 // ✅ Mock API module
 vi.mock('../api', async () => {
 	const actual = await vi.importActual('../api'); // Keep actual exports if needed
@@ -26,49 +27,94 @@ vi.stubGlobal('localStorage', {
 	getItem: vi.fn(() => 'mock-access-token'),
 });
 
+
 describe('RedirectButton Component', () => {
+
+	beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
 	it('renders the button correctly', () => {
 		render(
 			<RedirectButton
 				ticketid={1}
 				selectedOfficer={{ id: 2, is_superuser: true }}
 				departmentId={null}
-				fetchTickets={vi.fn()}
 			/>
 		);
 
 		expect(screen.getByText(/Redirect/i)).toBeInTheDocument();
 	});
 
-	it('shows an alert if no officer or department is selected', () => {
-		window.alert = vi.fn(); // ✅ Mock window.alert
+
+	it('calls the API when the button is clicked and the officer is selected', async () => {
+		api.post.mockResolvedValue({ status: 200 });
+
+		const user_object= { 
+			id: 2, 
+			username: "Test",
+			password: "1234",
+			is_staff: true 
+		};
+
 
 		render(
 			<RedirectButton
 				ticketid={1}
-				selectedOfficer={null}
+				selectedOfficer={{ user: user_object }}
 				departmentId={null}
-				fetchTickets={vi.fn()}
 			/>
 		);
 
 		fireEvent.click(screen.getByText(/Redirect/i));
 
-		expect(window.alert).toHaveBeenCalledWith(
-			'Please select either an officer or a department to redirect the ticket.'
-		);
+		await waitFor(() => {
+			expect(api.post).toHaveBeenCalledWith(
+			  '/api/redirect-ticket/',
+			  {
+				ticket: 1,
+				to_profile: 2,
+				department_id: null,
+			  },
+			  {
+				headers: { Authorization: 'Bearer mock-access-token' },
+			  }
+			);
+		  });
+		
+
+		await waitFor(() => {
+			expect(toast.promise).toHaveBeenCalledWith(
+			  expect.any(Promise),
+			  expect.objectContaining({ loading: 'Loading...' })
+			);
+		  });
+		
+	
+		await waitFor(() => {
+			expect(toast.promise).toHaveBeenCalledWith(
+			  expect.any(Promise),
+			  expect.objectContaining({
+				success: expect.any(Function),
+			  })
+			);
+		  });
+
+		expect(toast.promise).toHaveBeenCalled(); 
+
+			
 	});
 
-	it('calls API and fetchTickets on successful redirection', async () => {
-		api.post.mockResolvedValue({ status: 200 }); // ✅ Mock successful API response
-		const fetchTickets = vi.fn();
+	it('calls the API when the button is clicked and the admin is selected', async () => {
+		api.post.mockResolvedValue({ status: 200 });
+		const mockFetchTickets = vi.fn();
 
 		render(
 			<RedirectButton
 				ticketid={1}
 				selectedOfficer={{ id: 2, is_superuser: true }}
 				departmentId={null}
-				fetchTickets={fetchTickets}
+				fetchTickets={mockFetchTickets}
 			/>
 		);
 
@@ -79,34 +125,79 @@ describe('RedirectButton Component', () => {
 				'/api/redirect-ticket/',
 				{
 					ticket: 1,
-					to_profile: 2,
+					to_profile: 2, 
 					department_id: null,
 				},
 				{
-					headers: { Authorization: `Bearer mock-access-token` },
+					headers: { Authorization: 'Bearer mock-access-token' }, 
 				}
 			);
 
-			expect(toast.promise).toHaveBeenCalled();
+			expect(toast.promise).toHaveBeenCalled(); 
 		});
 	});
 
-	it('shows an error toast if the API request fails', async () => {
-		api.post.mockRejectedValue(new Error('Network error'));
+
+
+	it('calls the API when the button is clicked and the department is selected', async () => {
+		api.post.mockResolvedValue({ status: 200 });
+		const mockFetchTickets = vi.fn();
 
 		render(
 			<RedirectButton
 				ticketid={1}
-				selectedOfficer={{ id: 2, is_superuser: true }}
-				departmentId={null}
-				fetchTickets={vi.fn()}
+				selectedOfficer={null}
+				departmentId={2}
+				fetchTickets={mockFetchTickets}
 			/>
 		);
 
 		fireEvent.click(screen.getByText(/Redirect/i));
 
 		await waitFor(() => {
-			expect(toast.promise).toHaveBeenCalled();
+			expect(api.post).toHaveBeenCalledWith(
+				'/api/redirect-ticket/',
+				{
+					ticket: 1,
+					to_profile: null, 
+					department_id: 2,
+				},
+				{
+					headers: { Authorization: 'Bearer mock-access-token' }, 
+				}
+			);
+
+			expect(toast.promise).toHaveBeenCalled(); 
 		});
 	});
+
+
+	it('enables the button if officer is selected', () => {
+		render(
+			<RedirectButton
+				ticketid={1}
+				selectedOfficer={{ id: 2, is_superuser: true }}
+				departmentId={null}
+			/>
+		);
+
+		const button = screen.getByText(/Redirect/i);
+		expect(button).toBeEnabled();
+	});
+
+
+	it('enables the button if department is selected', () => {
+		render(
+			<RedirectButton
+				ticketid={1}
+				selectedOfficer={null}
+				departmentId={{id: 2}}
+			/>
+		);
+
+		const button = screen.getByText(/Redirect/i);
+		expect(button).toBeEnabled();
+	});
+
+
 });

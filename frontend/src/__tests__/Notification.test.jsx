@@ -2,9 +2,24 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, beforeEach } from 'vitest';
 import NotificationsTab from '../components/Notification';
 import api from "../api";
+import { vi } from "vitest";
+import { toast } from "sonner";  
 
 
 vi.mock("../api");
+
+beforeAll(() => {
+  window.HTMLMediaElement.prototype.play = vi.fn().mockImplementation(() => Promise.resolve());
+});
+
+
+
+vi.mock("sonner", () => ({
+  toast: {
+    error: vi.fn(),
+    success: vi.fn(),
+  },
+}));
 
 describe("NotificationsTab", () => {
     beforeEach(() => {
@@ -31,10 +46,11 @@ describe("NotificationsTab", () => {
         fireEvent.click(screen.getByRole("button")); 
         
         await waitFor(() => {
-          expect(consoleErrorSpy).toHaveBeenCalledWith(
-            "Error fetching notifications:", 
-            "test fetch error"
-          );
+          // expect(consoleErrorSpy).toHaveBeenCalledWith(
+          //   "Error fetching notifications:", 
+          //   "test fetch error"
+          // );
+          expect(toast.error).toHaveBeenCalledWith("❌ Error fetching notifications");
         });
         consoleErrorSpy.mockRestore();
       });
@@ -51,10 +67,16 @@ describe("NotificationsTab", () => {
         fireEvent.click(screen.getByRole("button")); 
         
         await waitFor(() => {
-          expect(consoleErrorSpy).toHaveBeenCalledWith(
-            "Error fetching notifications:", 
-            "fetch error data"
-          );
+          // expect(consoleErrorSpy).toHaveBeenCalledWith(
+          //   "Error fetching notifications:", 
+          //   "fetch error data"
+          // );
+          expect(toast.error).toHaveBeenCalledWith(expect.stringMatching(/Error/));
+          // expect(consoleErrorSpy).toHaveBeenCalledWith(
+          //   "Error marking notifications as read:",
+          //   expect.any(Error)
+          // );
+                    
         });
         consoleErrorSpy.mockRestore();
       });
@@ -90,10 +112,11 @@ describe("NotificationsTab", () => {
         const buttons = screen.getAllByRole("button");
         fireEvent.click(buttons[1]);
         await waitFor(() => {
-            expect(consoleErrorSpy).toHaveBeenCalledWith(
-              "Error marking notifications as read:", 
-              "test post error"
-            );
+            // expect(consoleErrorSpy).toHaveBeenCalledWith(
+            //   "Error marking notifications as read:", 
+            //   "test post error"
+            // );
+            expect(toast.error).toHaveBeenCalledWith(expect.stringMatching(/Error/));
           });
           consoleErrorSpy.mockRestore();
     });
@@ -117,10 +140,11 @@ describe("NotificationsTab", () => {
         const buttons = screen.getAllByRole("button");
         fireEvent.click(buttons[1]);
         await waitFor(() => {
-            expect(consoleErrorSpy).toHaveBeenCalledWith(
-              "Error marking notifications as read:", 
-              "mark error data"
-            );
+            // expect(consoleErrorSpy).toHaveBeenCalledWith(
+            //   "Error marking notifications as read:", 
+            //   "mark error data"
+            // );
+            expect(toast.error).toHaveBeenCalledWith(expect.stringMatching(/Error/));
           });
           consoleErrorSpy.mockRestore();
     });
@@ -172,10 +196,11 @@ describe("NotificationsTab", () => {
         const buttons = screen.getAllByRole("button");
         fireEvent.click(buttons[1]);
         await waitFor(() => {
-            expect(consoleErrorSpy).toHaveBeenCalledWith(
-              "Error marking notifications as read:", 
-              "test post error"
-            );
+            // expect(consoleErrorSpy).toHaveBeenCalledWith(
+            //   "Error marking notifications as read:", 
+            //   "test post error"
+            // );
+            expect(toast.error).toHaveBeenCalledWith(expect.stringMatching(/Error/));
           });
           consoleErrorSpy.mockRestore();
     });

@@ -1,16 +1,16 @@
-import React from 'react';
+import React, { act } from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { vi } from 'vitest'; // Vitest for mocking
+import { expect, vi } from 'vitest'; // Vitest for mocking
 import NewTicketForm from '../components/NewTicketForm';
 import api from '../api';
 import { toast } from 'sonner';
 
 // Mock API calls
 vi.mock('../api', async () => {
-	const actual = await vi.importActual('../api'); // Keep other exports if any
+	
 	return {
-		...actual,
+		__esModule: true,
 		default: { post: vi.fn() }, // Mock the default export properly
 	};
 });
@@ -53,7 +53,7 @@ describe('NewTicketForm Component', () => {
 	it('submits the form successfully', async () => {
 		api.post.mockResolvedValue({ status: 201 });
 		const togglePopup = vi.fn();
-		render(<NewTicketForm togglePopup={togglePopup} />);
+		render(<NewTicketForm togglePopup={togglePopup} fetchTickets={vi.fn()}/>);
 		const user = userEvent.setup();
 
 		// Fill out the form
@@ -64,6 +64,10 @@ describe('NewTicketForm Component', () => {
 		// Submit the form
 		fireEvent.submit(screen.getByTestId('generic-form'));
 
+		toast.promise.mockImplementation((promise, options) => { 
+			return promise.then((success) => options.success(success));
+		});
+
 		// Wait for API call and state reset
 		await waitFor(() => {
 			expect(api.post).toHaveBeenCalledWith('api/tickets/', {
@@ -72,9 +76,27 @@ describe('NewTicketForm Component', () => {
 				message: 'Any update?',
 				attachments: [],
 			});
-
-			expect(toast.promise).toHaveBeenCalled();
 		});
+
+		await waitFor(() => {
+			expect(toast.promise).toHaveBeenCalledWith(
+				expect.any(Promise),
+				expect.objectContaining({
+					loading: 'Loading...',
+					success: expect.any(Function),
+					error: expect.any(Function),
+				})
+			);
+		});
+
+		await act(async ()   => {		
+			const toastCallArgs = toast.promise.mock.calls[0];
+			const toastOptions = toastCallArgs[1];
+			expect(await toastOptions.success()).toMatch(/ticket submitted successfully/i);
+
+			})
+
+
 	});
 
 	it('handles file upload correctly', async () => {
@@ -93,15 +115,68 @@ describe('NewTicketForm Component', () => {
 	});
 
 	it('shows an error toast when API call fails', async () => {
-		api.post.mockRejectedValue(new Error('Network error'));
+		const errorMessage = "Network error"
+		
+		api.post.mockRejectedValue(new Error(errorMessage));
+		
+		toast.promise.mockImplementation((promise, options) => { 
+			return promise.catch((error) => options.error(error));
+		});
+		
 		render(<NewTicketForm togglePopup={vi.fn()} />);
 
 		// Submit the form
 		fireEvent.submit(screen.getByTestId('generic-form'));
 
-		// Wait for error toast to be displayed
 		await waitFor(() => {
-			expect(toast.promise).toHaveBeenCalled();
+			expect(toast.promise).toHaveBeenCalledWith(
+				expect.any(Promise),
+				expect.objectContaining({
+					loading: 'Loading...',
+					success: expect.any(Function),
+					error: expect.any(Function),
+				})
+			);
 		});
+		
+		await act(async ()   => {		
+			const toastCallArgs = toast.promise.mock.calls[0];
+			const toastOptions = toastCallArgs[1];
+			expect(await toastOptions.error(new Error(errorMessage))).toMatch(/network error/i);
+
+			})
+
+	});
+
+	it('shows generic error toast when API call fails with an undefined error', async() => {
+		api.post.mockRejectedValue({response: {status: 400}})
+
+		render(<NewTicketForm togglePopup={vi.fn()} />);
+
+		toast.promise.mockImplementation((promise, options) => { 
+			return promise.catch((error) => options.error(error));
+		});
+
+		// Submit the form
+		fireEvent.submit(screen.getByTestId('generic-form'));
+
+		await waitFor(() => {
+			expect(toast.promise).toHaveBeenCalledWith(
+				expect.any(Promise),
+				expect.objectContaining({
+					loading: 'Loading...',
+					success: expect.any(Function),
+					error: expect.any(Function),
+				})
+			);
+		});
+
+		await act(async ()   => {		
+			const toastCallArgs = toast.promise.mock.calls[0];
+			const toastOptions = toastCallArgs[1];
+			expect(await toastOptions.error()).toMatch(/an unknown error occurred/i);
+
+			})
+
 	});
 });

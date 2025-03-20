@@ -9,7 +9,8 @@ describe("TicketDetails Component", () => {
       priority: "High",
       assigned_to: "John Doe",
       created_at: "2024-02-04T00:00:00Z", 
-      closed_at: null,
+      closed_at: "2024-02-24T00:00:00Z",
+      due_date:"2024-02-15T00:00:00Z",
     };
 
     test("renders ticket details correctly", () => {
@@ -20,7 +21,8 @@ describe("TicketDetails Component", () => {
       expect(screen.getByText(`Priority: ${mockTicket.priority}`)).toBeInTheDocument();
       expect(screen.getByText(`Assigned to: ${mockTicket.assigned_to}`)).toBeInTheDocument();
       expect(screen.getByText(/Created at: \d{1,2}\/\d{1,2}\/\d{4}, \d{2}:\d{2}:\d{2}/i)).toBeInTheDocument();
-      expect(screen.getByText("Closed at: Not Set")).toBeInTheDocument();
+      expect(screen.getByText(/Closed at: \d{1,2}\/\d{1,2}\/\d{4}, \d{2}:\d{2}:\d{2}/i)).toBeInTheDocument();
+      expect(screen.getByText(/Due date: \d{1,2}\/\d{1,2}\/\d{4}, \d{2}:\d{2}:\d{2}/i)).toBeInTheDocument();
     });
 
     test("renders default values for missing ticket fields", () => {
@@ -39,6 +41,7 @@ describe("TicketDetails Component", () => {
       expect(screen.getByText("Assigned to: Unassigned")).toBeInTheDocument();
       expect(screen.getByText("Created at: Not Set")).toBeInTheDocument();
       expect(screen.getByText("Closed at: Not Set")).toBeInTheDocument();
+      expect(screen.getByText("Due Date: Not Set")).toBeInTheDocument();
     });
 });
 

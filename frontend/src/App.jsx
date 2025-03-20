@@ -5,7 +5,7 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import HelpQA from './pages/HelpQ&A';
 import NotFound from './pages/NotFound';
-import ProtectedRoute from './components/ProtectedRoute';
+import ProtectedRoute from './ProtectedRoute';
 import { Toaster } from 'sonner';
 import Layout from './Layout';
 import Departments from './components/Departments';
@@ -26,12 +26,10 @@ function App() {
 			<Layout>
 				<Routes>
 					<Route path="/" element={<Home />} />
-					
 					<Route
 						path="/dashboard"
 						element={
 							<ProtectedRoute>
-								<Toaster richColors position="bottom-center" />
 								<Dashboard />
 							</ProtectedRoute>
 						}

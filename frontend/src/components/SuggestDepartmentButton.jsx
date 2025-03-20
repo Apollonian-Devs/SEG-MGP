@@ -3,6 +3,7 @@ import api from '../api';
 import { ACCESS_TOKEN } from '../constants';
 import GenericButton from './GenericButton';
 import { playSound } from "../utils/SoundUtils";
+import handleApiError from "../utils/errorHandler.js"
 
 const SuggestDepartmentButton = ({ setSuggestedDepartments, tickets }) => {
 	const fetchSuggestedDepartment = async (ticketId, ticketDescription) => {
@@ -27,15 +28,17 @@ const SuggestDepartmentButton = ({ setSuggestedDepartments, tickets }) => {
 			);
 			return response.data.suggested_department;
 		} catch (error) {
-			console.error(
-				'Error fetching suggested department:',
-				error.response?.data || error.message
-			);
+			// console.error(
+			// 	'Error fetching suggested department:',
+			// 	error.response?.data || error.message
+			// );
+			handleApiError(error, "Error fetching suggested department");
 			return null;
 		}
 	};
 
 	const assignSuggestedDepartments = async () => {
+		if (tickets.length === 0) return;
 		const updatedDepartments = {};
 		for (const ticket of tickets) {
 			const response = await fetchSuggestedDepartment(

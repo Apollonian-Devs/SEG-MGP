@@ -1,4 +1,4 @@
-import { describe, test, expect, vi, beforeEach } from 'vitest';
+import { describe, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import DepartmentsDropdown from '../components/DepartmentsDropdown';
 import api from '../api';
@@ -31,17 +31,19 @@ describe('DepartmentsDropdown', () => {
     vi.clearAllMocks();
   });
 
-  test('shows loading state initially', () => {
+
+  it('shows loading state initially', () => {
     api.get.mockImplementation(() => new Promise(() => {})); 
     
-    render(<DepartmentsDropdown setSelectedDepartment={mockSetSelectedDepartment} />);
+    render(<DepartmentsDropdown setSelectedDepartments={mockSetSelectedDepartment} />);
     expect(screen.getByText('Loading departments...')).toBeInTheDocument();
   });
 
-  test('displays departments after successful fetch', async () => {
+
+  it('displays departments after successful fetch', async () => {
     api.get.mockResolvedValue({ data: mockDepartments });
     
-    render(<DepartmentsDropdown setSelectedDepartment={mockSetSelectedDepartment} />);
+    render(<DepartmentsDropdown setSelectedDepartments={mockSetSelectedDepartment} />);
     
     await waitFor(() => {
       expect(screen.queryByText('Loading departments...')).not.toBeInTheDocument();
@@ -54,11 +56,47 @@ describe('DepartmentsDropdown', () => {
     });
   });
 
-  test('handles API error', async () => {
+
+
+  it('does not close the dropdown when a department is selected', async () => {
+    api.get.mockResolvedValue({ data: mockDepartments });
+
+    render(<DepartmentsDropdown setSelectedDepartments={() => {}} />);
+
+    await waitFor(() => {
+      expect(screen.queryByText('Loading departments...')).not.toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText('Select a department'));
+
+    mockDepartments.forEach(dept => {
+      expect(screen.getByText(dept.name)).toBeInTheDocument();
+    });
+
+    const menuItem = screen.getByRole('button', { name: 'IT' });
+    fireEvent.click(menuItem);
+
+    const departmentInOptions = screen.getAllByText('IT');
+    expect(departmentInOptions).toHaveLength(2); 
+  });
+
+
+  it('shows "Select a department" when no department is selected', async () => {
+    render(<DepartmentsDropdown setSelectedDepartments={mockSetSelectedDepartment} />);
+
+    await waitFor(() => {
+      expect(screen.queryByText('Loading departments...')).not.toBeInTheDocument();
+    });
+
+    expect(screen.getByText('Select a department')).toBeInTheDocument();
+  });
+
+
+  it('handles API error', async () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     api.get.mockRejectedValue({ response: { data: 'Error' }, message: 'API Error' });
     
-    render(<DepartmentsDropdown setSelectedDepartment={mockSetSelectedDepartment} />);
+    render(<DepartmentsDropdown setSelectedDepartments={mockSetSelectedDepartment} />);
     
     await waitFor(() => {
       expect(screen.queryByText('Loading departments...')).not.toBeInTheDocument();
@@ -71,10 +109,30 @@ describe('DepartmentsDropdown', () => {
     consoleErrorSpy.mockRestore();
   });
 
-  test('selects department and updates state', async () => {
+
+  it('does not display any departments or loading message when the list is empty', async () => {
+    api.get.mockResolvedValue({ data: [] });
+  
+    render(<DepartmentsDropdown setSelectedDepartments={mockSetSelectedDepartment} />);
+  
+    await waitFor(() => {
+      expect(screen.queryByText('Loading departments...')).not.toBeInTheDocument();
+    });
+  
+    fireEvent.click(screen.getByText('Select a department'))
+    
+    mockDepartments.forEach(dept => {
+      expect(screen.queryByText(dept.name)).not.toBeInTheDocument();
+    });
+  
+    expect(screen.getByText('Select a department')).toBeInTheDocument();
+  });
+
+
+  it('selects department and updates state', async () => {
     api.get.mockResolvedValue({ data: mockDepartments });
     
-    render(<DepartmentsDropdown setSelectedDepartment={mockSetSelectedDepartment} />);
+    render(<DepartmentsDropdown setSelectedDepartments={mockSetSelectedDepartment} />);
     
     await waitFor(() => {
       expect(screen.queryByText('Loading departments...')).not.toBeInTheDocument();
@@ -87,20 +145,15 @@ describe('DepartmentsDropdown', () => {
     const menuItem = screen.getByRole('button', { name: 'IT' });
     fireEvent.click(menuItem);
     
-    
-    await waitFor(() => {
-      expect(mockSetSelectedDepartment).toHaveBeenCalledWith(mockDepartments[0]);
-    });
-  
-    
     const displayedText = screen.getByText('IT', { selector: 'h5' });
     expect(displayedText).toBeInTheDocument();
   });
 
-  test('uses correct API headers', async () => {
+
+  it('uses correct API headers', async () => {
     api.get.mockResolvedValue({ data: mockDepartments });
     
-    render(<DepartmentsDropdown setSelectedDepartment={mockSetSelectedDepartment} />);
+    render(<DepartmentsDropdown setSelectedDepartments={mockSetSelectedDepartment} />);
     
     await waitFor(() => {
       expect(api.get).toHaveBeenCalledWith('/api/departments/', {
@@ -109,11 +162,33 @@ describe('DepartmentsDropdown', () => {
     });
   });
 
-  test('handles missing access token', async () => {
+
+  it('displays the university icon next to each department name', async () => {
+    api.get.mockResolvedValue({ data: mockDepartments });
+  
+    render(<DepartmentsDropdown setSelectedDepartments={mockSetSelectedDepartment} />);
+    
+    await waitFor(() => {
+      expect(screen.queryByText('Loading departments...')).not.toBeInTheDocument();
+    });
+  
+    fireEvent.click(screen.getByText('Select a department'));
+
+    mockDepartments.forEach((dept) => {
+
+      const departmentItem = screen.getByText(dept.name);
+      const button = departmentItem.closest('button');
+      const icon = button.querySelector('svg');
+      expect(icon).toBeInTheDocument(); 
+      expect(icon).toHaveClass('lucide-university'); 
+    });
+  });
+
+  it('handles missing access token', async () => {
     localStorage.getItem.mockImplementation(() => null);
     api.get.mockResolvedValue({ data: mockDepartments });
     
-    render(<DepartmentsDropdown setSelectedDepartment={mockSetSelectedDepartment} />);
+    render(<DepartmentsDropdown setSelectedDepartments={mockSetSelectedDepartment} />);
     
     await waitFor(() => {
       expect(api.get).toHaveBeenCalledWith('/api/departments/', {

@@ -1,8 +1,9 @@
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from unittest.mock import patch
 from django.contrib.auth.models import User
 from api.models import Ticket, User, Department, Officer, TicketRedirect, TicketMessage, Notification
-from api.serializers import TicketSerializer, UserSerializer, DepartmentSerializer, OfficerSerializer, TicketRedirectSerializer, TicketMessageSerializer, NotificationSerializer, ChangeTicketDateSerializer
+from api.serializers import *
 from django.utils import timezone
 
 class UserSerializerTestCase(TestCase):
@@ -10,7 +11,7 @@ class UserSerializerTestCase(TestCase):
     def test_serialization(self):
 
         user = User.objects.create_user(
-            username='TestUsername',
+            username='@TestUsername',
             first_name='TestFirstName',
             last_name='TestLastName',
             email='TestEmail@example.com',
@@ -35,7 +36,7 @@ class UserSerializerTestCase(TestCase):
         mock_create_user.side_effect = Exception("Database error")
 
         valid_data = {
-            "username": "UniqueUser",  # Must be unique to pass serializer validation
+            "username": "@UniqueUser",  # Must be unique to pass serializer validation
             "first_name": "First",
             "last_name": "Last",
             "email": "unique@example.com",
@@ -53,7 +54,7 @@ class UserSerializerTestCase(TestCase):
     def test_deserialization_valid_data(self):
 
         valid_data = {
-            'username': 'TestUsername',
+            'username': '@TestUsername',
             'first_name': 'TestFirstName',
             'last_name': 'TestLastName',
             'email': 'TestEmail@example.com',
@@ -91,6 +92,49 @@ class UserSerializerTestCase(TestCase):
         self.assertFalse(serializer.is_valid())
 
         self.assertIn('email', serializer.errors)
+        self.assertIn('username', serializer.errors)
+
+    def test_long_username(self):
+        """Test that long usernames are properly handled"""
+        
+        long_username = "a" * 300  
+        user_data = {
+            'username': long_username,
+            'first_name': 'TestFirstName',
+            'last_name': 'TestLastName',
+            'email': 'TestEmail@example.com',
+            'password': 'TestPassword123'
+        }
+        
+        serializer = UserSerializer(data=user_data)
+        self.assertFalse(serializer.is_valid())
+        self.assertIn('username', serializer.errors)
+
+    def test_unique_username_constraint(self):
+        """Test that the username must be unique"""
+        
+        # Create the first user
+        User.objects.create_user(
+            username="TestUsername",
+            first_name="FirstName",
+            last_name="LastName",
+            email="email@example.com",
+            password="Password123"
+        )
+        
+        duplicate_data = {
+            'username': "TestUsername",  # Duplicate username
+            'first_name': 'AnotherFirstName',
+            'last_name': 'AnotherLastName',
+            'email': 'another.email@example.com',
+            'password': 'AnotherPassword123',
+            'is_staff': False,
+            'is_superuser': False,
+        }
+        
+        serializer = UserSerializer(data=duplicate_data)
+        self.assertFalse(serializer.is_valid())
+        self.assertIn('username', serializer.errors)  
 
 
 
@@ -107,7 +151,7 @@ class OfficerSerializerTestCase(TestCase):
         )
         # Create users
         self.userOne = User.objects.create(
-            username="john_doe", 
+            username="@john_doe", 
             email="john.doe@example.com",
             password="testpassword123",
             is_staff=True,
@@ -183,7 +227,7 @@ class TicketSerializerTestCase(TestCase):
     def setUp(self):
         """Create the necessary users to test the TicketSerializer."""
         self.superuser = User.objects.create_user(
-            username="admin",
+            username="@admin",
             email="admin@example.com",
             password="adminpass",
             is_superuser=True,
@@ -191,7 +235,7 @@ class TicketSerializerTestCase(TestCase):
         )
         
         self.student_user = User.objects.create_user(
-            username="student",
+            username="@student",
             email="student@example.com",
             password="studentpass"
         )
@@ -273,6 +317,22 @@ class TicketSerializerTestCase(TestCase):
         # self.assertIn('created_by', serializer.errors)
         self.assertIn('assigned_to', serializer.errors)
 
+    def test_deserialization_missing_required_field(self):
+
+        invalid_data = {
+            'description': 'Description for valid ticket',
+            'assigned_to': self.superuser.id,
+            'status': 'Open',
+            'priority': 'Medium',
+            'is_overdue': False,
+        }
+
+        serializer = TicketSerializer(data=invalid_data)
+
+        self.assertFalse(serializer.is_valid())
+        self.assertIn('subject', serializer.errors)  # "subject" is required but missing
+
+
 class DepartmentSerializerTestCase(TestCase):
     def setUp(self):
         self.department = Department.objects.create(
@@ -316,10 +376,10 @@ class DepartmentSerializerTestCase(TestCase):
 class TicketRedirectSerializerTestCase(TestCase):
     def setUp(self):
         self.user_one = User.objects.create_user(
-            username="john_doe", email="john.doe@example.com", password="password123"
+            username="@john_doe", email="john.doe@example.com", password="password123"
         )
         self.user_two = User.objects.create_user(
-            username="jane_doe", email="jane.doe@example.com", password="password123"
+            username="@jane_doe", email="jane.doe@example.com", password="password123"
         )
         
         self.ticket = Ticket.objects.create(
@@ -378,10 +438,10 @@ class TicketRedirectSerializerTestCase(TestCase):
 class TicketMessageSerializerTestCase(TestCase):
     def setUp(self):
         self.sender_profile = User.objects.create_user(
-            username="john_doe", email="john.doe@example.com", password="password123"
+            username="@john_doe", email="john.doe@example.com", password="password123"
         )
         self.user_two = User.objects.create_user(
-            username="jane_doe", email="jane.doe@example.com", password="password123"
+            username="@jane_doe", email="jane.doe@example.com", password="password123"
         )
         
         self.ticket = Ticket.objects.create(
@@ -443,7 +503,7 @@ class TicketMessageSerializerTestCase(TestCase):
 class NotificationSerializerTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create(
-            username="john_doe", 
+            username="@john_doe", 
             email="john.doe@example.com", 
             password="password123"
         )
@@ -516,3 +576,133 @@ class ChangeTicketDateSerializerTestCase(TestCase):
         created_data = serializer.create(serializer.validated_data)
 
         self.assertEqual(created_data, valid_data, "[ERROR] create() did not return expected validated data")
+
+
+class TicketStatusHistorySerializerTestCase(TestCase):
+
+    def setUp(self):
+        # Create test data
+        self.user = User.objects.create_user(
+            username="testuser",
+            email="testuser@example.com",
+            password="testpassword123",
+            first_name="Test",
+            last_name="User",
+        )
+        self.ticket = Ticket.objects.create(
+            subject="Test Ticket",
+            description="This is a test ticket.",
+            created_by=self.user,
+            status="Open",
+            priority="High",
+            is_overdue=False
+        )
+
+        self.ticket_status_history = TicketStatusHistory.objects.create(
+            ticket=self.ticket,
+            old_status="Open",
+            new_status="In Progress",
+            changed_by_profile=self.user,
+            notes="Status changed to in progress",
+        )
+
+    def test_serialization(self):
+        serializer = TicketStatusHistorySerializer(self.ticket_status_history)
+        self.assertEqual(serializer.data["old_status"], "Open")
+        self.assertEqual(serializer.data["new_status"], "In Progress")
+        self.assertEqual(serializer.data["profile_username"], self.user.username)
+        self.assertEqual(serializer.data["notes"], "Status changed to in progress")
+
+
+class TicketAttachmentSerializerTestCase(TestCase):
+
+    def setUp(self):
+        # Create test data
+
+        self.user = User.objects.create_user(
+            username="testuser",
+            email="testuser@example.com",
+            password="testpassword123",
+            first_name="Test",
+            last_name="User",
+        )
+
+        self.ticket = Ticket.objects.create(
+            subject="Test Ticket",
+            description="Test Description",
+            created_by=self.user,
+            priority="Medium",
+            status="Open",
+        )
+
+        # Create a TicketMessage instance, as the TicketAttachment might depend on this
+        self.ticket_message = TicketMessage.objects.create(
+            sender_profile=self.user,
+            ticket=self.ticket,
+            message_body="Test message",
+        )
+
+        self.ticket_attachment = TicketAttachment.objects.create(
+            message=self.ticket_message,
+            file_name="test_attachment.png",
+            file_path="/attachments/test_attachment.png",
+            mime_type="image/png",
+        )
+
+    def test_serializer(self):
+        serializer = TicketAttachmentSerializer(self.ticket_attachment)
+        self.assertEqual(serializer.data["file_name"], "test_attachment.png")
+        self.assertEqual(serializer.data["file_path"], "/attachments/test_attachment.png")
+        self.assertEqual(serializer.data["mime_type"], "image/png")
+
+    def test_deserialization_invalid_data(self):
+        long_file_name = "a" * 300
+        data = {
+            "file_name": long_file_name,
+            "file_path": "/attachments/invalid_attachment.png",
+            "mime_type": "image/png",
+        }
+        serializer = TicketAttachmentSerializer(data=data)
+        self.assertFalse(serializer.is_valid())
+
+
+
+class TicketPathSerializerTestCase(TestCase):
+
+    def setUp(self):
+        # Create test data
+        self.user_from = User.objects.create_user(
+            username="user_from",
+            email="user_from@example.com",
+            password="password123",
+        )
+        self.user_to = User.objects.create_user(
+            username="user_to",
+            email="user_to@example.com",
+            password="password123",
+        )
+
+        self.student_user = User.objects.create_user(
+            username="student_user",
+            email="user_to@example.com",
+            password="password123",
+        )
+
+        self.ticket = Ticket.objects.create(
+            subject="Test Ticket",
+            description="Test Description",
+            created_by=self.student_user,
+            priority="Medium",
+            status="Open",
+        )
+        self.ticket_redirect = TicketRedirect.objects.create(
+            ticket=self.ticket,
+            from_profile=self.user_from,
+            to_profile=self.user_to,
+        )
+
+    def test_serialization(self):
+        serializer = TicketPathSerializer(self.ticket_redirect)
+        self.assertEqual(serializer.data["from_username"], self.user_from.username)
+        self.assertEqual(serializer.data["to_username"], self.user_to.username)
+

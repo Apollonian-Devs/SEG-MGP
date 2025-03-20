@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import api from "../api";
 import { ACCESS_TOKEN } from "../constants";
 import GenericTable from "./GenericTable";
+import handleApiError from "../utils/errorHandler.js";
 
 const TicketPathButton = ({ ticketId }) => {
     const [pathRecords, setPathRecords] = useState([]);
@@ -19,7 +20,8 @@ const TicketPathButton = ({ ticketId }) => {
 
         setPathRecords(response.data.ticket_path);
       } catch (error) {
-        console.error("Error fetching ticket path:", error.response?.data || error.message);
+        // console.error("Error fetching ticket path:", error.response?.data || error.message);
+        handleApiError(error, "Error fetching ticket path");
       } 
     };
   

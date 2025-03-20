@@ -5,6 +5,8 @@ import api from '../api';
 import GenericForm from './GenericForm';
 import GenericInput from './GenericInput';
 import { Loader } from 'lucide-react';
+import { toast } from 'sonner';
+import handleApiError from "../utils/errorHandler";
 
 const LoginForm = () => {
 	const [username, setUsername] = useState('');
@@ -17,8 +19,6 @@ const LoginForm = () => {
 		e.preventDefault(); // Prevent the default form submission
 		setLoading(true);
 		try {
-			// const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-			// await pause(3000); // Simulate a network delay
 			const response = await api.post('/api/token/', { username, password });
 			localStorage.setItem(ACCESS_TOKEN, response.data.access);
 			localStorage.setItem(REFRESH_TOKEN, response.data.refresh);
@@ -26,11 +26,10 @@ const LoginForm = () => {
 			if (response.status === 200) {
 				navigate('/dashboard');
 				setUsername('');
+				toast.success("Successful Login. Welcome to your homepage.")
 			}
-		} catch (err) {
-			setError(
-				err.response?.data?.message || 'Login failed. Please try again.'
-			);
+		} catch (error) {
+			handleApiError(error, "Login failed. Please try again.");
 		} finally {
 			setPassword('');
 			setLoading(false);
@@ -74,7 +73,6 @@ const LoginForm = () => {
 					placeholder="Enter your password"
 				/>
 
-				{error && <p className="text-red-500">{error}</p>}
 				{isLoading && (
 					<div className="flex w-full items-center justify-center space-x-2">
 						<Loader size={20} className="animate-spin" />

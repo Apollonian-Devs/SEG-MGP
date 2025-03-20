@@ -4,8 +4,10 @@ import GenericButton from './GenericButton';
 import api from '../api';
 import { ACCESS_TOKEN } from '../constants';
 import { University } from 'lucide-react';
+import { toast } from "sonner";
+import handleApiError from "../utils/errorHandler.js";
 
-const DepartmentsDropdown = ({ setSelectedDepartment }) => {
+const DepartmentsDropdown = ({ ticketId, setSelectedDepartments }) => {
 	const [departments, setDepartments] = useState([]);
 	const [selectedDept, setSelectedDeptState] = useState(null);
 	const [loading, setLoading] = useState(true);
@@ -19,10 +21,12 @@ const DepartmentsDropdown = ({ setSelectedDepartment }) => {
 				});
 				setDepartments(response.data);
 			} catch (error) {
-				console.error(
-					'Error fetching departments:',
-					error.response?.data || error.message
-				);
+				// console.error(
+				// 	'Error fetching departments:',
+				// 	error.response?.data || error.message
+				// );
+				// toast.error("Error fetching deparments")
+				handleApiError(error, "Error fetching departments");
 			} finally {
 				setLoading(false);
 			}
@@ -32,7 +36,11 @@ const DepartmentsDropdown = ({ setSelectedDepartment }) => {
 	}, []);
 
 	const handleSelect = (department) => {
-		setSelectedDepartment(department);
+
+		setSelectedDepartments((prev) => ({
+			...prev,
+			[ticketId]: department,
+		}))
 		setSelectedDeptState(department);
 	};
 
@@ -48,7 +56,7 @@ const DepartmentsDropdown = ({ setSelectedDepartment }) => {
 						{selectedDept ? selectedDept.name : 'Select a department'}
 					</h5>
 				}
-				className="flex justify-center items-center w-48 gap-x-1.5 rounded-md bg-white px-2 py-1 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50"
+				className="flex justify-center items-center w-48 gap-x-1.5 rounded-md bg-white px-2 py-1 text-sm font-semibold text-gray-900 ring-1 ring-gray-300 ring-inset hover:bg-gray-50"
 			>
 				<div className="py-1">
 					{departments.map((department) => (

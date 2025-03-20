@@ -9,7 +9,6 @@ import OfficersDropdown from './OfficersDropdown';
 import DepartmentsDropdown from './DepartmentsDropdown';
 import RedirectButton from './RedirectButton';
 import SuggestDepartmentButton from './SuggestDepartmentButton';
-import AcceptButton from './AcceptButton';
 import StatusHistoryButton from './StatusHistoryButton';
 import SuggestTicketGroupingButton from './SuggestTicketGroupingButton';
 import TicketPathButton from './TicketPathButton';
@@ -28,13 +27,14 @@ import {
 } from 'lucide-react';
 import FilterTicketsDropdown from './FilterTicketsDropdown';
 import GenericDropdown from './GenericDropdown';
-
+import TicketDetails from './TicketDetails';
+import { playSound } from '../utils/SoundUtils';
+import { toast } from 'sonner';
 
 const TicketsCard = ({
 	user,
 	officers,
 	admin,
-	openPopup,
 	tickets,
 	setTickets,
 	selectedTicket,
@@ -48,6 +48,7 @@ const TicketsCard = ({
 	const [isChangeDateOpen, setChangeDateOpen] = useState(null);
 	const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 	const [isPathOpen, setIsPathOpen] = useState(false);
+	const [isDetailOpen, setIsDetailOpen] = useState(false);
 	const [selectedDepartments, setSelectedDepartments] = useState({});
 	const [suggestedDepartments, setSuggestedDepartments] = useState({});
 	const [suggestedGrouping, setSuggestedGrouping] = useState({});
@@ -80,24 +81,22 @@ const TicketsCard = ({
 	}, [tickets]);
 
 	const toggleChange = async (type, ticket_id) => {
-		try {
-			const access = localStorage.getItem(ACCESS_TOKEN);
-			const path = type === 'priority' ? 'change-priority' : 'change-status';
-			const response = await api.get(`/api/tickets/${path}/${ticket_id}/`, {
-				headers: { Authorization: `Bearer ${access}` },
-			});
-
-			//needs to be deleted
-			console.log('Response: ', response.data);
-			
-		} catch (error) {
-			console.error(
-				'Error changing status:',
-				error.response?.data || error.message
-			);
-		} finally {
-			fetchTickets();
-		}
+		const access = localStorage.getItem(ACCESS_TOKEN);
+		const path = type === 'priority' ? 'change-priority' : 'change-status';
+		const toggleChangePromise = api.get(`/api/tickets/${path}/${ticket_id}/`, {
+			headers: { Authorization: `Bearer ${access}` },
+		});
+		
+		toast.promise(toggleChangePromise, {
+			loading: 'Changing...',
+			success: async () => {
+				await fetchTickets();
+				return `${type} changed successfully!`;
+			},
+			error: (error) => {
+				return `Error changing ${type}: ${error.response?.data || error.message}`;
+			},
+		});
 	};
 
 	// Sorting Function
@@ -177,6 +176,18 @@ const TicketsCard = ({
 							/>
 						</PopUp>
 
+						<PopUp
+							isOpen={isDetailOpen}
+							onClose={() => {
+								setSelectedTicket(null);
+								setIsDetailOpen(false);
+							}}
+							width="w-fit min-w-[30%] max-w-[60%]"
+							height="h-fit"
+						>
+							<TicketDetails ticket={selectedTicket} />
+						</PopUp>
+
 						{/* Change Due Date Pop-up */}
 						<PopUp
 							isOpen={isChangeDateOpen}
@@ -235,12 +246,13 @@ const TicketsCard = ({
 								setIsOverdue={setIsOverdue}
 								applyFilters={applyFilters}
 								clearFilters={clearFilters}
+								dataTestId="filter-tickets-dropdown"
 							/>
 							{/* AI-powered suggestion dropdown */}
 							{user.is_staff &&
 								(user.is_superuser || user.is_department_head) && (
 									<GenericDropdown
-										className="inline-flex items-center justify-center gap-2 text-white hover:bg-customOrange-light transition-colors duration-500 bg-customOrange-dark rounded-md px-3 py-1"
+										className="inline-flex items-center justify-center gap-2 text-white hover:bg-customOrange-light transition-colors duration-500 bg-customOrange-dark rounded-md px-3 py-1 h-10"
 										showArrow={false}
 										buttonName={
 											<div className="flex items-center gap-2">
@@ -334,7 +346,7 @@ const TicketsCard = ({
 										className={`px-6 py-4 whitespace-nowrap text-sm text-gray-800 ${key === 'subject' ? 'max-w-52 truncate' : ''}`}
 										onClick={() => {
 											setSelectedTicket(ticket);
-											openPopup('viewTicket');
+											setIsDetailOpen(true);
 										}}
 									>
 										{key === 'status' ? (
@@ -357,7 +369,7 @@ const TicketsCard = ({
 												{ticket[key] || 'Not Set'}
 											</div>
 										) : (
-											ticket[key] || (key === 'priority' ? 'Not Set' : '')
+											ticket[key]
 										)}
 									</td>
 								))}
@@ -404,6 +416,7 @@ const TicketsCard = ({
 												}
 												className="flex items-center justify-center px-1 py-1 gap-1"
 												showArrow={false}
+												dataTestId="more-actions-dropdown"
 											>
 												<div className="flex flex-col space-y-2 p-2">
 													{/* Change Due Date */}
@@ -465,12 +478,8 @@ const TicketsCard = ({
 											<div className="flex items-center gap-2">
 												{user.is_superuser ? (
 													<DepartmentsDropdown
-														setSelectedDepartment={(dept) =>
-															setSelectedDepartments((prev) => ({
-																...prev,
-																[ticket.id]: dept,
-															}))
-														}
+														ticketId={ticket.id}
+														setSelectedDepartments={setSelectedDepartments}
 													/>
 												) : (
 													<OfficersDropdown
@@ -502,12 +511,10 @@ const TicketsCard = ({
 													<RedirectButton
 														ticketid={ticket.id}
 														selectedOfficer={selectedOfficers[ticket.id]}
-														departmentId={
-															user.is_superuser
-																? suggestedDepartments[ticket.id]?.id
-																: null
-														}
+														departmentId={suggestedDepartments[ticket.id]?.id}
 														fetchTickets={fetchTickets}
+														setShowingTickets={setShowingTickets}
+														dataTestId="suggested-redirect-button"
 													/>
 												</div>
 											</td>
@@ -520,9 +527,7 @@ const TicketsCard = ({
 										{/* Suggested Grouping & Accept the grouping Column */}
 										<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
 											<div className="flex item-center gap-2">
-												{suggestedGrouping[ticket.id] !== undefined
-													? suggestedGrouping[ticket.id]
-													: 'No suggestion'}
+												{suggestedGrouping[ticket.id] || 'No suggestion'}
 											</div>
 										</td>
 									</>

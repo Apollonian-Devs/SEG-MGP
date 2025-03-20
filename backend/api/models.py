@@ -24,6 +24,7 @@ def get_default_superuser():
     return User.objects.filter(is_superuser=True).first()
 
 
+
 class Department(models.Model):
     name = models.CharField(max_length=50, unique=True)
     description = models.CharField(max_length=255, null=True, blank=True)
@@ -148,7 +149,7 @@ class TicketRedirect(models.Model):
 class TicketAttachment(models.Model):
     message = models.ForeignKey(TicketMessage, on_delete=models.CASCADE)
     file_name = models.CharField(max_length=255)
-    file_path = models.CharField(max_length=255)  # or FileField
+    file_path = models.CharField(max_length=255)  
     mime_type = models.CharField(max_length=100)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 

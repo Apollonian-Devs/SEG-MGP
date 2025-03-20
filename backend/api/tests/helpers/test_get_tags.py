@@ -49,7 +49,7 @@ class GetTagsTests(TestCase):
             created_by=self.student_user, assigned_to=self.admin_user
         )
 
-        mock_ai.return_value = ([0, 1], [0.95, 0.85])  # Assign cluster 0 and 1 with high confidence
+        mock_ai.return_value = ([0, 1], [0.95, 0.85]) 
 
         result = get_tags(self.admin_user)
 

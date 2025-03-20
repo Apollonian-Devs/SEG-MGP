@@ -127,6 +127,7 @@ class UserTicketsView(views.APIView):
             return Response({"error": "An error has occurred"}, status=500)
 
 
+
 class TicketSendResponseView(views.APIView):
     permission_classes = [IsAuthenticated]
 
@@ -170,10 +171,6 @@ class TicketSendResponseView(views.APIView):
         else:
             print(" Serializer errors:", serializer.errors)
             return Response(serializer.errors, status=400)
-
-
-
-
 
 
 class TicketMessageHistory(views.APIView):

@@ -332,7 +332,7 @@ def get_tickets_for_user(user):
     """
 
 
-    if user.is_superuser or user.is_staff:
+    if user.is_staff:
         tickets = Ticket.objects.filter(assigned_to=user)
     else:
         tickets = Ticket.objects.filter(created_by=user) 
@@ -507,6 +507,7 @@ def get_department_head(department_id):
         return officer.user if officer else None
     except Officer.DoesNotExist:
         return None
+
 
 def is_chief_officer(user):
     """

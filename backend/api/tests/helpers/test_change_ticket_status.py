@@ -45,7 +45,7 @@ class ChangeTicketStatusTests(TestCase):
 
         changeTicketStatus(self.ticket, self.officer)
         self.ticket.refresh_from_db()
-        self.assertEqual(self.ticket.status, "Open")  # Circular queue behavior
+        self.assertEqual(self.ticket.status, "Open")  
 
     def test_ticket_status_history_is_logged(self):
         """Test that a history record is created when status changes."""

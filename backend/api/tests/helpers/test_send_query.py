@@ -66,7 +66,7 @@ class TestSendQuery(TestCase):
         """
         Test that a superuser cannot create a ticket.
         """
-        admin_user = User.objects.create_user(username="admin", email="admin@example.com", password="password", is_superuser=True)
+        admin_user = User.objects.create_superuser(username="admin", email="admin@example.com", password="password")
         with self.assertRaises(PermissionDenied):
             send_query(admin_user, self.subject, self.description, self.message_body, self.attachments)
 

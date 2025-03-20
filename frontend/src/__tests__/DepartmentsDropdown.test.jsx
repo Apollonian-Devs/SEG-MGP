@@ -3,6 +3,7 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import DepartmentsDropdown from '../components/DepartmentsDropdown';
 import api from '../api';
 import { ACCESS_TOKEN } from '../constants';
+import { toast } from 'sonner';
 
 
 vi.mock('../api');
@@ -31,6 +32,12 @@ describe('DepartmentsDropdown', () => {
     vi.clearAllMocks();
   });
 
+  vi.mock('sonner', () => ({
+          toast: {
+              error: vi.fn(),
+              success: vi.fn()
+          },
+      }));
 
   it('shows loading state initially', () => {
     api.get.mockImplementation(() => new Promise(() => {})); 
@@ -93,7 +100,6 @@ describe('DepartmentsDropdown', () => {
 
 
   it('handles API error', async () => {
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     api.get.mockRejectedValue({ response: { data: 'Error' }, message: 'API Error' });
     
     render(<DepartmentsDropdown setSelectedDepartments={mockSetSelectedDepartment} />);
@@ -101,12 +107,8 @@ describe('DepartmentsDropdown', () => {
     await waitFor(() => {
       expect(screen.queryByText('Loading departments...')).not.toBeInTheDocument();
     });
-    
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      'Error fetching departments:',
-      'Error'
-    );
-    consoleErrorSpy.mockRestore();
+
+    expect(toast.error).toHaveBeenCalledWith("❌ Error fetching departments")
   });
 
 

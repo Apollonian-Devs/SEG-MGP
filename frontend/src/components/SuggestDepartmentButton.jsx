@@ -28,10 +28,6 @@ const SuggestDepartmentButton = ({ setSuggestedDepartments, tickets }) => {
 			);
 			return response.data.suggested_department;
 		} catch (error) {
-			// console.error(
-			// 	'Error fetching suggested department:',
-			// 	error.response?.data || error.message
-			// );
 			handleApiError(error, "Error fetching suggested department");
 			return null;
 		}

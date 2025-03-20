@@ -20,7 +20,6 @@ const StatusHistoryButton = ({ ticketId }) => {
 
         setStatusRecords(response.data.status_history);
       } catch (error) {
-        // console.error("Error fetching status history:", error.response?.data || error.message);
         handleApiError(error, "Error fetching status history");
       } 
     };

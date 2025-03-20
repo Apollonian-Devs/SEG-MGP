@@ -21,11 +21,6 @@ const DepartmentsDropdown = ({ ticketId, setSelectedDepartments }) => {
 				});
 				setDepartments(response.data);
 			} catch (error) {
-				// console.error(
-				// 	'Error fetching departments:',
-				// 	error.response?.data || error.message
-				// );
-				// toast.error("Error fetching deparments")
 				handleApiError(error, "Error fetching departments");
 			} finally {
 				setLoading(false);

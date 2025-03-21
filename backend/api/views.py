@@ -262,38 +262,51 @@ class TicketRedirectView(views.APIView):
     def post(self, request):
         request.data['from_profile'] = request.user.id
 
+        if not self.handle_department_head(request):
+            return Response({"error": "No department head found for this department"}, status=400)
+        
+        response = self.redirect_ticket(request)
+        
+        return response
+        
+    def handle_department_head(self, request):
+        """
+        Handle logic for assigning the department head if the user is a superuser
+        and a valid department_id is provided.
+        """
         department_id = request.data.get('department_id')
         if department_id and request.user.is_superuser:
             department_head = get_department_head(department_id)
             if department_head:
                 request.data['to_profile'] = department_head.id
-            else:
-                return Response({"error": "No department head found for this department"}, status=400)
-
-
-
+                return True
+        return False
+    
+    def redirect_ticket(self, request):
+        """
+        Handles the ticket redirection process, including validating data and redirecting the ticket.
+        """
         serializer = TicketRedirectSerializer(data=request.data)
-        
+
         if serializer.is_valid():
             try:
                 ticket_id = serializer.validated_data['ticket'].id
                 from_user_id = serializer.validated_data['from_profile'].id
                 to_user_id = serializer.validated_data['to_profile'].id
-                ticket = Ticket.objects.get(id=ticket_id)  
-                from_user = User.objects.get(id=from_user_id)  
-                to_user = User.objects.get(id=to_user_id)  
 
+                # Fetch users and ticket
+                ticket = Ticket.objects.get(id=ticket_id)
+                from_user = User.objects.get(id=from_user_id)
+                to_user = User.objects.get(id=to_user_id)
 
+                # Redirect the ticket
                 updated_ticket = redirect_query(ticket, from_user, to_user)
-                serializer = TicketSerializer(updated_ticket)
+                ticket_serializer = TicketSerializer(updated_ticket)
 
-                return Response(
-                    {"ticket": serializer.data},
-                    status=201
-                )
+                return Response({"ticket": ticket_serializer.data}, status=201)
             except Exception as e:
-                print(f"error occured: {e}")
-                return Response({"error": "an error has occured"}, status=500)
+                print(f"error occurred: {e}")
+                return Response({"error": "An error has occurred"}, status=500)
         else:
             print(f"Serializer errors: ", serializer.errors)
             return Response(serializer.errors, status=400)

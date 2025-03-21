@@ -139,20 +139,13 @@ def send_response(sender_profile, ticket, message_body, is_internal=False, attac
 
     # Create a Notification for the other party.
     if sender_profile.is_staff:
-
-        Notification.objects.create(
-            user_profile=ticket.created_by,
-            ticket=ticket,
-            message=f"Staff responded to Ticket #{ticket.id}"
-        )
+        message= f"Staff responded to Ticket #{ticket.id}"
+        create_notification(ticket.created_by, ticket, message)
         send_email(ticket.created_by, "Message Recieved", f"Staff replied on Ticket #{ticket.id}")
     else:
         if ticket.assigned_to is not None:
-            Notification.objects.create(
-                user_profile=ticket.assigned_to,
-                ticket=ticket,
-                message=f"Student replied on Ticket #{ticket.id}"
-            )
+            message=f"Student replied on Ticket #{ticket.id}"
+            create_notification(ticket.assigned_to, ticket, message)
             send_email(ticket.assigned_to, "Message Recieved", f"Student replied on Ticket #{ticket.id}")
 
     return new_msg
@@ -197,14 +190,9 @@ def redirect_query(ticket, from_user, to_user):
         to_profile=to_user,
     )
 
-
     msg=f"Ticket #{ticket.id} has been redirected to you by {from_user.username}."
 
-    Notification.objects.create(
-        user_profile=to_user,
-        ticket=ticket,
-        message=msg,
-    )
+    create_notification(to_user, ticket, msg)
 
     send_email(to_user, 'Redirection of ticket', msg)
 
@@ -277,6 +265,12 @@ def get_ticket_path(admin_user, ticket):
     return path
 
 
+def create_notification(to_user, ticket, msg):
+    Notification.objects.create(
+    user_profile=to_user,
+    ticket=ticket,
+    message=msg,
+    )
     
 
 def get_notifications(user, limit=10):
@@ -470,18 +464,12 @@ def changeTicketDueDate(ticket, user, new_due_date):
                 f"Due date has been set/updated to {new_due_date.strftime('%Y-%m-%d %H:%M:%S')} "
                 f"by {user.username}."
             )
-        
-        Notification.objects.create(
-            user_profile=ticket.created_by,
-            ticket=ticket,
-            message=msg,
-        )
 
+        create_notification(ticket.created_by, ticket, msg)
         send_email(ticket.created_by, 'Your due date of the ticket', (msg),)
 
         return ticket
     
-
     else:
         raise PermissionDenied("Only officers or admins can change ticket due date.")
 
@@ -576,4 +564,5 @@ def get_tags(user):
 
     print(f"✅ DEBUG: Successfully assigned clusters: {ticket_cluster_map}")
     return ticket_cluster_map
+
 

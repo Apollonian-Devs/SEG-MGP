@@ -191,6 +191,55 @@ describe('GenericDropdown Component', () => {
       // Check that minWidth is set to 'auto'
       expect(dropdownMenu).toHaveStyle('min-width: auto');
     });
+
+    it('calculates dropdown position correctly and sets menuPositionAbove and menuPositionRight', () => {
+       
+      const buttonGetBoundingClientRect = vi.spyOn(HTMLDivElement.prototype, 'getBoundingClientRect')
+        .mockImplementationOnce(() => ({
+          top: 100,
+          right: 200,
+          bottom: 200, // Button's bottom position (button is positioned near the top)
+          left: 100,
+          width: 150,
+          height: 40,
+        }));
+      
+      // Create a spy for getBoundingClientRect for dropdown menu (the menu element)
+      const menuGetBoundingClientRect = vi.spyOn(HTMLDivElement.prototype, 'getBoundingClientRect')
+        .mockImplementationOnce(() => ({
+          top: 300, 
+          right: 150,
+          bottom: 100, // Increase the height of the dropdown menu so that the space below the button is insufficient
+          left: 100,
+          width: 150,
+          height: 200, // Height of the dropdown menu (menu is too tall to fit below)
+        }));
+  
+      render(
+        <GenericDropdown buttonName="Select TestButton" maxHeight="100">
+          <div>Option 1</div>
+          <div>Option 2</div>
+          <div>Option 3</div>
+        </GenericDropdown>
+      );
+  
+      // Simulate opening the dropdown
+      fireEvent.click(screen.getByText('Select TestButton'));
+  
+      // Assert that the dropdown menu is rendered
+      expect(screen.getByText('Option 1')).toBeInTheDocument();
+  
+      // Check if the dropdown menu has a max-height of 100px (set in the test)
+      const dropdownMenu = screen.getByRole('menu');
+      expect(dropdownMenu).toHaveStyle('max-height: 100px');
+  
+      // Assert if the dropdown menu is positioned above (bottom-full class)
+      expect(dropdownMenu).toHaveClass('bottom-full'); // The `bottom-full` class should be applied if there's limited space below
+  
+      // Clean up after the test
+      buttonGetBoundingClientRect.mockRestore();
+      menuGetBoundingClientRect.mockRestore();
+    });
   
 
 });

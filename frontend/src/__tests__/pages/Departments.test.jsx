@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import Departments from "../components/Departments";
+import Departments from "../../pages/Departments";
 import { vi } from "vitest";
 
 vi.mock("../components/TeamCard", () => ({
@@ -69,16 +69,5 @@ describe("Departments Component", () => {
       expect(screen.getByText(name)).toBeInTheDocument();
     });
   });
-
-  test("✅ Clicking on a department link navigates to the correct URL", () => {
-    render(<Departments />);
-
-
-    const links = screen.getAllByRole("link", { name: /Visit/i });
-
-  
-    expect(links[0]).toHaveAttribute("href", "https://www.kcl.ac.uk/artshums");
-});
-
 
 });

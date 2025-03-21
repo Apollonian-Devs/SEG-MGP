@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import TeamCard from "./TeamCard";
-import GenericButton from "./GenericButton";
+import TeamCard from "../components/TeamCard";
+import GenericButton from "../components/GenericButton";
 import KCLImage from "../assets/kclFaculty.png";
 
 const Departments = () => {

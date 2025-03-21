@@ -104,7 +104,7 @@ $ python3 manage.py runserver
 > python manage.py runserver
 ```
 
-## Running tests for backend
+### Running tests for backend
 You can run all backend tests with the command:
 ```
 $ python3 manage.py test

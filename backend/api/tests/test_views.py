@@ -1294,7 +1294,8 @@ class TestTicketPathView(TestCase):
             "password": "testpass",
             "first_name": "first",
             "last_name": "last",
-            "is_staff": "true"
+            "is_staff": "true",
+            "is_superuser": "true",
         }
 
         self.client.post(reverse("register"), test_user)
@@ -1302,7 +1303,7 @@ class TestTicketPathView(TestCase):
         response = self.client.post(reverse("get_token"), 
                                     {"username": "@testStaff", 
                                      "password": "testpass"})
-
+        
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {response.json()["access"]}') 
 
 

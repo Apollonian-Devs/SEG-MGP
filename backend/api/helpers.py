@@ -139,7 +139,7 @@ def send_response(sender_profile, ticket, message_body, is_internal=False, attac
 
     # Create a Notification for the other party.
     if sender_profile.is_staff:
-        msg= f"Staff responded to Ticket #{ticket.id}"
+        message= f"Staff responded to Ticket #{ticket.id}"
         create_notification(ticket.created_by, ticket, message)
         send_email(ticket.created_by, "Message Recieved", f"Staff replied on Ticket #{ticket.id}")
     else:

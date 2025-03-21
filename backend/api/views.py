@@ -262,25 +262,18 @@ class TicketRedirectView(views.APIView):
     def post(self, request):
         request.data['from_profile'] = request.user.id
 
-        if not self.handle_department_head(request):
-            return Response({"error": "No department head found for this department"}, status=400)
-        
-        response = self.redirect_ticket(request)
-        
-        return response
-        
-    def handle_department_head(self, request):
-        """
-        Handle logic for assigning the department head if the user is a superuser
-        and a valid department_id is provided.
-        """
         department_id = request.data.get('department_id')
         if department_id and request.user.is_superuser:
             department_head = get_department_head(department_id)
             if department_head:
                 request.data['to_profile'] = department_head.id
-                return True
-        return False
+            else:
+                return Response({"error": "No department head found for this department"}, status=400)
+
+        
+        response = self.redirect_ticket(request)
+        
+        return response
     
     def redirect_ticket(self, request):
         """

@@ -504,7 +504,7 @@ const TicketsCard = ({
 										{/* Suggested Departments & Accept Button Column (Only for Superusers) */}
 										{user.is_superuser && (
 											<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-												<div className="flex items-center gap-2">
+												<div className="flex items-center justify-between gap-2">
 													{suggestedDepartments[ticket.id]?.name ||
 														'No suggestion'}
 													<RedirectButton

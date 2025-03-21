@@ -145,35 +145,39 @@ class TicketSendResponseView(views.APIView):
         print("Processed data before validation:", data)  # Debugging output
 
         serializer = TicketMessageSerializer(data=data)
-        if serializer.is_valid():
-            try:
-                comment = send_response(
-                    sender_profile=serializer.validated_data["sender_profile"],
-                    ticket=serializer.validated_data["ticket"],
-                    message_body=serializer.validated_data["message_body"],
-                )
-
-                for attachment in data["attachments"]:
-
-                        TicketAttachment.objects.create(
-                            message=comment,
-                            file_name=attachment["file_name"],
-                            file_path=attachment["file_path"],
-                            mime_type=attachment["mime_type"]
-                        )
-
-                serializer = TicketMessageSerializer(comment)
-                return Response(serializer.data, status=201)
-
-            except ValidationError as e:
-                return Response({"error": str(e)}, status=404)
-            except ValueError as e:
-                return Response({"error": str(e)}, status=400)
-            except Exception:
-                return Response({"error": "An error has occurred"}, status=500)
-        else:
+        
+        if not serializer.is_valid():
             print(" Serializer errors:", serializer.errors)
             return Response(serializer.errors, status=400)
+        
+        try:
+            comment = send_response(
+                sender_profile=serializer.validated_data["sender_profile"],
+                ticket=serializer.validated_data["ticket"],
+                message_body=serializer.validated_data["message_body"],
+            )
+
+            self.handle_attachments(comment, data["attachments"])
+
+            return Response(TicketMessageSerializer(comment).data, status=201)
+
+        except ValidationError as e:
+            return Response({"error": str(e)}, status=404)
+        except ValueError as e:
+            return Response({"error": str(e)}, status=400)
+        except Exception:
+            return Response({"error": "An error has occurred"}, status=500)
+    
+    def handle_attachments(self, comment, attachments):
+        """Helper method to handle file attachments."""
+        for attachment in attachments:
+            TicketAttachment.objects.create(
+                message=comment,
+                file_name=attachment["file_name"],
+                file_path=attachment["file_path"],
+                mime_type=attachment.get("mime_type", "application/octet-stream")
+            )
+            
 
 
 class TicketMessageHistory(views.APIView):

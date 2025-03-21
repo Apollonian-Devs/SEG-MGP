@@ -65,7 +65,7 @@ npm run dev
 
 Note: Although mostly the same at each step, the first set of commands at each step are for Linux and MacOS users while the second set of commands at each step are for Windows users.
 
-First set up and activate a virtual environment:
+First set up and activate a virtual environment in the root directory of the project:
 ```
 $ virtualenv venv
 $ source venv/bin/activate
@@ -74,7 +74,8 @@ $ source venv/bin/activate
 > python -m venv venv
 > venv/Scripts/activate
 ```
-Next install all the required packages:
+Ensure you are in the backend directory for the following instructions.
+Install all the required packages:
 ```
 $ pip3 install -r requirements.txt
 ```

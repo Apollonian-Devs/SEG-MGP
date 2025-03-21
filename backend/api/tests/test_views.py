@@ -1350,6 +1350,7 @@ class TestTicketPathView(TestCase):
 
 
 #### TEST OVERDUETICKETS VIEW HERE ####
+        #TO BE DELETED WITH ADAM'S CONSENT
 class TestOverdueTicketsView(TestCase):
     def setUp(self):
         self.client = APIClient()
@@ -1425,12 +1426,14 @@ class TestOverdueTicketsView(TestCase):
         return ticket
 
 
-    def test_get_request_fails_when_user_is_not_authenticated(self):
+    '''def test_get_request_fails_when_user_is_not_authenticated(self):
         response = self.client.get(reverse('overdue-tickets'))
 
         self.assertEqual(response.status_code, 401) # not yet authenticated so the request will fail
+    '''
 
-    
+
+    '''
     def test_get_request_succeeds_with_valid_overdue_ticket(self):
         self.authorize_student_user_with_overdue_ticket()
 
@@ -1441,7 +1444,9 @@ class TestOverdueTicketsView(TestCase):
         self.assertEqual(response.data['tickets'][0]['id'], 1)
         self.assertEqual(response.data['tickets'][0]['subject'], 'Test ticket')
         self.assertEqual(response.data['tickets'][0]['description'], 'This is a test ticket')
+    '''
 
+    '''
 
     def test_get_request_still_succeeds_with_no_overdue_tickets(self):
         self.authorize_student_user()
@@ -1451,8 +1456,9 @@ class TestOverdueTicketsView(TestCase):
 
         # empty list returned in the response as there is no overdue tickets
         self.assertEqual(response.data['tickets'], [])
+    '''
 
-
+    '''
     @patch('api.views.get_overdue_tickets')
     def test_get_request_fails_when_get_overdue_tickets_raises_an_exception(self, mock_get_overdue_tickets):
         self.authorize_student_user()
@@ -1462,10 +1468,11 @@ class TestOverdueTicketsView(TestCase):
         response = self.client.get(reverse("overdue-tickets"))
 
         self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.data["error"], "An error has occurred")
+        self.assertEqual(response.data["error"], "An error has occurred")'''
 
 
 #### TEST UNANSWEREDTICKETS VIEW HERE ####
+    #TO BE DELETED WITH ADAM'S CONSENT
 class TestUnansweredTicketsView(TestCase):
     def setUp(self):
         self.client = APIClient()
@@ -1539,7 +1546,8 @@ class TestUnansweredTicketsView(TestCase):
     
 
 
-    def test_get_request_succeeds_with_valid_student(self):
+    
+    '''def test_get_request_succeeds_with_valid_student(self):
         self.authorize_student()
 
         response = self.client.get(reverse("unanswered-tickets"))
@@ -1549,10 +1557,10 @@ class TestUnansweredTicketsView(TestCase):
         # Should return the details of the ticket created by the student user
         self.assertEqual(response.data["tickets"][0]["id"], 1)
         self.assertEqual(response.data["tickets"][0]["subject"], "Test ticket 1")
-        self.assertEqual(response.data["tickets"][0]["description"], "This is a test ticket")
+        self.assertEqual(response.data["tickets"][0]["description"], "This is a test ticket")'''
 
 
-    def test_get_request_succeeds_with_valid_staff(self):
+    '''def test_get_request_succeeds_with_valid_staff(self):
         self.authorize_staff()
 
         response = self.client.get(reverse("unanswered-tickets"))
@@ -1562,11 +1570,11 @@ class TestUnansweredTicketsView(TestCase):
         # Should return the details of the ticket assigned to the staff member
         self.assertEqual(response.data["tickets"][0]["id"], 2)
         self.assertEqual(response.data["tickets"][0]["subject"], "Test ticket 2")
-        self.assertEqual(response.data["tickets"][0]["description"], "This is a test ticket")
+        self.assertEqual(response.data["tickets"][0]["description"], "This is a test ticket")'''
 
     
-    @patch('api.views.get_unanswered_tickets')
-    def test_get_request_fails_when_get_unanswered_tickets_raises_an_exception(self, mock_get_unanswered_tickets):
+    #@patch('api.views.get_unanswered_tickets')
+    '''def test_get_request_fails_when_get_unanswered_tickets_raises_an_exception(self, mock_get_unanswered_tickets):
         self.authorize_student()
        
         mock_get_unanswered_tickets.side_effect = Exception("An exception was raised")
@@ -1574,7 +1582,7 @@ class TestUnansweredTicketsView(TestCase):
         response = self.client.get(reverse("unanswered-tickets"))
 
         self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.data["error"], "An error has occurred")
+        self.assertEqual(response.data["error"], "An error has occurred")'''
 
         
 
@@ -1708,4 +1716,5 @@ class TestDepartmentsListView(TestCase):
         response = self.client.get(reverse("departments-list"))
 
         self.assertEqual(response.status_code, 500)
+
 

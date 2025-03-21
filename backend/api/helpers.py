@@ -12,18 +12,6 @@ import yagmail
 
 
 
-STATUS_CHOICES = [
-        ("Open", "Open"),
-        ("In Progress", "In Progress"),
-        ("Awaiting Student", "Awaiting Student"),
-        ("Closed", "Closed"),
-    ]
-    
-PRIORITY_CHOICES = [
-    ("Low", "Low"),
-    ("Medium", "Medium"),
-    ("High", "High"),
-]
 
 
 STATUS_OPEN = STATUS_CHOICES[0][0]  
@@ -38,7 +26,7 @@ def send_query(student_user, subject, description, message_body, attachments=Non
     Creates a new ticket for 'student' user.
     Also creates an initial TicketMessage and handles file attachments.
     """
-    
+
     if student_user is None or student_user.is_staff:
         raise PermissionDenied("Only student users can create tickets.")
 
@@ -192,11 +180,12 @@ def redirect_query(ticket, from_user, to_user):
     admins can redirect across departments.
     """
 
-    if ticket.status == STATUS_CLOSED:
-        raise ValidationError("Redirection failed: Closed tickets cannot be redirected.")
-    
     if ticket is None:
         raise ValidationError("Invalid ticket provided.")
+
+    if ticket.status == STATUS_CLOSED:
+        raise ValidationError("Redirection failed: Closed tickets cannot be redirected.")
+
     
     validate_redirection(from_user, to_user)
 
@@ -500,7 +489,6 @@ def changeTicketDueDate(ticket, user, new_due_date):
         raise PermissionDenied("Only officers or admins can change ticket due date.")
 
 
-
 def get_department_head(department_id):
     try:
         officer = Officer.objects.filter(department_id=department_id, is_department_head=True).first()
@@ -591,3 +579,4 @@ def get_tags(user):
 
     print(f"✅ DEBUG: Successfully assigned clusters: {ticket_cluster_map}")
     return ticket_cluster_map
+

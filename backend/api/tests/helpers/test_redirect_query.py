@@ -115,4 +115,10 @@ class TestRedirectQuery(TestCase):
         
         with self.assertRaises(PermissionDenied):
             redirect_query(self.ticket, self.staff_user, None)
+            
+    def test_redirection_fails_with_none_ticket(self):
+        with self.assertRaises(ValidationError):
+            redirect_query(None, self.staff_user,self.staff_user2)
+            
+
 

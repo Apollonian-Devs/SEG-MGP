@@ -12,8 +12,7 @@ urlpatterns = [
     path("tickets/<int:ticket_id>/messages/post/", views.TicketSendResponseView.as_view(), name="send-ticket"),
     path("all-officers/", views.AllOfficersView.as_view(), name="all-officers"),
     path("user-notifications/", views.UserNotificationsView.as_view(), name="user-notifications"),
-    path("overdue-tickets/", views.OverdueTicketsView.as_view(), name="overdue-tickets"),  
-    #path("unanswered-tickets/", views.UnansweredTicketsView.as_view(), name="unanswered-tickets"), 
+    #path("overdue-tickets/", views.OverdueTicketsView.as_view(), name="overdue-tickets"),  
     path("tickets/change-date", views.ChangeTicketDateView.as_view(), name="change-ticket-date"), 
     path("ticket-status-history/<int:ticket_id>/", views.TicketStatusHistoryView.as_view(), name="ticket-status-history"),
      path("ticket-path/<int:ticket_id>/", views.TicketPathView.as_view(), name="ticket-path"),    
@@ -23,5 +22,6 @@ urlpatterns = [
     path("suggested-department/", views.SuggestDepartmentView.as_view(), name= "suggest-deparment")
 
 ]
+
 
 

@@ -57,3 +57,22 @@ class ChangeTicketStatusTests(TestCase):
         self.assertEqual(history_entry.old_status, old_status)  # Old status should be correct
         self.assertEqual(history_entry.new_status, self.ticket.status)  # New status should match updated ticket status
         self.assertIn(f"Status changed from {old_status} to {self.ticket.status}", history_entry.notes)
+
+    def test_change_ticket_status_from_none_unsaved(self):
+        # Use existing officer user
+        officer = self.officer
+
+    
+        ticket = Ticket(
+            subject="Unsaved Ticket",
+            description="Testing default status fallback",
+            created_by=self.student,
+            assigned_to=officer
+        )
+        ticket.status = None 
+
+        changeTicketStatus(ticket, officer)
+
+        self.assertEqual(ticket.status, "Open")
+
+

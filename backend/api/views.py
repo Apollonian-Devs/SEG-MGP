@@ -122,7 +122,9 @@ class UserTicketsView(views.APIView):
     def get(self, request):
         try:
             user = request.user
-            tickets = get_tickets_for_user(user)  # Call helper function
+
+            get_overdue_tickets(user)
+            tickets = get_tickets_for_user(user)
             return Response({"tickets": tickets})
         except Exception:
             return Response({"error": "An error has occurred"}, status=500)
@@ -316,7 +318,7 @@ class TicketPathView(views.APIView):
             return Response({"error": "An error has occurred"}, status=500)
 
 
-class OverdueTicketsView(views.APIView):
+'''class OverdueTicketsView(views.APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -326,22 +328,10 @@ class OverdueTicketsView(views.APIView):
             serializer = TicketSerializer(overdue_tickets, many=True)  
             return Response({"tickets": serializer.data})  
         except Exception:
-            return Response({"error": "An error has occurred"}, status=500)        
+            return Response({"error": "An error has occurred"}, status=500)'''      
     
 
-'''
-class UnansweredTicketsView(views.APIView):
-    permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        try:
-            user = request.user
-            unanswered_tickets = get_unanswered_tickets(user) 
-            serializer = TicketSerializer(unanswered_tickets, many=True)  
-            return Response({"tickets": serializer.data})  
-        except Exception:
-            return Response({"error": "An error has occurred"}, status=500)        
-'''
 
 class ChangeTicketDateView(views.APIView):
     permission_classes = [IsAuthenticated]
@@ -421,3 +411,4 @@ class GroupTicketsView(views.APIView):
         except Exception as e:
             print(f"❌ API Exception: {e}")
             return Response({"error": f"An error has occurred: {str(e)}"}, status=500)
+

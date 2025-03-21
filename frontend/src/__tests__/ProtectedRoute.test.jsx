@@ -65,7 +65,7 @@ describe('ProtectedRoute Component', () => {
 	it('renders protected content when the token is valid', async () => {
 		renderWithRouter(true);
 		await waitFor(() =>
-			expect(screen.getByTestId('protected-content')).toBeInTheDocument()
+			expect(screen.getByTestId(/protected-content/i)).toBeInTheDocument()
 		);
 	});
 

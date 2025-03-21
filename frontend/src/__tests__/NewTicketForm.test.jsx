@@ -174,7 +174,8 @@ describe('NewTicketForm Component', () => {
 		await act(async ()   => {		
 			const toastCallArgs = toast.promise.mock.calls[0];
 			const toastOptions = toastCallArgs[1];
-			expect(await toastOptions.error()).toMatch(/an unknown error occurred/i);
+			expect(await toastOptions.error()).toMatch(/error submitting ticket/i);
+
 
 			})
 

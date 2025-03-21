@@ -5,12 +5,13 @@ import api from "../api";  // The module your Chat component uses
 import { ACCESS_TOKEN } from "../constants";
 import { vi } from "vitest";
 
+HTMLMediaElement.prototype.play = () => Promise.resolve();
 
 vi.mock("../api");
 
 describe("Chat", () => {
   beforeEach(() => {
-
+    vi.restoreAllMocks(); 
     localStorage.setItem(ACCESS_TOKEN, "token");
   });
 

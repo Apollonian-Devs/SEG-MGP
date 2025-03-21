@@ -54,7 +54,7 @@ class TicketTestCase(TestCase):
 
     # 5) priority can be empty
     def test_ticket_with_no_priority_is_valid(self):
-        self.ticket.priority = ''
+        self.ticket.priority = None
         try:
             self.ticket.full_clean()
         except ValidationError:
@@ -144,3 +144,15 @@ class TicketTestCase(TestCase):
         self.ticket.save()
         self.ticket.refresh_from_db()
         self.assertEqual(self.ticket.assigned_to, self.user1)
+
+    # 17)  Invalid status should raise a ValidationError
+    def test_ticket_invalid_status(self):
+        self.ticket.status = 'InvalidStatus'
+        with self.assertRaises(ValidationError):
+            self.ticket.full_clean()
+
+    # 18) Invalid priority should raise a ValidationError
+    def test_ticket_invalid_priority(self):
+        self.ticket.priority = 'InvalidPriority'
+        with self.assertRaises(ValidationError):
+            self.ticket.full_clean()

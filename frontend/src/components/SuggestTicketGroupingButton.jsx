@@ -4,6 +4,7 @@ import api from "../api";
 import { ACCESS_TOKEN } from "../constants";
 import GenericButton from "./GenericButton";
 import { playSound } from "../utils/SoundUtils";
+import handleApiError from "../utils/errorHandler"
 
 const SuggestTicketGroupingButton = ({ setSuggestedGrouping, tickets }) => {
     const assignRandomGrouping = async () => {
@@ -17,7 +18,7 @@ const SuggestTicketGroupingButton = ({ setSuggestedGrouping, tickets }) => {
     
             if (response.data.error) {
     
-                toast.error(`❌ ${response.data.error}`);
+                toast.error("❌ Unable to group tickets. Please try again.");
                 return;
             }
     
@@ -32,9 +33,7 @@ const SuggestTicketGroupingButton = ({ setSuggestedGrouping, tickets }) => {
             toast.success("✅ Ticket grouping suggestions updated!");
     
         } catch (error) {
-            
-            const errorMessage = error.response?.data?.error || "Failed to fetch ticket groupings. Please try again.";
-            toast.error(`❌ ${errorMessage}`);
+            handleApiError(error, "Failed to fetch ticket groupings. Please try again.")
         }
     };
     

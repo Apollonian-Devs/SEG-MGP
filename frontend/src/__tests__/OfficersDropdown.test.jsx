@@ -1,11 +1,10 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import OfficersDropdown from '../components/OfficersDropdown';
 import api from '../api'; 
 
-
 describe('OfficersDropdown Component', () => {
     it('renders with correct default text', () => {
-        render(<OfficersDropdown officers={[]} setSelectedOfficer={() => {}} />);
+        render(<OfficersDropdown officers={[]} onSelectOfficer={() => {}} />);
         expect(screen.getByText('Select an officer')).toBeInTheDocument();
     });
 
@@ -16,7 +15,7 @@ describe('OfficersDropdown Component', () => {
                     { user: { id: 1, username: 'user1' } },
                     { user: { id: 2, username: 'user2' } },
                 ]}
-                setSelectedOfficer={() => {}}
+                onSelectOfficer={() => {}}
             />
         );
 
@@ -26,32 +25,30 @@ describe('OfficersDropdown Component', () => {
         expect(screen.getByText('user2')).toBeInTheDocument();
     });
 
-    it('renders correct text when officer is selected', () => {
+    it('renders correct text when officer is selected', async () => {
+        const mockOnSelectOfficer = vi.fn();
 
-        const mockSetSelectedOfficer = vi.fn();
-
-        
         render(
             <OfficersDropdown 
                 officers={[
                     { user: { id: 1, username: 'user1' } },
                     { user: { id: 2, username: 'user2' } },
                 ]}
-                setSelectedOfficer={mockSetSelectedOfficer}
+                onSelectOfficer={mockOnSelectOfficer}
             />
         );
 
         fireEvent.click(screen.getByText('Select an officer'));
         fireEvent.click(screen.getByText('user1'));
 
-        expect(mockSetSelectedOfficer).toHaveBeenCalledTimes(1);
-        expect(screen.queryByText('Select an officer')).not.toBeInTheDocument();
+        expect(mockOnSelectOfficer).toHaveBeenCalledTimes(1);
 
-
+        await waitFor(() => {
+            expect(screen.queryByText('Select an officer')).not.toBeInTheDocument();
+        });
     });
 
     it('renders children with admin when dropdown is open', () => {
-
         const adminUser = { id: 3, username: '@admin1', is_superuser: true };
 
         render(
@@ -61,7 +58,7 @@ describe('OfficersDropdown Component', () => {
                     { user: { id: 2, username: 'user2' } },
                 ]}
                 admin={adminUser}
-                setSelectedOfficer={() => {}}
+                onSelectOfficer={() => {}}
             />
         );
 
@@ -72,30 +69,29 @@ describe('OfficersDropdown Component', () => {
         expect(screen.getByText('Admin: @admin1')).toBeInTheDocument();
     });
 
-    it('renders correct text when admin is selected', () => {
-
-        const mockSetSelectedOfficer = vi.fn();
-
-
+    it('renders correct text when admin is selected', async () => {
+        const mockOnSelectOfficer = vi.fn();
         const adminUser = { id: 3, username: '@admin1', is_superuser: true };
+
         render(
             <OfficersDropdown 
                 officers={[
                     { user: { id: 1, username: 'user1' } },
                     { user: { id: 2, username: 'user2' } },
                 ]}
-                admin= {adminUser}
-                setSelectedOfficer={mockSetSelectedOfficer}
+                admin={adminUser}
+                onSelectOfficer={mockOnSelectOfficer}
             />
         );
 
         fireEvent.click(screen.getByText('Select an officer'));
         fireEvent.click(screen.getByText('Admin: @admin1'));
 
-        expect(mockSetSelectedOfficer).toHaveBeenCalledTimes(1);
-        expect(screen.queryByText('Select an officer')).not.toBeInTheDocument();
+        expect(mockOnSelectOfficer).toHaveBeenCalledTimes(1);
 
-
+        await waitFor(() => {
+            expect(screen.queryByText('Select an officer')).not.toBeInTheDocument();
+        });
     });
-   
 });
+

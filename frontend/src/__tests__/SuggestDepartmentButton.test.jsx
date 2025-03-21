@@ -4,6 +4,7 @@ import { vi } from "vitest";
 import SuggestDepartmentButton from "../components/SuggestDepartmentButton";
 import api from "../api";
 import { ACCESS_TOKEN } from "../constants";
+import { toast } from 'sonner';
 
 vi.mock("../api");
 
@@ -18,6 +19,13 @@ describe("SuggestDepartmentButton", () => {
     vi.clearAllMocks();
     localStorage.setItem(ACCESS_TOKEN, "test-token");
   });
+
+  vi.mock('sonner', () => ({
+    toast: {
+        error: vi.fn(),
+        success: vi.fn()
+    },
+  }));
 
   test("renders the button correctly", () => {
     render(
@@ -78,7 +86,6 @@ describe("SuggestDepartmentButton", () => {
       response: { data: { detail: "Invalid ticket" } },
       message: "API Error"
     };
-    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     api.post.mockRejectedValue(error);
 
     render(
@@ -91,18 +98,13 @@ describe("SuggestDepartmentButton", () => {
     fireEvent.click(screen.getByRole("button", { name: /Suggest Departments/i }));
 
     await waitFor(() => {
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "Error fetching suggested department:",
-        {detail: "Invalid ticket"}
-      );
       expect(mockSetSuggestedDepartments).toHaveBeenCalledWith({});
     });
-    consoleErrorSpy.mockRestore();
+    expect(toast.error).toHaveBeenCalledWith("❌ Error fetching suggested department");
   });
 
   test("handles network errors without response", async () => {
     const error = new Error("Network Error");
-    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     api.post.mockRejectedValue(error);
 
     render(
@@ -115,13 +117,9 @@ describe("SuggestDepartmentButton", () => {
     fireEvent.click(screen.getByRole("button", { name: /Suggest Departments/i }));
 
     await waitFor(() => {
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "Error fetching suggested department:",
-        "Network Error"
-      );
       expect(mockSetSuggestedDepartments).toHaveBeenCalledWith({});
     });
-    consoleErrorSpy.mockRestore();
+    expect(toast.error).toHaveBeenCalledWith("❌ Error fetching suggested department");
   });
 
   test("handles empty tickets array", async () => {

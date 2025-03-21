@@ -7,6 +7,7 @@ import Popup from './Popup';
 import GenericTable from './GenericTable';
 import GenericButton from './GenericButton';
 import { playSound } from "../utils/SoundUtils";
+import handleApiError from '../utils/errorHandler';
 
 const NotificationsTab = ({ user }) => {
 	const [notifications, setNotifications] = useState([]);
@@ -23,45 +24,44 @@ const NotificationsTab = ({ user }) => {
 			});
 			setNotifications(response.data.notifications);
 		} catch (error) {
-			console.error(
-				'Error fetching notifications:',
-				error.response?.data || error.message
-			);
+			handleApiError(error, "Error fetching notifications");
 		}
 	};
 
-	const markSetAsRead = async () => {
-		if (clickedNotifications.size > 0) {
-			try {
-				const access = localStorage.getItem(ACCESS_TOKEN);
-				for (let entry of clickedNotifications) {
-					await api.post(
-						`/api/user-notifications/`,
-						{ id: entry },
-						{
-							headers: {
-								Authorization: `Bearer ${access}`,
-							},
-						}
-					);
+	const markNotificationAsRead = async (notificationId, access) => {
+		try {
+			await api.post(
+				`/api/user-notifications/`,
+				{ id: notificationId },
+				{
+					headers: {
+						Authorization: `Bearer ${access}`,
+					},
 				}
-			} catch (error) {
-				console.error(
-					'Error marking notifications as read:',
-					error.response?.data || error.message
-				);
-			}
+			);
+		} catch (error) {
+			handleApiError(error, `Error marking notification ${notificationId} as read`);
 		}
 	};
+	
+	const markSetAsRead = async () => {
+		if (clickedNotifications.size === 0) return;
+	
+		const access = localStorage.getItem(ACCESS_TOKEN);
+	
+		await Promise.all(
+			[...clickedNotifications].map((notificationId) => 
+				markNotificationAsRead(notificationId, access)
+			)
+		);
+	};
+	
 
 	const handleNotificationClick = (id) => {
 		setClickedNotifications((prev) => {
 			const newClicked = new Set(prev);
-			if (newClicked.has(id)) {
-				newClicked.delete(id);
-			} else {
-				newClicked.add(id);
-			}
+			const wasClicked = newClicked.has(id);
+			wasClicked ? newClicked.delete(id) : newClicked.add(id);
 			return newClicked;
 		});
 	};

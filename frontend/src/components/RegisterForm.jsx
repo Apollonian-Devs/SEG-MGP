@@ -60,11 +60,12 @@ const RegisterForm = () => {
 				onSubmit={handleSubmit}
 				buttonLabel="Register"
 			>
+				
 				<GenericInput
 					id="username"
 					label="Username"
 					type="text"
-					required={true}
+					required={true} 
 					onChange={(e) => setUsername(e.target.value)}
 					placeholder="Enter your username"
 				></GenericInput>

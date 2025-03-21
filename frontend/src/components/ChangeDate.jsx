@@ -5,7 +5,7 @@ import GenericForm from "./GenericForm";
 import api from "../api";
 import { Navigate, useNavigate } from "react-router-dom";
 import { toast } from 'sonner';
-import handleApiError from "../utils/errorHandler.js"
+import handleApiError from "../utils/errorHandler.js";
 
 const ChangeDate = ({ ticket, setSelectedTicket, setTickets }) => {
 
@@ -20,35 +20,23 @@ const ChangeDate = ({ ticket, setSelectedTicket, setTickets }) => {
 
             const response = await api.post(
                 "api/tickets/change-date", 
-                {
-                    id: ticket.id,
-                    due_date: date
-                },
-                {
-                    headers: {
-                    Authorization: `Bearer ${access}`, 
-                    },
-                });
-            
-                if (response.status === 201) {
-                    toast.success("The due date for the ticket has been successfully updated")
+                { id: ticket.id, due_date: date },
+                { headers: { Authorization: `Bearer ${access}` } }
+            );
 
-                    console.log(`updated ticket: ${response.data.ticket.id}`);
-                    console.log(`updated subject: ${response.data.ticket.subject}`);
-                    console.log(`updated due date: ${response.data.ticket.due_date}`);
+            if (response.status !== 201) return;
 
-                    setSelectedTicket(prevTicket => ({
-                        ...prevTicket,
-                        due_date: response.data.ticket.due_date
-                    }));
-        
-                    setTickets(prevTickets => 
-                        prevTickets.map(t => 
-                            t.id === ticket.id ? { ...t, due_date: response.data.ticket.due_date } : t
-                        )
-                    );
-            }
+            toast.success("The due date for the ticket has been successfully updated");
+
+            const updatedDueDate = response.data.ticket.due_date;
+
+            setSelectedTicket((prevTicket) => ({ ...prevTicket, due_date: updatedDueDate }));
+
+            setTickets((prevTickets) =>
+                prevTickets.map((t) => (t.id === ticket.id ? { ...t, due_date: updatedDueDate } : t))
+            );
         }
+        
         catch (error) {
             
             if (error.response?.status === 400) {

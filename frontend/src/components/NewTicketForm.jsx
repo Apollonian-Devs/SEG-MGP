@@ -4,6 +4,7 @@ import GenericForm from './GenericForm';
 import GenericInput from './GenericInput';
 import { useFileInput } from '../utils/attachmentUtils';
 import { toast } from 'sonner';
+import { formatApiErrorMessage } from "../utils/errorHandler";
 
 const NewTicketForm = ({ togglePopup, fetchTickets }) => {
     const [subject, setSubject] = useState('');
@@ -31,9 +32,7 @@ const NewTicketForm = ({ togglePopup, fetchTickets }) => {
 				await fetchTickets();
                 return 'Ticket Submitted successfully';
             },
-            error: (error) => {
-                return `Error submitting ticket: ${error?.message || "An unknown error occurred"}`;
-            },
+            error: (error) => formatApiErrorMessage(error, "Error submitting ticket"),
         });
     };
 
@@ -90,4 +89,3 @@ const NewTicketForm = ({ togglePopup, fetchTickets }) => {
 };
 
 export default NewTicketForm;
-

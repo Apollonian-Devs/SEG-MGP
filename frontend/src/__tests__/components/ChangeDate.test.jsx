@@ -9,10 +9,14 @@ import { toast } from 'sonner';
 describe("ChangeDate Component", () => {
 
     beforeEach(() => {
+        vi.clearAllMocks();
+        api.post.mockReset();
+    
         vi.spyOn(Storage.prototype, "getItem").mockReturnValue("mockAccessToken");
-      });
-      
+    });
+    
 
+    
     vi.mock("../../api", () => ({
         default: {
             post: vi.fn(),
@@ -31,6 +35,7 @@ describe("ChangeDate Component", () => {
         expect(screen.getByLabelText(/change date/i)).toBeInTheDocument();
     });
 
+    
 
     it("Change date form should be successfully submitted with a valid date and correct toast should be displayed", async () => {
         api.post.mockResolvedValue({ status: 201 ,
@@ -88,14 +93,12 @@ describe("ChangeDate Component", () => {
         expect(updatedTickets).toEqual([{ id: 1, due_date: "2025-12-25" }, {id: 2, due_date: "2025-12-30"}]);
     })
 
-    it("Console error and correct toast should be displayed when there is a 400 response to an invalid post request", async () => {
+    it("Correct toast should be displayed when there is a 400 response to an invalid post request", async () => {
         const user = userEvent.setup();
         
         const mockTicketId = {id: 1}
 
         api.post.mockRejectedValue({response: {status: 400}});
-
-        const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
         api.post.mockClear();
 
@@ -107,18 +110,14 @@ describe("ChangeDate Component", () => {
         await user.click(screen.getByRole('button', {name: /confirm change/i}));
 
         expect(toast.error).toHaveBeenCalledWith("❌ Please ensure you pick a valid date that isn't in the past and isn't today's date");
-
-        // expect(consoleError).toHaveBeenCalledWith("The reason for the error is: ", {response: {status: 400}});
     })
 
-    it("Console error and correct toast should be displayed when there is any other response to an invalid post request that isn't 400", async () => {
+    it("Correct toast should be displayed when there is any other response to an invalid post request that isn't 400", async () => {
         const user = userEvent.setup();
         
         const mockTicketId = {id: 1}
 
         api.post.mockRejectedValue(new Error('Submission failed'));
-
-        const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
         api.post.mockClear();
 
@@ -131,7 +130,42 @@ describe("ChangeDate Component", () => {
 
         expect(toast.error).toHaveBeenCalledWith("❌ There has been an error trying to update the due date of the ticket");
 
-        // expect(consoleError).toHaveBeenCalledWith("The reason for the error is: ", expect.any(Error));
     })
+
+    it("Date doesn't get updated when there is a non-error response that is not 201", async () => {
+        const user = userEvent.setup();
+        
+        const mockTicket = { id: 1, due_date: "2025-12-31" };
+        const mockSetSelectedTicket = vi.fn();
+        const mockSetTickets = vi.fn();
+    
+        api.post.mockResolvedValue({ status: 200 }); // Correctly mock response
+    
+        render(
+            <MemoryRouter>
+                <ChangeDate 
+                    ticket={mockTicket} 
+                    setSelectedTicket={mockSetSelectedTicket}
+                    setTickets={mockSetTickets}
+                />
+            </MemoryRouter>
+        );
+    
+        const date = screen.getByPlaceholderText(/enter the new date/i);
+        fireEvent.change(date, { target: { value: "2025-12-31" } });
+    
+        await user.click(screen.getByRole("button", { name: /confirm change/i }));
+    
+        expect(api.post).toHaveBeenCalledTimes(1); // Ensure only 1 API call
+    
+        // Ensure toast.success was never called
+        expect(toast.success).not.toHaveBeenCalled();
+        
+        // Ensure state updates never happened
+        expect(mockSetSelectedTicket).not.toHaveBeenCalled();
+        expect(mockSetTickets).not.toHaveBeenCalled();
+    });
+    
+    
 
 })

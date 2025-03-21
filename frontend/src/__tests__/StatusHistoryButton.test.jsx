@@ -1,60 +1,58 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import { describe, it, expect} from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import StatusHistoryButton from '../components/StatusHistoryButton';
 import api from "../api";
+import handleApiError from "../utils/errorHandler"; 
 
-
+// Mock API and error handler
 vi.mock("../api");
+vi.mock("../utils/errorHandler", () => ({
+  __esModule: true,
+  default: vi.fn(),
+}));
 
 describe("StatusHistoryButton", () => {
-
-  it("fetches status history correctly",async()=>{
+  it("fetches status history correctly", async () => {
     api.get.mockResolvedValue({
-        data: {
-          status_history:[
-              {notes:"note 1"}
-            ]
-        },
+      data: {
+        status_history: [{ notes: "note 1" }],
+      },
     });
-    render(<StatusHistoryButton/>);
-    await waitFor(() => expect(screen.getByText("note 1")).toBeInTheDocument());
-    
-  })
 
-  it("fetches status history with console error",async()=>{
-      //console log test adapted from https://stackoverflow.com/questions/76042978/in-vitest-how-do-i-assert-that-a-console-log-happened
-      api.get.mockRejectedValue(new Error("test fetch error"));
-      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    render(<StatusHistoryButton />);
     
-      render(<StatusHistoryButton/>);
+    await waitFor(() => 
+      expect(screen.getByText("note 1")).toBeInTheDocument()
+    );
+  });
 
-      
-      await waitFor(() => {
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          "Error fetching status history:", 
-          "test fetch error"
-        );
-      });
-      consoleErrorSpy.mockRestore();
+  it("fetches status history with error", async () => {
+    api.get.mockRejectedValue(new Error("test fetch error"));
+
+    render(<StatusHistoryButton />);
+
+    await waitFor(() => {
+      expect(handleApiError).toHaveBeenCalledWith(
+        expect.any(Error), 
+        "Error fetching status history"
+      );
     });
-    it("fetches status history with error data",async()=>{
-    api.get.mockRejectedValue({ 
+  });
+
+  it("fetches status history with error response data", async () => {
+    api.get.mockRejectedValue({
       response: {
         data: "fetch error data",
       },
     });
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-  
-    render(<StatusHistoryButton/>);
 
-    
+    render(<StatusHistoryButton />);
+
     await waitFor(() => {
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "Error fetching status history:", 
-        "fetch error data"
+      expect(handleApiError).toHaveBeenCalledWith(
+        expect.objectContaining({ response: { data: "fetch error data" } }), 
+        "Error fetching status history"
       );
     });
-    consoleErrorSpy.mockRestore();
   });
-
-})
+});

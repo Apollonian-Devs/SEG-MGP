@@ -122,10 +122,13 @@ class UserTicketsView(views.APIView):
     def get(self, request):
         try:
             user = request.user
-            tickets = get_tickets_for_user(user)  # Call helper function
+
+            get_overdue_tickets(user)
+            tickets = get_tickets_for_user(user)
             return Response({"tickets": tickets})
         except Exception:
             return Response({"error": "An error has occurred"}, status=500)
+
 
 
 class TicketSendResponseView(views.APIView):
@@ -142,39 +145,39 @@ class TicketSendResponseView(views.APIView):
         print("Processed data before validation:", data)  # Debugging output
 
         serializer = TicketMessageSerializer(data=data)
-        if serializer.is_valid():
-            try:
-                comment = send_response(
-                    sender_profile=serializer.validated_data["sender_profile"],
-                    ticket=serializer.validated_data["ticket"],
-                    message_body=serializer.validated_data["message_body"],
-                )
-
-                for attachment in data["attachments"]:
-
-                        TicketAttachment.objects.create(
-                            message=comment,
-                            file_name=attachment["file_name"],
-                            file_path=attachment["file_path"],
-                            mime_type=attachment["mime_type"]
-                        )
-
-                serializer = TicketMessageSerializer(comment)
-                return Response(serializer.data, status=201)
-
-            except ValidationError as e:
-                return Response({"error": str(e)}, status=404)
-            except ValueError as e:
-                return Response({"error": str(e)}, status=400)
-            except Exception:
-                return Response({"error": "An error has occurred"}, status=500)
-        else:
+        
+        if not serializer.is_valid():
             print(" Serializer errors:", serializer.errors)
             return Response(serializer.errors, status=400)
+        
+        try:
+            comment = send_response(
+                sender_profile=serializer.validated_data["sender_profile"],
+                ticket=serializer.validated_data["ticket"],
+                message_body=serializer.validated_data["message_body"],
+            )
 
+            self.handle_attachments(comment, data["attachments"])
 
+            return Response(TicketMessageSerializer(comment).data, status=201)
 
-
+        except ValidationError as e:
+            return Response({"error": str(e)}, status=404)
+        except ValueError as e:
+            return Response({"error": str(e)}, status=400)
+        except Exception:
+            return Response({"error": "An error has occurred"}, status=500)
+    
+    def handle_attachments(self, comment, attachments):
+        """Helper method to handle file attachments."""
+        for attachment in attachments:
+            TicketAttachment.objects.create(
+                message=comment,
+                file_name=attachment["file_name"],
+                file_path=attachment["file_path"],
+                mime_type=attachment.get("mime_type", "application/octet-stream")
+            )
+            
 
 
 class TicketMessageHistory(views.APIView):
@@ -244,6 +247,11 @@ class UserNotificationsView(views.APIView):
 
     def post(self,request):
         try:
+            notification_id = request.data.get("id")
+            notification = Notification.objects.filter(id=notification_id).first()
+            if not notification:
+                raise Exception
+            
             mark_id_as_read(request.data.get("id"))
             return Response({"message": "mark success"})
         except Exception:
@@ -262,30 +270,36 @@ class TicketRedirectView(views.APIView):
             else:
                 return Response({"error": "No department head found for this department"}, status=400)
 
-
-
-        serializer = TicketRedirectSerializer(data=request.data)
         
+        response = self.redirect_ticket(request)
+        
+        return response
+    
+    def redirect_ticket(self, request):
+        """
+        Handles the ticket redirection process, including validating data and redirecting the ticket.
+        """
+        serializer = TicketRedirectSerializer(data=request.data)
+
         if serializer.is_valid():
             try:
                 ticket_id = serializer.validated_data['ticket'].id
                 from_user_id = serializer.validated_data['from_profile'].id
                 to_user_id = serializer.validated_data['to_profile'].id
-                ticket = Ticket.objects.get(id=ticket_id)  
-                from_user = User.objects.get(id=from_user_id)  
-                to_user = User.objects.get(id=to_user_id)  
 
+                # Fetch users and ticket
+                ticket = Ticket.objects.get(id=ticket_id)
+                from_user = User.objects.get(id=from_user_id)
+                to_user = User.objects.get(id=to_user_id)
 
+                # Redirect the ticket
                 updated_ticket = redirect_query(ticket, from_user, to_user)
-                serializer = TicketSerializer(updated_ticket)
+                ticket_serializer = TicketSerializer(updated_ticket)
 
-                return Response(
-                    {"ticket": serializer.data},
-                    status=201
-                )
+                return Response({"ticket": ticket_serializer.data}, status=201)
             except Exception as e:
-                print(f"error occured: {e}")
-                return Response({"error": "an error has occured"}, status=500)
+                print(f"error occurred: {e}")
+                return Response({"error": "An error has occurred"}, status=500)
         else:
             print(f"Serializer errors: ", serializer.errors)
             return Response(serializer.errors, status=400)
@@ -319,7 +333,7 @@ class TicketPathView(views.APIView):
             return Response({"error": "An error has occurred"}, status=500)
 
 
-class OverdueTicketsView(views.APIView):
+'''class OverdueTicketsView(views.APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -329,19 +343,9 @@ class OverdueTicketsView(views.APIView):
             serializer = TicketSerializer(overdue_tickets, many=True)  
             return Response({"tickets": serializer.data})  
         except Exception:
-            return Response({"error": "An error has occurred"}, status=500)        
+            return Response({"error": "An error has occurred"}, status=500)'''      
     
-class UnansweredTicketsView(views.APIView):
-    permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        try:
-            user = request.user
-            unanswered_tickets = get_unanswered_tickets(user) 
-            serializer = TicketSerializer(unanswered_tickets, many=True)  
-            return Response({"tickets": serializer.data})  
-        except Exception:
-            return Response({"error": "An error has occurred"}, status=500)        
 
 
 class ChangeTicketDateView(views.APIView):
@@ -352,27 +356,28 @@ class ChangeTicketDateView(views.APIView):
         user = request.user
         serializer = ChangeTicketDateSerializer(data=request.data)
 
-        if serializer.is_valid():
-            try:
-                ticket_id = serializer.validated_data['id']
-                ticket = Ticket.objects.get(id=ticket_id)
-                new_due_date = serializer.validated_data['due_date']
-            
-                updated_ticket = changeTicketDueDate(ticket, user, new_due_date)
-                
-                serializer = TicketSerializer(updated_ticket)
-
-                return Response({"ticket": serializer.data}, status=201)
-            
-            except Ticket.DoesNotExist:
-                return Response({"error": "Ticket not found"}, status=404)
-            except ValueError as e:
-                print("The error", str(e))
-                return Response({"error": str(e)}, status=400)
-            except Exception:
-                return Response({"error": "An error has occurred"}, status=500)
-        else:
+        if not serializer.is_valid():
             return Response(serializer.errors, status=400)
+        
+        try:
+            ticket_id = serializer.validated_data['id']
+            ticket = Ticket.objects.get(id=ticket_id)
+            new_due_date = serializer.validated_data['due_date']
+        
+            updated_ticket = changeTicketDueDate(ticket, user, new_due_date)
+            
+            serializer = TicketSerializer(updated_ticket)
+
+            return Response({"ticket": serializer.data}, status=201)
+        
+        except Ticket.DoesNotExist:
+            return Response({"error": "Ticket not found"}, status=404)
+        except ValueError as e:
+            print("The error", str(e))
+            return Response({"error": str(e)}, status=400)
+        except Exception:
+            return Response({"error": "An error has occurred"}, status=500)
+            
 
 class DepartmentsListView(views.APIView):
     permission_classes = [IsAuthenticated]
@@ -422,3 +427,4 @@ class GroupTicketsView(views.APIView):
         except Exception as e:
             print(f"❌ API Exception: {e}")
             return Response({"error": f"An error has occurred: {str(e)}"}, status=500)
+

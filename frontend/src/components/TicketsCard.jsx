@@ -9,7 +9,6 @@ import OfficersDropdown from './OfficersDropdown';
 import DepartmentsDropdown from './DepartmentsDropdown';
 import RedirectButton from './RedirectButton';
 import SuggestDepartmentButton from './SuggestDepartmentButton';
-import AcceptButton from './AcceptButton';
 import StatusHistoryButton from './StatusHistoryButton';
 import SuggestTicketGroupingButton from './SuggestTicketGroupingButton';
 import TicketPathButton from './TicketPathButton';
@@ -42,6 +41,7 @@ const TicketsCard = ({
 	setSelectedTicket,
 	fetchTickets,
 }) => {
+
 	const [showingTickets, setShowingTickets] = useState(tickets);
 	const [isChatOpen, setIsChatOpen] = useState(false);
 	const [selectedOfficers, setSelectedOfficers] = useState({});
@@ -86,6 +86,7 @@ const TicketsCard = ({
 		const toggleChangePromise = api.get(`/api/tickets/${path}/${ticket_id}/`, {
 			headers: { Authorization: `Bearer ${access}` },
 		});
+		
 		toast.promise(toggleChangePromise, {
 			loading: 'Changing...',
 			success: async () => {

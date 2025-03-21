@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { LucideChevronDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import GenericButton from './GenericButton';
-import { motion } from 'framer-motion';
 
 const GenericDropdown = ({
 	buttonName,
@@ -16,18 +16,18 @@ const GenericDropdown = ({
 	const dropdownRef = useRef(null);
 	const menuRef = useRef(null);
 
-	const toggleDropdown = () => {
-		setIsOpen((prev) => !prev);
-	};
-
 	useEffect(() => {
 		if (isOpen && dropdownRef.current && menuRef.current) {
 			const dropdown = dropdownRef.current.getBoundingClientRect();
 			setDropdownWidth(dropdown.width);
 		}
-	}, [isOpen]); // Run when isOpen changes
+	}, [isOpen]); 
 
-	useEffect(() => {
+  const toggleDropdown = () => {
+    setIsOpen((prev) => !prev);
+  };
+
+  useEffect(() => {
 		const handleClickOutside = (event) => {
 			if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
 				setIsOpen(false);
@@ -78,3 +78,4 @@ const GenericDropdown = ({
 };
 
 export default GenericDropdown;
+

@@ -5,6 +5,7 @@ import GenericButton from "./GenericButton";
 import { handleFileChange } from "../utils/attachmentUtils";
 import { toast } from 'sonner';
 
+
 const Chat = ({ ticket, onClose, user }) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);

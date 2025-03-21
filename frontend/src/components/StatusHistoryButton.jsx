@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import api from "../api";
 import { ACCESS_TOKEN } from "../constants";
 import GenericTable from "./GenericTable";
+import handleApiError from "../utils/errorHandler.js"
 
 const StatusHistoryButton = ({ ticketId }) => {
     const [statusRecords, setStatusRecords] = useState([]);
@@ -19,7 +20,7 @@ const StatusHistoryButton = ({ ticketId }) => {
 
         setStatusRecords(response.data.status_history);
       } catch (error) {
-        console.error("Error fetching status history:", error.response?.data || error.message);
+        handleApiError(error, "Error fetching status history");
       } 
     };
   

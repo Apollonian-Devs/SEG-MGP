@@ -3,16 +3,16 @@ import GenericDropdown from './GenericDropdown';
 import GenericButton from './GenericButton';
 
 const GenericTable = ({
-	tableClass = `min-w-full divide-y divide-gray-200`,
-	bodyClass = 'divide-y divide-gray-200',
-	columnDefinition,
-	data = [],
-	dataName = 'data',
-	rowDefinition,
+  tableClass = `min-w-full divide-y divide-gray-200`,
+  bodyClass = 'divide-y divide-gray-200',
+  columnDefinition,
+  data = [],
+  dataName = 'data',
+  rowDefinition,
 }) => {
-	const [currentPage, setCurrentPage] = useState(1);
-	const [rowsPerPage, setRowsPerPage] = useState(5);
-	const totalPages = Math.ceil(data.length / rowsPerPage);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const totalPages = Math.ceil(data.length / rowsPerPage);
 
 	useEffect(() => {
 		if (data.length === 0) {
@@ -22,9 +22,9 @@ const GenericTable = ({
 		setCurrentPage(currentPage > totalPages ? totalPages : currentPage);
 	}, [data.length]);
 
-	const startIndex = (currentPage - 1) * rowsPerPage;
-	const paginatedData = data.slice(startIndex, startIndex + rowsPerPage);
-	const options = [5, 10, 20, 50];
+  const startIndex = (currentPage - 1) * rowsPerPage;
+  const paginatedData = data.slice(startIndex, startIndex + rowsPerPage);
+  const options = [5, 10, 20, 50];
 
 	const handleRowsPerPageChange = (option) => {
 		setRowsPerPage(option);
@@ -66,71 +66,70 @@ const GenericTable = ({
 				</div>
 			</div>
 
-			<div>
-				<table className={tableClass}>
-					<thead>
-						<tr>{columnDefinition}</tr>
-					</thead>
-					<tbody className={bodyClass}>
-						{data.length === 0 ? (
-							<tr>
-								<td
-									colSpan={columnDefinition.length}
-									className="px-6 py-4 text-center text-gray-500"
-								>
-									No {dataName} found.
-								</td>
-							</tr>
-						) : (
-							paginatedData.map((row) => rowDefinition(row))
-						)}
-					</tbody>
-				</table>
-			</div>
+      {/* Scrollable Container */}
+        <table className={tableClass}>
+          <thead>
+            <tr>{columnDefinition}</tr>
+          </thead>
+          <tbody className={bodyClass}>
+            {data.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={React.Children.count(columnDefinition)}
+                  className="px-6 py-4 text-center text-gray-500"
+                >
+                  No {dataName} found.
+                </td>
+              </tr>
+            ) : (
+              paginatedData.map((row) => rowDefinition(row))
+            )}
+          </tbody>
+        </table>
 
-			{totalPages > 1 && (
-				<div className="flex justify-center space-x-2 mt-4">
-					<button
-						onClick={() => setCurrentPage(1)}
-						disabled={currentPage === 1}
-						className="px-4 py-2 border-2 border-customOrange-light rounded-md disabled:opacity-50"
-					>
-						First
-					</button>
+      {totalPages > 1 && (
+        <div className="flex justify-center space-x-2 mt-4">
+          <button
+            onClick={() => setCurrentPage(1)}
+            disabled={currentPage === 1}
+            className="px-4 py-2 border-2 border-customOrange-light rounded-md disabled:opacity-50"
+          >
+            First
+          </button>
 
-					{currentPage > 1 && (
-						<button
-							onClick={() => setCurrentPage(currentPage - 1)}
-							className="px-4 py-2 border rounded-md bg-gray-100"
-						>
-							{currentPage - 1}
-						</button>
-					)}
+          {currentPage > 1 && (
+            <button
+              onClick={() => setCurrentPage(currentPage - 1)}
+              className="px-4 py-2 border rounded-md bg-gray-100"
+            >
+              {currentPage - 1}
+            </button>
+          )}
 
-					<button className="px-4 py-2 border rounded-md bg-customOrange-dark text-white">
-						{currentPage}
-					</button>
+          <button className="px-4 py-2 border rounded-md bg-customOrange-dark text-white">
+            {currentPage}
+          </button>
 
-					{currentPage < totalPages && (
-						<button
-							onClick={() => setCurrentPage(currentPage + 1)}
-							className="px-4 py-2 border rounded-md bg-gray-100"
-						>
-							{currentPage + 1}
-						</button>
-					)}
+          {currentPage < totalPages && (
+            <button
+              onClick={() => setCurrentPage(currentPage + 1)}
+              className="px-4 py-2 border rounded-md bg-gray-100"
+            >
+              {currentPage + 1}
+            </button>
+          )}
 
-					<button
-						onClick={() => setCurrentPage(totalPages)}
-						disabled={currentPage === totalPages}
-						className="px-4 py-2 border-2 border-customOrange-light rounded-md disabled:opacity-50"
-					>
-						Last
-					</button>
-				</div>
-			)}
-		</>
-	);
+          <button
+            onClick={() => setCurrentPage(totalPages)}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 border-2 border-customOrange-light rounded-md disabled:opacity-50"
+          >
+            Last
+          </button>
+        </div>
+      )}
+    </>
+  );
 };
 
 export default GenericTable;

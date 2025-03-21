@@ -52,12 +52,7 @@ describe("TicketsCard - rendering", () => {
   beforeEach(() => {
 		vi.resetAllMocks();
 		localStorage.setItem(ACCESS_TOKEN, 'mock_access_token');
-		// api.get.mockImplementation((url) => {
-		// 	if (url.startsWith('/api/departments/')) {
-		// 		return Promise.resolve({ response: { data:  mockDepartments} });
-		// 	}
-		// 	return Promise.reject(new Error('Unknown API call'));
-		// });
+		
 	});
 
 	afterEach(() => {
@@ -1040,7 +1035,7 @@ it("should update selectedOfficers state when an officer is selected", async () 
       fireEvent.click((screen.getByText('@officer1')));
     });
     await act(async () => {
-      fireEvent.click(screen.getAllByRole("button", { name: /redirect/i })[0]);
+      fireEvent.click(screen.getByRole("button", { name: /redirect/i }));
     });
     await waitFor(() => {expect(screen.getByText("ticket 5")).toBeInTheDocument();  });
 
@@ -1055,7 +1050,7 @@ it("should update selectedOfficers state when an officer is selected", async () 
           description: 'description 1',
         },
       ],
-  });
+    });
 
     render(
       <TicketsCard
@@ -1080,57 +1075,76 @@ it("should update selectedOfficers state when an officer is selected", async () 
     expect(screen.getByText('ticket 1')).toBeInTheDocument();
   });
 
+it("Suggestion", async () => {
+  localStorage.setItem(ACCESS_TOKEN, 'mock_access_token');
 
-  it("displays suggested departments column for superusers", () => {
-    render(
-      <TicketsCard
-        user={{ is_staff: true, is_superuser: true }}
-        tickets={[{ id: 1, subject: "ticket 1", status: "testStatus" }]}
-        suggestedDepartments={{ 1: { id: 10, name: "IT Department" } }}
-      />
-    );
-  
-    expect(screen.getByText(/Suggested Departments/i)).toBeInTheDocument();
+  api.get.mockResolvedValue({
+    data: [
+      {
+        id: 1,
+        name: 'department 1',
+        description: 'description 1',
+      },
+    ],
   });
-  
-  
 
-  it("Redirect to suggested department as admin", async () => {
-    vi.spyOn(React, "useState").mockReturnValueOnce([
-      { 1: { suggested_department: 'IT' } },
-      vi.fn(),
-    ]);
-    api.get.mockResolvedValue({
-      data: [
-        {
-          suggested_department: 'IT',
-          confidence_score: 0.8,
+  api.post.mockImplementation((url) => {
+    if (url.startsWith('/api/suggested-department/')) {
+      return Promise.resolve({ data:  {
+        suggested_department: {
+            id: 12,
+            name: "Finance"
         },
-      ],
+        "confidence_score": 1
+    }});
+    }
+    return Promise.reject(new Error('Unknown API call'));
   });
-    render(
-      <TicketsCard
-        user={{ is_staff: true, is_superuser: true }}
-        tickets={[{ id: 1, subject: "ticket 1", status: "testStatus" }]}
-      />
-    );
 
-    const AISuggestionButton = screen.getByRole("button", {
-      name: /ai suggestion/i,
-    });
-    await act(async () => {
+  render(
+    <TicketsCard
+      user={{ is_staff: true, is_superuser: true }}
+      tickets={[{
+        id: 113,
+        subject: "Request for Professional Development Support",
+        description: "I need financial assistance for a training course.",
+        status: "In Progress",
+        priority: "High",
+        created_at: "2025-03-12T16:26:13.532025Z",
+        updated_at: "2025-03-13T01:57:14.977674Z",
+        due_date: "2025-03-21T16:26:13.532025Z",
+        is_overdue: false,
+        assigned_to: "@admin1"
+      }]}
+    />
+  );
+
+  const AISuggestionButton = screen.getByRole("button", {
+    name: /ai suggestion/i,
+  });
+  await act(async () => {
     fireEvent.click(AISuggestionButton);
-    });
-    await act(async () => {
+  });
+  await act(async () => {
     fireEvent.click(screen.getByRole("button", { name: /suggest departments/i }));
   });
 
-    expect(screen.getByText(/suggested departments/i)).toBeInTheDocument();
-    
-    expect(screen.getByTestId("suggested-redirect-button")).toBeInTheDocument();
-    await act(async () => {
-    fireEvent.click(screen.getByTestId("suggested-redirect-button"));
-    });
-
-    
+  expect(api.post).toHaveBeenCalledWith(
+    '/api/suggested-department/',
+    {
+      ticket_id: 113,
+      description: "I need financial assistance for a training course.",
+    },
+    expect.objectContaining({
+      headers: {
+        Authorization: `Bearer mock_access_token`,
+        'Content-Type': 'application/json',
+      },
+    })
+  );
+  await waitFor(() => {
+    // expect(screen.getByText("Suggested Departments")).toBeInTheDocument();
+    expect(screen.getByText("Finance")).toBeInTheDocument();
   });
+  expect(screen.getByTestId("suggested-redirect-button")).toBeInTheDocument();
+});

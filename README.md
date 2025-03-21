@@ -67,7 +67,7 @@ Note: Although mostly the same at each step, the first set of commands at each s
 
 First set up and activate a virtual environment in the root directory of the project:
 ```
-$ virtualenv venv
+$ python3 -m venv venv
 $ source venv/bin/activate
 ```
 ```

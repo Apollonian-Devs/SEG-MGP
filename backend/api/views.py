@@ -363,27 +363,28 @@ class ChangeTicketDateView(views.APIView):
         user = request.user
         serializer = ChangeTicketDateSerializer(data=request.data)
 
-        if serializer.is_valid():
-            try:
-                ticket_id = serializer.validated_data['id']
-                ticket = Ticket.objects.get(id=ticket_id)
-                new_due_date = serializer.validated_data['due_date']
-            
-                updated_ticket = changeTicketDueDate(ticket, user, new_due_date)
-                
-                serializer = TicketSerializer(updated_ticket)
-
-                return Response({"ticket": serializer.data}, status=201)
-            
-            except Ticket.DoesNotExist:
-                return Response({"error": "Ticket not found"}, status=404)
-            except ValueError as e:
-                print("The error", str(e))
-                return Response({"error": str(e)}, status=400)
-            except Exception:
-                return Response({"error": "An error has occurred"}, status=500)
-        else:
+        if not serializer.is_valid():
             return Response(serializer.errors, status=400)
+        
+        try:
+            ticket_id = serializer.validated_data['id']
+            ticket = Ticket.objects.get(id=ticket_id)
+            new_due_date = serializer.validated_data['due_date']
+        
+            updated_ticket = changeTicketDueDate(ticket, user, new_due_date)
+            
+            serializer = TicketSerializer(updated_ticket)
+
+            return Response({"ticket": serializer.data}, status=201)
+        
+        except Ticket.DoesNotExist:
+            return Response({"error": "Ticket not found"}, status=404)
+        except ValueError as e:
+            print("The error", str(e))
+            return Response({"error": str(e)}, status=400)
+        except Exception:
+            return Response({"error": "An error has occurred"}, status=500)
+            
 
 class DepartmentsListView(views.APIView):
     permission_classes = [IsAuthenticated]

@@ -247,6 +247,11 @@ class UserNotificationsView(views.APIView):
 
     def post(self,request):
         try:
+            notification_id = request.data.get("id")
+            notification = Notification.objects.filter(id=notification_id).first()
+            if not notification:
+                raise Exception
+            
             mark_id_as_read(request.data.get("id"))
             return Response({"message": "mark success"})
         except Exception:

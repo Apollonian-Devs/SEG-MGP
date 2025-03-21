@@ -20,6 +20,16 @@ STATUS_AWAITING_STUDENT = STATUS_CHOICES[2][0]
 STATUS_CLOSED = STATUS_CHOICES[3][0] 
 
 
+def handle_attachments(message, attachments):
+    """Handles file attachments for a given message."""
+    for att in attachments:
+        if "file_name" in att and "file_path" in att:
+            TicketAttachment.objects.create(
+                message=message,
+                file_name=att["file_name"],
+                file_path=att["file_path"],
+                mime_type=att.get("mime_type", "application/octet-stream"),
+            )
 
 def send_query(student_user, subject, description, message_body, attachments=None):
     """
@@ -57,14 +67,7 @@ def send_query(student_user, subject, description, message_body, attachments=Non
     )
 
     if attachments:
-        for att in attachments:
-            if "file_name" in att and "file_path" in att:
-                TicketAttachment.objects.create(
-                    message=msg,
-                    file_name=att["file_name"],
-                    file_path=att["file_path"],
-                    mime_type=att.get("mime_type", "application/octet-stream"),
-                )
+        handle_attachments(msg, attachments)
 
     TicketStatusHistory.objects.create(
         ticket=ticket,
@@ -112,14 +115,8 @@ def send_response(sender_profile, ticket, message_body, is_internal=False, attac
     # Process attachments if provided.
     #-----written by chatgpt ------
     if attachments:
-        for att in attachments:
-            TicketAttachment.objects.create(
-                message=new_msg,
-                file_name=att["file_name"],
-                file_path=att["file_path"],
-                mime_type=att.get("mime_type", "application/octet-stream")
-            )
-
+        handle_attachments(new_msg, attachments)
+        
     # Update the ticket's updated_at timestamp.
     ticket.updated_at = timezone.now()
     ticket.save()

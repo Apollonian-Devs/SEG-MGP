@@ -12,7 +12,8 @@ export default defineConfig({
       provider: 'v8', 
       reporter: ['text', 'html'], 
       exclude: [
-        '*.config.js', 
+        '*.config.js',
+        'src/main.jsx',
       ],
     },
   },

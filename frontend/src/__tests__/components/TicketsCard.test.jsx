@@ -1080,6 +1080,21 @@ it("should update selectedOfficers state when an officer is selected", async () 
     expect(screen.getByText('ticket 1')).toBeInTheDocument();
   });
 
+
+  it("displays suggested departments column for superusers", () => {
+    render(
+      <TicketsCard
+        user={{ is_staff: true, is_superuser: true }}
+        tickets={[{ id: 1, subject: "ticket 1", status: "testStatus" }]}
+        suggestedDepartments={{ 1: { id: 10, name: "IT Department" } }}
+      />
+    );
+  
+    expect(screen.getByText(/Suggested Departments/i)).toBeInTheDocument();
+  });
+  
+  
+
   it("Redirect to suggested department as admin", async () => {
     vi.spyOn(React, "useState").mockReturnValueOnce([
       { 1: { suggested_department: 'IT' } },
@@ -1116,4 +1131,6 @@ it("should update selectedOfficers state when an officer is selected", async () 
     await act(async () => {
     fireEvent.click(screen.getByTestId("suggested-redirect-button"));
     });
+
+    
   });

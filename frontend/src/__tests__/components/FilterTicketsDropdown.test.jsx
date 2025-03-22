@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import FilterTicketsDropdown from "../../components/FilterTicketsDropdown";
 import { expect, it, vi } from "vitest";
-import React, { useState, useRef } from "react";
+import React from "react";
 
 describe("FilterTicketsDropdown Component", () => {
   let mockSetPriority,
@@ -83,13 +83,24 @@ describe("FilterTicketsDropdown Component", () => {
     fireEvent.click(screen.getByTestId("filter-tickets-dropdown"));
 
     const highPriorityInput = screen.getByDisplayValue("High");
+    const mediumPriorityInput = screen.getByDisplayValue("Medium");
+    const lowPriorityInput = screen.getByDisplayValue("Low");
 
     expect(highPriorityInput).toHaveAttribute("name", "priority");
     expect(highPriorityInput).toHaveAttribute("value", "High");
+    expect(mediumPriorityInput).toHaveAttribute("name", "priority");
+    expect(mediumPriorityInput).toHaveAttribute("value", "Medium");
+    expect(lowPriorityInput).toHaveAttribute("name", "priority");
+    expect(lowPriorityInput).toHaveAttribute("value", "Low");
 
     fireEvent.click(highPriorityInput);
-
     expect(mockSetPriority).toHaveBeenCalledWith("High");
+
+    fireEvent.click(mediumPriorityInput);
+    expect(mockSetPriority).toHaveBeenCalledWith("Medium");
+
+    fireEvent.click(lowPriorityInput);
+    expect(mockSetPriority).toHaveBeenCalledWith("Low");
   });
 
   it("allows selecting a status option", () => {
@@ -110,13 +121,30 @@ describe("FilterTicketsDropdown Component", () => {
     fireEvent.click(screen.getByTestId("filter-tickets-dropdown"));
 
     const openStatusInput = screen.getByDisplayValue("Open");
+    const inProgressStatusInput = screen.getByDisplayValue("In Progress");
+    const awaitingStudentStatusInput = screen.getByDisplayValue("Awaiting Student");
+    const closedStatusInput = screen.getByDisplayValue("Closed");
 
     expect(openStatusInput).toHaveAttribute("name", "status");
     expect(openStatusInput).toHaveAttribute("value", "Open");
+    expect(inProgressStatusInput).toHaveAttribute("name", "status");
+    expect(inProgressStatusInput).toHaveAttribute("value", "In Progress");
+    expect(awaitingStudentStatusInput).toHaveAttribute("name", "status");
+    expect(awaitingStudentStatusInput).toHaveAttribute("value", "Awaiting Student");
+    expect(closedStatusInput).toHaveAttribute("name", "status");
+    expect(closedStatusInput).toHaveAttribute("value", "Closed");
 
     fireEvent.click(openStatusInput);
-
     expect(mockSetStatus).toHaveBeenCalledWith("Open");
+
+    fireEvent.click(inProgressStatusInput);
+    expect(mockSetStatus).toHaveBeenCalledWith("In Progress");
+
+    fireEvent.click(awaitingStudentStatusInput);
+    expect(mockSetStatus).toHaveBeenCalledWith("Awaiting Student");
+
+    fireEvent.click(closedStatusInput);
+    expect(mockSetStatus).toHaveBeenCalledWith("Closed");
   });
 
   it("allows selecting the overdue option", () => {
@@ -136,14 +164,22 @@ describe("FilterTicketsDropdown Component", () => {
 
     fireEvent.click(screen.getByTestId("filter-tickets-dropdown"));
 
-    const openStatusInput = screen.getByDisplayValue("true");
+    const YesInput = screen.getByDisplayValue("true");
+    const NoInput = screen.getByDisplayValue("false");
 
-    expect(openStatusInput).toHaveAttribute("name", "isOverdue");
-    expect(openStatusInput).toHaveAttribute("value", "true");
+    expect(YesInput).toHaveAttribute("name", "isOverdue");
+    expect(YesInput).toHaveAttribute("value", "true");
+    expect(NoInput).toHaveAttribute("name", "isOverdue");
+    expect(NoInput).toHaveAttribute("value", "false");
 
-    fireEvent.click(openStatusInput);
+    fireEvent.click(YesInput);
 
     expect(mockSetIsOverdue).toHaveBeenCalledWith(true);
+
+    fireEvent.click(NoInput);
+
+    expect(mockSetIsOverdue).toHaveBeenCalledWith(false);
+
   });
 
   it("calls applyFilters when Apply button is clicked", () => {

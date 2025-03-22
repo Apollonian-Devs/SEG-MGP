@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { formatApiErrorMessage } from "../utils/errorHandler";
 import { ACCESS_TOKEN } from '../constants';
 import { postWithAuth } from '../utils/apiUtils';
+import { handleToastPromise } from '../utils/toastUtils';
 
 const NewTicketForm = ({ togglePopup, fetchTickets }) => {
     const [subject, setSubject] = useState('');
@@ -27,20 +28,20 @@ const NewTicketForm = ({ togglePopup, fetchTickets }) => {
         });
           
 
-        toast.promise(newTicketPromise, {
+        handleToastPromise(newTicketPromise, {
             loading: 'Loading...',
-            success: async () =>  {
-                togglePopup();
-                setSubject('');
-                setDescription('');
-                setMessage('');
-                setAttachments([]);
-                resetFileInput();
-				await fetchTickets();
-                return 'Ticket Submitted successfully';
+            successMessage: 'Ticket Submitted successfully',
+            successCallback: async () => {
+              togglePopup();
+              setSubject('');
+              setDescription('');
+              setMessage('');
+              setAttachments([]);
+              resetFileInput();
+              await fetchTickets();
             },
-            error: (error) => formatApiErrorMessage(error, "Error submitting ticket"),
-        });
+            errorCallback: (error) => formatApiErrorMessage(error, "Error submitting ticket"),
+          });
     };
 
     return (

@@ -14,6 +14,7 @@ import SuggestTicketGroupingButton from './SuggestTicketGroupingButton';
 import TicketPathButton from './TicketPathButton';
 import { formatApiErrorMessage } from '../utils/errorHandler';
 import { getWithAuth } from '../utils/apiUtils';
+import { handleToastPromise } from '../utils/toastUtils';
 
 import ChangeDate from './ChangeDate';
 import {
@@ -87,17 +88,15 @@ const TicketsCard = ({
 		const path = type === 'priority' ? 'change-priority' : 'change-status';
 		const toggleChangePromise = getWithAuth(`/api/tickets/${path}/${ticket_id}/`);
 		
-		toast.promise(toggleChangePromise, {
+		handleToastPromise(toggleChangePromise, {
 			loading: 'Changing...',
-			success: async () => {
-				await fetchTickets();
-				return `${type} changed successfully!`;
-			},
-			error: (error) => {
-				const msg = formatApiErrorMessage(error, "Something went wrong", { includePrefix: false });
-				return `Error changing ${type}: ${msg}`;
-			},
+			successMessage: `${type} changed successfully!`,
+			successCallback: fetchTickets,
+			errorCallback: (error) =>
+				`Error changing ${type}: ${formatApiErrorMessage(error, "Something went wrong", { includePrefix: false })}`,
 		});
+		
+
 	};
 
 	// Sorting Function

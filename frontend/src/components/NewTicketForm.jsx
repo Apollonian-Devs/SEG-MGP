@@ -5,6 +5,7 @@ import GenericInput from './GenericInput';
 import { useFileInput } from '../utils/attachmentUtils';
 import { toast } from 'sonner';
 import { formatApiErrorMessage } from "../utils/errorHandler";
+import { ACCESS_TOKEN } from '../constants';
 
 const NewTicketForm = ({ togglePopup, fetchTickets }) => {
     const [subject, setSubject] = useState('');
@@ -18,7 +19,12 @@ const NewTicketForm = ({ togglePopup, fetchTickets }) => {
         e.preventDefault();
 
         const payload = { subject, description, message, attachments };
-        const newTicketPromise = api.post('api/tickets/', payload);
+        const newTicketPromise = api.post('api/tickets/', payload, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem(ACCESS_TOKEN)}`,
+            },
+        });
 
         toast.promise(newTicketPromise, {
             loading: 'Loading...',

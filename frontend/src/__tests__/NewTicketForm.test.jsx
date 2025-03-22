@@ -75,6 +75,11 @@ describe('NewTicketForm Component', () => {
 				description: 'No hot water',
 				message: 'Any update?',
 				attachments: [],
+			}, {
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+				},
 			});
 		});
 

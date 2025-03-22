@@ -12,6 +12,8 @@ import SuggestDepartmentButton from './SuggestDepartmentButton';
 import StatusHistoryButton from './StatusHistoryButton';
 import SuggestTicketGroupingButton from './SuggestTicketGroupingButton';
 import TicketPathButton from './TicketPathButton';
+import { formatApiErrorMessage } from '../utils/errorHandler';
+
 import ChangeDate from './ChangeDate';
 import {
 	MessageSquareMore,
@@ -94,7 +96,8 @@ const TicketsCard = ({
 				return `${type} changed successfully!`;
 			},
 			error: (error) => {
-				return `Error changing ${type}: ${error.response?.data || error.message}`;
+				const msg = formatApiErrorMessage(error, "Something went wrong", { includePrefix: false });
+				return `Error changing ${type}: ${msg}`;
 			},
 		});
 	};
@@ -108,7 +111,7 @@ const TicketsCard = ({
 		setSortConfig({ key, direction });
 
 		const sortedTickets = [...showingTickets].sort((a, b) => {
-			const valueA = a[key] ?? ''; // Treat null/undefined as an empty string
+			const valueA = a[key] ?? ''; 
 			const valueB = b[key] ?? '';
 
 			return (

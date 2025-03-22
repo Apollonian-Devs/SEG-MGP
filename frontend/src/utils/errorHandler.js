@@ -10,12 +10,20 @@ const handleApiError = (error, userMessage = "Something went wrong. Please try a
     toast.error(`❌ ${userMessage}`);
 };
 
-export const formatApiErrorMessage = (error, fallback = "An unknown error occurred") => {
+
+
+export const formatApiErrorMessage = (
+    error,
+    fallback = "An unknown error occurred",
+    opts = { includePrefix: true }
+  ) => {
     console.error(error);
-    const detailedMessage =
-      error?.response?.data || error?.message || fallback;
-    return `❌ ${detailedMessage}`;
+    const detailedMessage = error?.response?.data || error?.message || fallback;
+    return opts.includePrefix ? `❌ ${detailedMessage}` : detailedMessage;
   };
+  
+
+  
   
   
 export default handleApiError;

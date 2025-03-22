@@ -30,34 +30,39 @@ const HeroSection = () => {
 				animate={{ y: 0, opacity: 1 }}
 				transition={{ duration: 0.6, delay: 0.3 }}
 			>
-				<a
+				<motion.a
 					href="/dashboard"
 					className="py-2 px-3 border-2 border-gray-900 rounded-md bg-customOrange-light font-medium hover:bg-customOrange-dark/80 transition-colors duration-500 items-center flex"
+					initial={{ opacity: 0, y: 20 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.6 }}
+					whileHover={{ scale: 1.1 }}
 				>
 					Submit a Ticket
-				</a>
-
-				<a 
-					href="/departmentsList"
-					className="py-2 px-3 border-2 border-gray-900 rounded-md bg-customGreen-light font-medium hover:bg-customOrange-dark/80 transition-colors duration-500"
-				>
-					Departments
-				</a>
-
-
-				<a
+				</motion.a>
+				<motion.a
 					href="/helpfaq"
 					className="py-2 px-3 border-2 border-gray-900 rounded-md bg-customGray-light font-medium hover:bg-customGray-dark/80 transition-colors duration-500 items-center flex"
+					initial={{ opacity: 0, y: 20 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.6 }}
+					whileHover={{ scale: 1.1 }}
 				>
 					Help & FAQs
-				</a>
-				<a
+				</motion.a>
+				<motion.a
 					href="https://github.com/Lluc4s/SEG-MGP"
+					target="_blank"
+					rel="noopener noreferrer"
 					className="py-2 px-3 border-2 border-gray-900 rounded-md bg-neutral-300 font-medium hover:bg-neutral-400/70 transition-colors duration-500 items-center flex gap-2"
+					initial={{ opacity: 0, y: 20 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.6 }}
+					whileHover={{ scale: 1.1 }}
 				>
 					<FontAwesomeIcon icon={faGithub} className="h-6 w-6" />
 					<p className="max-sm:hidden block">Github Repository</p>
-				</a>
+				</motion.a>
 			</motion.div>
 			<motion.div
 				className="flex justify-center"

@@ -132,6 +132,7 @@ describe('ProtectedRoute - Token Refresh Failure', () => {
 			expect(toast.error).toHaveBeenCalledWith('Error refreshing token', {
 				description: 'Token refresh failed',
 			});
+			expect(localStorage.clear).toHaveBeenCalled();
 		});
 
 		// Ensure Protected Content is NOT shown

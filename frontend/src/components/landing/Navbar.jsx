@@ -5,9 +5,16 @@ const Navbar = () => {
 	return (
 		<nav className="sticky top-0 z-50 py-3 px-4 bg-customOrange-dark shadow-lg">
 			<div className="flex justify-between items-center max-w-7xl mx-auto">
-				<div className="flex items-center flex-shrink-0">
-					<img className="h-10 w-10 mr-2" src={logoBlack} alt="Logo" />
-					<span className="text-xl tracking-tight">Apollonian Devs</span>
+				<div>
+					<a href="/" className="flex items-center flex-shrink-0">
+						<img className="h-10 w-10 mr-2" src={logoBlack} alt="Logo" />
+						<span className="text-xl tracking-tight">Apollonian Devs</span>
+					</a>
+				</div>
+				<div className='flex items-center justify-between space-x-6 max-sm:hidden text-gray-700 font-normal underline underline-offset-4'> 
+					<a href="/departments" className='hover:text-customOrange-light transition-colors duration-500'>Departments</a>
+					<a href="/helpfaq" className='hover:text-customOrange-light transition-colors duration-500'>Help & FAQs</a>
+					<a href="/aboutus" className='hover:text-customOrange-light transition-colors duration-500'>About Us</a>
 				</div>
 				<div className="flex justify-center space-x-12 items-center">
 					<a

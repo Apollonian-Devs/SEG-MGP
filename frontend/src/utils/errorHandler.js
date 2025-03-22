@@ -12,8 +12,11 @@ const handleApiError = (error, userMessage = "Something went wrong. Please try a
 
 export const formatApiErrorMessage = (error, fallback = "An unknown error occurred") => {
     console.error(error);
-    return `❌ ${error?.message || fallback}`;
+    const detailedMessage =
+      error?.response?.data || error?.message || fallback;
+    return `❌ ${detailedMessage}`;
   };
+  
   
 export default handleApiError;
 

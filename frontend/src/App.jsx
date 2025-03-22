@@ -6,9 +6,9 @@ import Login from './pages/Login';
 import HelpQA from './pages/HelpQ&A';
 import NotFound from './pages/NotFound';
 import ProtectedRoute from './ProtectedRoute';
-import { Toaster } from 'sonner';
 import Layout from './Layout';
-import Departments from './components/Departments';
+import Departments from './pages/Departments';
+import AboutUs from './pages/AboutUs';
 
 function Logout() {
 	localStorage.clear();
@@ -38,7 +38,8 @@ function App() {
 					<Route path="/register" element={<RegisterAndLogout />} />
 					<Route path="/logout" element={<Logout />} />
 					<Route path="/helpfaq" element={<HelpQA />} />
-					<Route path = "/departmentsList" element={<Departments />} />
+					<Route path = "/departments" element={<Departments />} />
+					<Route path = "/aboutus" element={<AboutUs />} />
 					<Route path="*" element={<NotFound />} />
 				</Routes>
 			</Layout>

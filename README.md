@@ -60,32 +60,75 @@ npm install
 npm run dev
 ```
 
-### Backend
 
-1. Create venv (virtual environment folder)
-2. Activate and download packages in requirements.txt
-3. Migrate the database
-4. Runserver
+### Backend 
 
-#### Linux/MacOS
+Note: Although mostly the same at each step, the first set of commands at each step are for Linux and MacOS users while the second set of commands at each step are for Windows users.
 
+First set up and activate a virtual environment in the root directory of the project:
 ```
-$ virtualenv venv
+$ python3 -m venv venv
 $ source venv/bin/activate
+```
+```
+> python -m venv venv
+> venv/Scripts/activate
+```
+Ensure you are in the backend directory for the following instructions.
+Install all the required packages:
+```
 $ pip3 install -r requirements.txt
+```
+```
+> pip install -r requirements.txt
+```
+Migrate the database:
+```
 $ python3 manage.py migrate
+```
+```
+> python manage.py migrate
+```
+Seed the database: 
+```
+$ python3 manage.py seed
+```
+```
+> python manage.py seed
+```
+Run the backend server:
+```
 $ python3 manage.py runserver
 ```
-
-#### Window
-
 ```
-python -m venv venv
-venv/Scripts/activate
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py runserver
+> python manage.py runserver
 ```
+
+### Running tests for backend
+You can run all backend tests with the command:
+```
+$ python3 manage.py test
+```
+```
+> python manage.py test
+```
+Obtain the coverage of the backend tests:
+```
+$ coverage run manage.py test
+```
+```
+> coverage run manage.py test
+```
+You can either get a report on the command line interface (using the first command) or as a more detailed html report (using the second command):
+```
+$ coverage report
+$ coverage html
+```
+```
+> coverage report
+> coverage html
+```
+
 
 ## Sources
 

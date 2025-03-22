@@ -14,7 +14,7 @@ const Navbar = () => {
 				<div className='flex items-center justify-between space-x-6 max-sm:hidden text-gray-700 font-normal underline underline-offset-4'> 
 					<a href="/departments" className='hover:text-customOrange-light transition-colors duration-500'>Departments</a>
 					<a href="/helpfaq" className='hover:text-customOrange-light transition-colors duration-500'>Help & FAQs</a>
-					<a href="/members" className='hover:text-customOrange-light transition-colors duration-500'>About Us</a>
+					<a href="/aboutus" className='hover:text-customOrange-light transition-colors duration-500'>About Us</a>
 				</div>
 				<div className="flex justify-center space-x-12 items-center">
 					<a

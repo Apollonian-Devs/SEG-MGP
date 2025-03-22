@@ -255,7 +255,7 @@ describe("TicketsCard - rendering", () => {
 			);
 		});
 	});
-});
+
 
 describe('TicketsCard - Toggle Change', () => {
 	beforeEach(() => {
@@ -1148,4 +1148,29 @@ it("Suggestion", async () => {
     expect(screen.getByText("Finance")).toBeInTheDocument();
   });
   expect(screen.getByTestId("suggested-redirect-button")).toBeInTheDocument();
+});
+
+it("close chat pop up", () => {
+  // Wrapper written by GPT
+  const Wrapper = () => {
+    const [selectedTicket, setSelectedTicket] = useState(null);
+    return (
+      <TicketsCard
+        user={{}}
+        tickets={[{ id: 1, subject: "ticket 1", status: "testStatus" }]}
+        selectedTicket={selectedTicket}
+        setSelectedTicket={setSelectedTicket}
+      />
+    );
+  };
+
+  render(<Wrapper />);
+
+  fireEvent.click(screen.getByRole("button", { name: /chat/i })); 
+  fireEvent.click(screen.getByRole("button", { name: /✕/i })); 
+  fireEvent.click(screen.getByRole("button", { name: /chat/i })); 
+  fireEvent.click(screen.getByRole("button", { name: /✖/i })); 
+  
+});
+
 });

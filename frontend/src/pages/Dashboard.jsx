@@ -6,8 +6,8 @@ import NewTicketButton from '../components/NewTicketButton';
 import GenericDropdown from '../components/GenericDropdown';
 import NotificationsTab from '../components/Notification';
 import { CircleUserRound } from 'lucide-react';
-import { toast } from 'sonner';
 import handleApiError from '../utils/errorHandler';
+import { getWithAuth } from '../utils/apiUtils';
 
 const Dashboard = () => {
 	const [current_user, setCurrent_user] = useState(null);
@@ -19,11 +19,7 @@ const Dashboard = () => {
 	const fetchCurrentUser = async () => {
 		try {
 		  const access = localStorage.getItem(ACCESS_TOKEN);
-		  const response = await api.get('/api/current_user/', {
-			headers: {
-			  Authorization: `Bearer ${access}`,
-			},
-		  });
+		  const response = await getWithAuth('/api/current_user/');
 		  setCurrent_user(response.data);
 		} catch (error) {
 		  handleApiError(error, "Error fetching current user");
@@ -34,11 +30,7 @@ const Dashboard = () => {
 	  const fetchOfficers = async () => {
 		try {
 		  const access = localStorage.getItem(ACCESS_TOKEN);
-		  const response = await api.get('/api/all-officers/', {
-			headers: {
-			  Authorization: `Bearer ${access}`,
-			},
-		  });
+		  const response = await getWithAuth('/api/all-officers/');
 		  setOfficers(response.data.officers);
 		  setAdmin(response.data.admin);
 		} catch (error) {
@@ -50,10 +42,7 @@ const Dashboard = () => {
 	
 	  const fetchTickets = async () => {
 		try {
-		  const access = localStorage.getItem(ACCESS_TOKEN);
-		  const response = await api.get('/api/user-tickets/', {
-			headers: { Authorization: `Bearer ${access}` },
-		  });
+		  const response = await getWithAuth('/api/user-tickets/');
 		  setTickets(response.data.tickets);
 		} catch (error) {
 		  handleApiError(error, "Error fetching tickets");

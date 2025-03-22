@@ -13,6 +13,7 @@ import StatusHistoryButton from './StatusHistoryButton';
 import SuggestTicketGroupingButton from './SuggestTicketGroupingButton';
 import TicketPathButton from './TicketPathButton';
 import { formatApiErrorMessage } from '../utils/errorHandler';
+import { getWithAuth } from '../utils/apiUtils';
 
 import ChangeDate from './ChangeDate';
 import {
@@ -83,11 +84,8 @@ const TicketsCard = ({
 	}, [tickets]);
 
 	const toggleChange = async (type, ticket_id) => {
-		const access = localStorage.getItem(ACCESS_TOKEN);
 		const path = type === 'priority' ? 'change-priority' : 'change-status';
-		const toggleChangePromise = api.get(`/api/tickets/${path}/${ticket_id}/`, {
-			headers: { Authorization: `Bearer ${access}` },
-		});
+		const toggleChangePromise = getWithAuth(`/api/tickets/${path}/${ticket_id}/`);
 		
 		toast.promise(toggleChangePromise, {
 			loading: 'Changing...',

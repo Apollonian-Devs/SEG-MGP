@@ -4,6 +4,8 @@ import api from '../api';
 import GenericButton from './GenericButton';
 import { toast } from 'sonner';
 import { playSound } from '../utils/SoundUtils';
+import { formatApiErrorMessage } from '../utils/errorHandler';
+import { postWithAuth } from '../utils/apiUtils';
 
 const RedirectButton = ({
 	ticketid,
@@ -17,24 +19,16 @@ const RedirectButton = ({
 			return;
 		}
 
-		const access = localStorage.getItem(ACCESS_TOKEN);
-		const redirectTicketPromise = api.post(
-			'/api/redirect-ticket/',
-			{
-				ticket: ticketid,
-				to_profile: selectedOfficer
-					? selectedOfficer.is_superuser
-						? selectedOfficer.id
-						: selectedOfficer.user.id
-					: null,
-				department_id: departmentId,
-			},
-			{
-				headers: {
-					Authorization: `Bearer ${access}`,
-				},
-			}
-		);
+		const redirectTicketPromise = postWithAuth('/api/redirect-ticket/', {
+			ticket: ticketid,
+			to_profile: selectedOfficer
+			  ? selectedOfficer.is_superuser
+				? selectedOfficer.id
+				: selectedOfficer.user.id
+			  : null,
+			department_id: departmentId,
+		  });
+		  
 
 		toast.promise(redirectTicketPromise, {
 			loading: 'Loading...',
@@ -46,9 +40,12 @@ const RedirectButton = ({
 				);
 				return 'Ticket Redirected successfully';
 			},
-			error: (error) => {
-				return `Error redirecting ticket: ${error.message}`;
-			},
+			error: (error) =>
+				`Error redirecting ticket: ${formatApiErrorMessage(
+					error,
+					"An error occurred while redirecting the ticket",
+					{ includePrefix: false }
+				)}`,
 		});
 	};
 

@@ -4,7 +4,8 @@ import { ACCESS_TOKEN } from "../constants";
 import GenericButton from "./GenericButton";
 import { handleFileChange } from "../utils/attachmentUtils";
 import { toast } from 'sonner';
-
+import { getWithAuth } from "../utils/apiUtils";
+import { postWithAuth } from "../utils/apiUtils";
 
 const Chat = ({ ticket, onClose, user }) => {
   const [messages, setMessages] = useState([]);
@@ -15,10 +16,7 @@ const Chat = ({ ticket, onClose, user }) => {
   // Fetch messages for the given ticket
   const fetchMessages = async () => {
     try {
-      const access = localStorage.getItem(ACCESS_TOKEN);
-      const response = await api.get(`/api/tickets/${ticket.id}/messages/`, {
-        headers: { Authorization: `Bearer ${access}` },
-      });
+      const response = await getWithAuth(`/api/tickets/${ticket.id}/messages/`);
       setMessages(response.data.messages);
     } catch (error) {
       setError(error.response?.data || "Failed to fetch messages");
@@ -41,13 +39,9 @@ const Chat = ({ ticket, onClose, user }) => {
         message_body,   
         attachments: attachments.length > 0 ? attachments : [] 
     };
-      const response = await api.post(
-        `/api/tickets/${ticket.id}/messages/post/`, // Updated URL
-        payload, // Pass a single payload object
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+    const response = await postWithAuth(`/api/tickets/${ticket.id}/messages/post/`, payload);
+
+
       // Add the new message to the current list
       //setMessages((prevMessages) => [...prevMessages, response.data]);
   

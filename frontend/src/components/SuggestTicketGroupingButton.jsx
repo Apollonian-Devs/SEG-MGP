@@ -6,15 +6,14 @@ import GenericButton from "./GenericButton";
 import { playSound } from "../utils/SoundUtils";
 import handleApiError from "../utils/errorHandler"
 
+import { getWithAuth } from "../utils/apiUtils";
+
 const SuggestTicketGroupingButton = ({ setSuggestedGrouping, tickets }) => {
     const assignRandomGrouping = async () => {
         const groupedTickets = {};
     
         try {
-            const access = localStorage.getItem(ACCESS_TOKEN);
-            const response = await api.get('/api/user-tickets-grouping/', {
-                headers: { Authorization: `Bearer ${access}` },
-            });
+            const response = await getWithAuth('/api/user-tickets-grouping/');
     
             if (response.data.error) {
     

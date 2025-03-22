@@ -6,6 +6,7 @@ import { ACCESS_TOKEN } from '../constants';
 import { University } from 'lucide-react';
 import { toast } from "sonner";
 import handleApiError from "../utils/errorHandler.js";
+import { getWithAuth } from '../utils/apiUtils';
 
 const DepartmentsDropdown = ({ ticketId, setSelectedDepartments }) => {
 	const [departments, setDepartments] = useState([]);
@@ -15,10 +16,7 @@ const DepartmentsDropdown = ({ ticketId, setSelectedDepartments }) => {
 	useEffect(() => {
 		const fetchDepartments = async () => {
 			try {
-				const access = localStorage.getItem(ACCESS_TOKEN);
-				const response = await api.get('/api/departments/', {
-					headers: { Authorization: `Bearer ${access}` },
-				});
+				const response = await getWithAuth('/api/departments/');
 				setDepartments(response.data);
 			} catch (error) {
 				handleApiError(error, "Error fetching departments");

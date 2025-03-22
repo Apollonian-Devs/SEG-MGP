@@ -3,6 +3,7 @@ import api from "../api";
 import { ACCESS_TOKEN } from "../constants";
 import GenericTable from "./GenericTable";
 import handleApiError from "../utils/errorHandler.js";
+import { getWithAuth } from "../utils/apiUtils";
 
 const TicketPathButton = ({ ticketId }) => {
     const [pathRecords, setPathRecords] = useState([]);
@@ -11,12 +12,7 @@ const TicketPathButton = ({ ticketId }) => {
     
     const fetchRecords = async () => {
       try {
-        const access = localStorage.getItem(ACCESS_TOKEN);
-        const response = await api.get(`/api/ticket-path/${ticketId}/`, {
-          headers: {
-            Authorization: `Bearer ${access}`,
-          },
-        });
+        const response = await getWithAuth(`/api/ticket-path/${ticketId}/`);
 
         setPathRecords(response.data.ticket_path);
       } catch (error) {

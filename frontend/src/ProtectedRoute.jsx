@@ -29,6 +29,7 @@ function ProtectedRoute({ children }) {
 		} catch (error) {
 			toast.error('Error refreshing token', { description: error.message });
 			setIsAuthorized(false);
+			localStorage.clear(); // Clear all tokens
 		}
 	};
 
@@ -53,7 +54,7 @@ function ProtectedRoute({ children }) {
 		return (
 			<div className="flex items-center justify-center p-5 bg-white shadow-lg rounded-lg gap-5">
 				<Loader size={20} className="animate-spin" />
-				Loading...
+				Authorising...
 			</div>
 		);
 	}

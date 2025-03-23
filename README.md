@@ -1,4 +1,4 @@
-# Team Dionysus Games Group project
+# Team Apollonian Devs Group project
 
 ## Team members
 
@@ -54,13 +54,22 @@ The deployed version of the application can be found at: **\_**
 
 1. Make sure you have nodeJS installed. (When you download nodeJS from the official website it normally comes with npm)
 2. After cloning the repository, run the following command to install dependencies:
-
 ```
 npm install
+```
+3. Running the application
+```
 npm run dev
 ```
-
-
+#### Running tests for frontend
+Test:
+```
+npm run test
+```
+Coverage:
+```
+npm run coverage
+```
 ### Backend 
 
 Note: Although mostly the same at each step, the first set of commands at each step are for Linux and MacOS users while the second set of commands at each step are for Windows users.
@@ -104,7 +113,7 @@ $ python3 manage.py runserver
 > python manage.py runserver
 ```
 
-### Running tests for backend
+#### Running tests for backend
 You can run all backend tests with the command:
 ```
 $ python3 manage.py test

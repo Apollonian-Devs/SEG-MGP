@@ -79,7 +79,7 @@ Note: Although mostly the same at each step, the first set of commands at each s
 First set up and activate a virtual environment in the root directory of the project.
 Note: The first set of commands below are for Linux and MacOS users while the second set of commands are for Windows users.
 
-⚠️ **Python Version Requirement** 
+⚠️ **Python Version Requirement:**
 Please ensure you are using Python 3.12. We experienced issues when trying to use Python 3.13, specifically with an external AI library that we used not supporting this latest version, and therefore our application may not function properly if using Python 3.13. 
 ```
 $ python3.12 -m venv venv

@@ -76,43 +76,36 @@ npm run coverage
 
 Note: Although mostly the same at each step, the first set of commands at each step are for Linux and MacOS users while the second set of commands at each step are for Windows users.
 
-First set up and activate a virtual environment in the root directory of the project:
+First set up and activate a virtual environment in the root directory of the project.
+Note: The first set of commands below are for Linux and MacOS users while the second set of commands are for Windows users.
+
+⚠️ **Python Version Requirement** 
+Please ensure you are using Python 3.12. We experienced issues when trying to use Python 3.13, specifically with an external AI library that we used not supporting this latest version, and therefore our application may not function properly if using Python 3.13. 
 ```
-$ python3 -m venv venv
+$ python3.12 -m venv venv
 $ source venv/bin/activate
 ```
 ```
-> python -m venv venv
+> py -3.12 -m venv venv
 > venv/Scripts/activate
 ```
-Ensure you are in the backend directory for the following instructions.
+**Ensure you are in the backend directory for the following instructions.**
+Note: If using Windows, remove the 3 from pip and python, such that all commands are either pip ... or python ...
 Install all the required packages:
 ```
 $ pip3 install -r requirements.txt
-```
-```
-> pip install -r requirements.txt
 ```
 Migrate the database:
 ```
 $ python3 manage.py migrate
 ```
-```
-> python manage.py migrate
-```
 Seed the database: 
 ```
 $ python3 manage.py seed
 ```
-```
-> python manage.py seed
-```
 Run the backend server:
 ```
 $ python3 manage.py runserver
-```
-```
-> python manage.py runserver
 ```
 
 #### Running tests for backend
@@ -120,24 +113,14 @@ You can run all backend tests with the command:
 ```
 $ python3 manage.py test
 ```
-```
-> python manage.py test
-```
 Obtain the coverage of the backend tests:
 ```
 $ coverage run manage.py test
 ```
-```
-> coverage run manage.py test
-```
-You can either get a report on the command line interface (using the first command) or as a more detailed html report (using the second command):
+You can either get a basic report on the command line interface (using the first command) or as a more detailed html report (using the second command):
 ```
 $ coverage report
 $ coverage html
-```
-```
-> coverage report
-> coverage html
 ```
 
 

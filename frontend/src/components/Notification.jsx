@@ -121,7 +121,8 @@ const NotificationsTab = ({ user }) => {
 									{notification.message}
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-									{notification.created_at || 'Not Set'}
+									{/* {notification.created_at || 'Not Set'} */}
+									{notification.created_at ? new Date(notification.created_at).toLocaleString() : "Not Set"}
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
 									{notification.read_Status || 'Not Set'}

@@ -74,10 +74,8 @@ npm run coverage
 ```
 ### Backend 
 
-Note: Although mostly the same at each step, the first set of commands at each step are for Linux and MacOS users while the second set of commands at each step are for Windows users.
-
 First set up and activate a virtual environment in the root directory of the project.
-Note: The first set of commands below are for Linux and MacOS users while the second set of commands are for Windows users.
+Note: The first set of commands for doing this are for Linux and MacOS users while the second set of commands are for Windows users.
 
 ⚠️ **Python Version Requirement:**
 Please ensure you are using Python 3.12. We experienced issues when trying to use Python 3.13, specifically with an external AI library that we used not supporting this latest version, and therefore our application may not function properly if using Python 3.13. 

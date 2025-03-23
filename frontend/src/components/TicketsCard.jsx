@@ -144,7 +144,7 @@ const TicketsCard = ({
 		setShowingTickets(filteredTickets);
 	};
 
-	
+
 	const clearFilters = () => {
 		setPriority('');
 		setStatus('');
@@ -174,6 +174,7 @@ const TicketsCard = ({
 								ticket={selectedTicket}
 								onClose={() => setIsChatOpen(false)}
 								user={user}
+								fetchTickets={fetchTickets}
 							/>
 						</PopUp>
 

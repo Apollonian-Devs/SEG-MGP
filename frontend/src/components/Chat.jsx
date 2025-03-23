@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { getWithAuth } from "../utils/apiUtils";
 import { postWithAuth } from "../utils/apiUtils";
 
-const Chat = ({ ticket, onClose, user }) => {
+const Chat = ({ ticket, onClose, user , fetchTickets}) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -34,25 +34,17 @@ const Chat = ({ ticket, onClose, user }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem(ACCESS_TOKEN);
       const payload = {   
         message_body,   
         attachments: attachments.length > 0 ? attachments : [] 
     };
     const response = await postWithAuth(`/api/tickets/${ticket.id}/messages/post/`, payload);
 
-
-      // Add the new message to the current list
-      //setMessages((prevMessages) => [...prevMessages, response.data]);
-  
-      // Clear the input field
-      //setMessage_body("");
-      //setError(null);
       fetchMessages();
       setMessage_body("");
-      //setAttachments(undefined);
       setAttachments([]);
       toast.success("Your message has been sent");
+      await fetchTickets();
       
     } catch (err) {
       console.error("Full error object:", err);

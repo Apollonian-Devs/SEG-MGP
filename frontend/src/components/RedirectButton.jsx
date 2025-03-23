@@ -20,14 +20,15 @@ const RedirectButton = ({
 			return;
 		}
 
+
 		const redirectTicketPromise = postWithAuth('/api/redirect-ticket/', {
 			ticket: ticketid,
-			to_profile: selectedOfficer
-			  ? selectedOfficer.is_superuser
-				? selectedOfficer.id
-				: selectedOfficer.user.id
-			  : null,
-			department_id: departmentId,
+				to_profile: selectedOfficer
+					? selectedOfficer.is_superuser
+						? selectedOfficer.id
+						: selectedOfficer.user?.id
+					: null,
+				department_id: departmentId,
 		  });
 		  
 

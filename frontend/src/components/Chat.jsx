@@ -4,9 +4,10 @@ import { ACCESS_TOKEN } from "../constants";
 import GenericButton from "./GenericButton";
 import { handleFileChange } from "../utils/attachmentUtils";
 import { toast } from 'sonner';
+import { getWithAuth } from "../utils/apiUtils";
+import { postWithAuth } from "../utils/apiUtils";
 
-
-const Chat = ({ ticket, onClose, user }) => {
+const Chat = ({ ticket, onClose, user , fetchTickets}) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -15,10 +16,7 @@ const Chat = ({ ticket, onClose, user }) => {
   // Fetch messages for the given ticket
   const fetchMessages = async () => {
     try {
-      const access = localStorage.getItem(ACCESS_TOKEN);
-      const response = await api.get(`/api/tickets/${ticket.id}/messages/`, {
-        headers: { Authorization: `Bearer ${access}` },
-      });
+      const response = await getWithAuth(`/api/tickets/${ticket.id}/messages/`);
       setMessages(response.data.messages);
     } catch (error) {
       setError(error.response?.data || "Failed to fetch messages");
@@ -36,29 +34,17 @@ const Chat = ({ ticket, onClose, user }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem(ACCESS_TOKEN);
       const payload = {   
         message_body,   
         attachments: attachments.length > 0 ? attachments : [] 
     };
-      const response = await api.post(
-        `/api/tickets/${ticket.id}/messages/post/`, // Updated URL
-        payload, // Pass a single payload object
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      // Add the new message to the current list
-      //setMessages((prevMessages) => [...prevMessages, response.data]);
-  
-      // Clear the input field
-      //setMessage_body("");
-      //setError(null);
+    const response = await postWithAuth(`/api/tickets/${ticket.id}/messages/post/`, payload);
+
       fetchMessages();
       setMessage_body("");
-      //setAttachments(undefined);
       setAttachments([]);
       toast.success("Your message has been sent");
+      await fetchTickets();
       
     } catch (err) {
       console.error("Full error object:", err);

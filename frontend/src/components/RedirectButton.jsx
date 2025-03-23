@@ -4,6 +4,9 @@ import api from '../api';
 import GenericButton from './GenericButton';
 import { toast } from 'sonner';
 import { playSound } from '../utils/SoundUtils';
+import { formatApiErrorMessage } from '../utils/errorHandler';
+import { postWithAuth } from '../utils/apiUtils';
+import { handleToastPromise } from '../utils/toastUtils';
 
 const RedirectButton = ({
 	ticketid,
@@ -17,39 +20,29 @@ const RedirectButton = ({
 			return;
 		}
 
-		const access = localStorage.getItem(ACCESS_TOKEN);
-		const redirectTicketPromise = api.post(
-			'/api/redirect-ticket/',
-			{
-				ticket: ticketid,
+
+		const redirectTicketPromise = postWithAuth('/api/redirect-ticket/', {
+			ticket: ticketid,
 				to_profile: selectedOfficer
 					? selectedOfficer.is_superuser
 						? selectedOfficer.id
 						: selectedOfficer.user?.id
 					: null,
 				department_id: departmentId,
-			},
-			{
-				headers: {
-					Authorization: `Bearer ${access}`,
-				},
-			}
-		);
+		  });
+		  
 
-		toast.promise(redirectTicketPromise, {
+		  handleToastPromise(redirectTicketPromise, {
 			loading: 'Loading...',
-			success: async () => {
-				await fetchTickets();
-				console.log(
-					'Ticket was redirected to:',
-					selectedOfficer || departmentId
-				);
-				return 'Ticket Redirected successfully';
+			successMessage: 'Ticket Redirected successfully',
+			successCallback: async () => {
+			  await fetchTickets();
+			  console.log('Ticket was redirected to:', selectedOfficer || departmentId);
 			},
-			error: (error) => {
-				return `Error redirecting ticket: ${error.message}`;
-			},
-		});
+			errorCallback: (error) =>
+			  `Error redirecting ticket: ${formatApiErrorMessage(error, "An error occurred while redirecting the ticket", { includePrefix: false })}`,
+		  });
+		  
 	};
 
 	const isDisabled = !selectedOfficer && !departmentId;

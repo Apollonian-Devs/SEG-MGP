@@ -12,6 +12,10 @@ import SuggestDepartmentButton from './SuggestDepartmentButton';
 import StatusHistoryButton from './StatusHistoryButton';
 import SuggestTicketGroupingButton from './SuggestTicketGroupingButton';
 import TicketPathButton from './TicketPathButton';
+import { formatApiErrorMessage } from '../utils/errorHandler';
+import { getWithAuth } from '../utils/apiUtils';
+import { handleToastPromise } from '../utils/toastUtils';
+
 import ChangeDate from './ChangeDate';
 import {
 	MessageSquareMore,
@@ -81,22 +85,18 @@ const TicketsCard = ({
 	}, [tickets]);
 
 	const toggleChange = async (type, ticket_id) => {
-		const access = localStorage.getItem(ACCESS_TOKEN);
 		const path = type === 'priority' ? 'change-priority' : 'change-status';
-		const toggleChangePromise = api.get(`/api/tickets/${path}/${ticket_id}/`, {
-			headers: { Authorization: `Bearer ${access}` },
+		const toggleChangePromise = getWithAuth(`/api/tickets/${path}/${ticket_id}/`);
+		
+		handleToastPromise(toggleChangePromise, {
+			loading: 'Changing...',
+			successMessage: `${type} changed successfully!`,
+			successCallback: fetchTickets,
+			errorCallback: (error) =>
+				`Error changing ${type}: ${formatApiErrorMessage(error, "Something went wrong", { includePrefix: false })}`,
 		});
 		
-		toast.promise(toggleChangePromise, {
-			loading: 'Changing...',
-			success: async () => {
-				await fetchTickets();
-				return `${type} changed successfully!`;
-			},
-			error: (error) => {
-				return `Error changing ${type}: ${error.response?.data || error.message}`;
-			},
-		});
+
 	};
 
 	// Sorting Function
@@ -108,7 +108,7 @@ const TicketsCard = ({
 		setSortConfig({ key, direction });
 
 		const sortedTickets = [...showingTickets].sort((a, b) => {
-			const valueA = a[key] ?? ''; // Treat null/undefined as an empty string
+			const valueA = a[key] ?? ''; 
 			const valueB = b[key] ?? '';
 
 			return (
@@ -144,6 +144,7 @@ const TicketsCard = ({
 		setShowingTickets(filteredTickets);
 	};
 
+
 	const clearFilters = () => {
 		setPriority('');
 		setStatus('');
@@ -173,6 +174,7 @@ const TicketsCard = ({
 								ticket={selectedTicket}
 								onClose={() => setIsChatOpen(false)}
 								user={user}
+								fetchTickets={fetchTickets}
 							/>
 						</PopUp>
 

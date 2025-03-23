@@ -314,8 +314,9 @@ describe('TicketsCard - Toggle Change', () => {
 		// Test error function with a mock error response
 		const mockError = { response: { data: 'Something went wrong' } };
 		expect(toastOptions.error(mockError)).toBe(
-			'Error changing status: Something went wrong'
-		);
+      'Error changing status: Something went wrong'
+    );
+    
 
 		// Test error function with a standard error
 		const standardError = new Error('Network failure');

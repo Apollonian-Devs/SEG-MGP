@@ -6,7 +6,8 @@ import NewTicketButton from '../components/NewTicketButton';
 import GenericDropdown from '../components/GenericDropdown';
 import NotificationsTab from '../components/Notification';
 import { CircleUserRound } from 'lucide-react';
-import { toast } from 'sonner';
+import handleApiError from '../utils/errorHandler';
+import { getWithAuth } from '../utils/apiUtils';
 
 const Dashboard = () => {
 	const [current_user, setCurrent_user] = useState(null);
@@ -17,57 +18,37 @@ const Dashboard = () => {
 
 	const fetchCurrentUser = async () => {
 		try {
-			const access = localStorage.getItem(ACCESS_TOKEN);
-			const response = await api.get('/api/current_user/', {
-				headers: {
-					Authorization: `Bearer ${access}`,
-				},
-			});
-			// console.log('Current User:', response.data);
-			setCurrent_user(response.data); // No need to manually restructure the object
+		  const access = localStorage.getItem(ACCESS_TOKEN);
+		  const response = await getWithAuth('/api/current_user/');
+		  setCurrent_user(response.data);
 		} catch (error) {
-			toast.error('Error fetching current user', {
-				description: error.response?.data || error.message,
-			});
-			setCurrent_user(null);
+		  handleApiError(error, "Error fetching current user");
+		  setCurrent_user(null);
 		}
-	};
-
-	const fetchOfficers = async () => {
+	  };
+	
+	  const fetchOfficers = async () => {
 		try {
-			const access = localStorage.getItem(ACCESS_TOKEN);
-			const response = await api.get('/api/all-officers/', {
-				headers: {
-					Authorization: `Bearer ${access}`,
-				},
-			});
-			// console.log('All Officers', response.data);
-			setOfficers(response.data.officers); // No need to manually restructure the object
-			setAdmin(response.data.admin);
+		  const access = localStorage.getItem(ACCESS_TOKEN);
+		  const response = await getWithAuth('/api/all-officers/');
+		  setOfficers(response.data.officers);
+		  setAdmin(response.data.admin);
 		} catch (error) {
-			toast.error('Error fetching officers', {
-				description: error.response?.data || error.message,
-			});
-			setOfficers(null);
-			setAdmin(null);
+		  handleApiError(error, "Error fetching officers");
+		  setOfficers(null);
+		  setAdmin(null);
 		}
-	};
-
-	const fetchTickets = async () => {
+	  };
+	
+	  const fetchTickets = async () => {
 		try {
-			const access = localStorage.getItem(ACCESS_TOKEN);
-			const response = await api.get('/api/user-tickets/', {
-				headers: { Authorization: `Bearer ${access}` },
-			});
-			setTickets(response.data.tickets);
-			// console.log('Tickets:', response.data.tickets);
+		  const response = await getWithAuth('/api/user-tickets/');
+		  setTickets(response.data.tickets);
 		} catch (error) {
-			toast.error('Error fetching tickets', {
-				description: error.response?.data || error.message,
-			});
-			setTickets(null);
+		  handleApiError(error, "Error fetching tickets");
+		  setTickets(null);
 		}
-	};
+	  };
 
 	useEffect(() => {
 		fetchCurrentUser();

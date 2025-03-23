@@ -198,78 +198,68 @@ describe('Dashboard Component', () => {
 
 describe('Dashboard API error handling', () => {
 	test('shows toast error(response) when fetching current user fails', async () => {
-		vi.spyOn(api, 'get').mockRejectedValueOnce({
-			response: { data: 'Server error while fetching current user' },
-		});
-
-		render(<Dashboard />);
-
-		await waitFor(() => {
-			expect(toast.error).toHaveBeenCalledWith('Error fetching current user', {
-				description: 'Server error while fetching current user',
-			});
-		});
+	  vi.spyOn(api, 'get').mockRejectedValueOnce({
+		response: { data: 'Server error while fetching current user' },
+	  });
+  
+	  render(<Dashboard />);
+  
+	  await waitFor(() => {
+		// Expect the prefixed error message
+		expect(toast.error).toHaveBeenCalledWith('❌ Error fetching current user');
+	  });
 	});
-
+  
 	test('shows toast error(message) when fetching current user fails', async () => {
-		vi.spyOn(api, 'get').mockRejectedValueOnce({
-			message: 'Server error while fetching current user',
-		});
-
-		render(<Dashboard />);
-
-		await waitFor(() => {
-			expect(toast.error).toHaveBeenCalledWith('Error fetching current user', {
-				description: 'Server error while fetching current user',
-			});
-		});
+	  vi.spyOn(api, 'get').mockRejectedValueOnce({
+		message: 'Server error while fetching current user',
+	  });
+  
+	  render(<Dashboard />);
+  
+	  await waitFor(() => {
+		expect(toast.error).toHaveBeenCalledWith('❌ Error fetching current user');
+	  });
 	});
-
+  
 	test('logs an error(response) when fetching officers & tickets fails', async () => {
-		vi.spyOn(api, 'get')
-			.mockResolvedValueOnce({
-				data: { username: 'test_user', is_staff: true, is_superuser: false },
-			}) // Mock current user
-			.mockRejectedValueOnce({
-				response: { data: 'Server error while fetching tickets' },
-			}) // Mock ticket fetch failure
-			.mockRejectedValueOnce({
-				response: { data: 'Unable to fetch officers' },
-			}); // Mock officers fetch failure
-
-		render(<Dashboard />);
-
-		await waitFor(() => {
-			expect(toast.error).toHaveBeenCalledWith('Error fetching tickets', {
-				description: 'Server error while fetching tickets',
-			});
-			expect(toast.error).toHaveBeenCalledWith('Error fetching officers', {
-				description: 'Unable to fetch officers',
-			});
-		});
+	  vi.spyOn(api, 'get')
+		.mockResolvedValueOnce({
+		  data: { username: 'test_user', is_staff: true, is_superuser: false },
+		}) // current user succeeds
+		.mockRejectedValueOnce({
+		  response: { data: 'Server error while fetching tickets' },
+		}) // tickets error
+		.mockRejectedValueOnce({
+		  response: { data: 'Unable to fetch officers' },
+		}); // officers error
+  
+	  render(<Dashboard />);
+  
+	  await waitFor(() => {
+		expect(toast.error).toHaveBeenCalledWith('❌ Error fetching tickets');
+		expect(toast.error).toHaveBeenCalledWith('❌ Error fetching officers');
+	  });
 	});
-
+  
 	test('logs an error(message) when fetching officers & tickets fails', async () => {
-		vi.spyOn(api, 'get')
-			.mockResolvedValueOnce({
-				data: { username: 'test_user', is_staff: true, is_superuser: false },
-			}) // Mock current user
-			.mockRejectedValueOnce({
-				message: 'Server error while fetching tickets',
-			}) // Mock ticket fetch failure
-			.mockRejectedValueOnce({
-				message: 'Unable to fetch officers',
-			}); // Mock officers fetch failure
-
-		render(<Dashboard />);
-
-		await waitFor(() => {
-			expect(toast.error).toHaveBeenCalledWith('Error fetching tickets', {
-				description: 'Server error while fetching tickets',
-			});
-			expect(toast.error).toHaveBeenCalledWith('Error fetching officers', {
-				description: 'Unable to fetch officers',
-			});
-		});
+	  vi.spyOn(api, 'get')
+		.mockResolvedValueOnce({
+		  data: { username: 'test_user', is_staff: true, is_superuser: false },
+		})
+		.mockRejectedValueOnce({
+		  message: 'Server error while fetching tickets',
+		}) 
+		.mockRejectedValueOnce({
+		  message: 'Unable to fetch officers',
+		}); 
+  
+	  render(<Dashboard />);
+  
+	  await waitFor(() => {
+		expect(toast.error).toHaveBeenCalledWith('❌ Error fetching tickets');
+		expect(toast.error).toHaveBeenCalledWith('❌ Error fetching officers');
+	  });
 	});
-});
+  });
+  

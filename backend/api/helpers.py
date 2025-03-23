@@ -461,7 +461,7 @@ def changeTicketDueDate(ticket, user, new_due_date):
             ticket.save()
 
         msg = (
-                f"Due date has been set/updated to {new_due_date.strftime('%Y-%m-%d %H:%M:%S')} "
+                f"Due date has been set/updated to {new_due_date.strftime('%d/%m/%Y, %H:%M:%S')} "
                 f"by {user.username}."
             )
 

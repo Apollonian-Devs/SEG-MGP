@@ -6,6 +6,7 @@ import { handleFileChange } from "../utils/attachmentUtils";
 import { toast } from 'sonner';
 import { getWithAuth } from "../utils/apiUtils";
 import { postWithAuth } from "../utils/apiUtils";
+import handleApiError from "../utils/errorHandler.js";
 
 const Chat = ({ ticket, onClose, user , fetchTickets}) => {
   const [messages, setMessages] = useState([]);
@@ -19,7 +20,8 @@ const Chat = ({ ticket, onClose, user , fetchTickets}) => {
       const response = await getWithAuth(`/api/tickets/${ticket.id}/messages/`);
       setMessages(response.data.messages);
     } catch (error) {
-      setError(error.response?.data || "Failed to fetch messages");
+      // setError(error.response?.data || "Failed to fetch messages");
+      handleApiError(error, (error.response?.data || "Failed to fetch messages"));
     } finally {
       setLoading(false);
     }
@@ -47,9 +49,10 @@ const Chat = ({ ticket, onClose, user , fetchTickets}) => {
       await fetchTickets();
       
     } catch (err) {
-      console.error("Full error object:", err);
-      setError(err.response?.data || "Failed to send text");
-      toast.error(`Failed to send message: ${err.response?.data?.detail || err.message}`);
+      // console.error("Full error object:", err);
+      // setError(err.response?.data || "Failed to send text");
+      // toast.error(`Failed to send message: ${err.response?.data?.detail || err.message}`);
+      handleApiError(err, "Failed to send text")
     }
   };
   
@@ -73,8 +76,8 @@ const Chat = ({ ticket, onClose, user , fetchTickets}) => {
 
           {loading ? (
             <p>Loading messages...</p>
-          ) : error ? (
-            <p style={{ color: "red" }}>{error}</p>
+          // ) : error ? (
+          //   <p style={{ color: "red" }}>{error}</p>
           ) : (
             <div style={styles.chatHistory}>
               {messages.length === 0 ? (

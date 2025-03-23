@@ -84,13 +84,14 @@ describe("NotificationsTab", () => {
     it("marks notifications correctly", async () => {
         api.get.mockResolvedValue({
             data: {
-              notifications: [{ id: 1, message: "Notification 1", ticket_subject: "test subject" }],
+              notifications: [{ id: 1, message: "Notification 1", ticket_subject: "test subject", created_at: "2024-02-04T00:00:00Z" }],
             },
         });
         api.post.mockResolvedValue({ data: { success: true } });
         render(<NotificationsTab user={{}}/>);
         fireEvent.click(screen.getByRole("button"));
         await waitFor(() => screen.getByText("Notification 1"));
+        expect(screen.getByText(/\d{1,2}\/\d{1,2}\/\d{4}, \d{2}:\d{2}:\d{2}/i)).toBeInTheDocument();
         fireEvent.click(screen.getByText('Notification 1').closest('tr'));
         const buttons = screen.getAllByRole("button");
         fireEvent.click(buttons[1]);

@@ -1,9 +1,10 @@
 import Chat from "../components/Chat";
 import { render, screen, waitFor, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import api from "../api";  // The module your Chat component uses
+import api from "../api";
 import { ACCESS_TOKEN } from "../constants";
-import { vi } from "vitest";
+import { expect, vi } from "vitest";
+import { toast } from 'sonner';
 
 HTMLMediaElement.prototype.play = () => Promise.resolve();
 
@@ -18,6 +19,13 @@ describe("Chat", () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
+
+  vi.mock('sonner', () => ({
+    toast: {
+        error: vi.fn(),
+        success: vi.fn()
+    },
+  }));
 
   // 1) Test the loading state
   it("should render loading message initially", async () => {
@@ -189,7 +197,8 @@ describe("Chat", () => {
       );
     });
 
-    expect(screen.getByText("Failed to send text")).toBeInTheDocument();
+    // expect(screen.getByText("Failed to send text")).toBeInTheDocument();
+    expect(toast.error).toHaveBeenCalledWith("❌ Failed to send text");
   });
 
   it("failed to fetch messages (with error.response)", async () => {
@@ -217,7 +226,8 @@ describe("Chat", () => {
       });
     });
 
-    expect(screen.getByText("Failed to fetch messages")).toBeInTheDocument();
+    // expect(screen.getByText("Failed to fetch messages")).toBeInTheDocument();
+    expect(toast.error).toHaveBeenCalledWith("❌ Failed to fetch messages");
   });
 
   it("failed to fetch messages (fallback)", async () => {
@@ -241,7 +251,8 @@ describe("Chat", () => {
       });
     });
 
-    expect(screen.getByText("Failed to fetch messages")).toBeInTheDocument();
+    // expect(screen.getByText("Failed to fetch messages")).toBeInTheDocument();
+    expect(toast.error).toHaveBeenCalledWith("❌ Failed to fetch messages");
   });
 
 
@@ -289,7 +300,8 @@ describe("Chat", () => {
       );
     });
 
-    expect(screen.getByText("Failed to send text")).toBeInTheDocument();
+    // expect(screen.getByText("Failed to send text")).toBeInTheDocument();
+    expect(toast.error).toHaveBeenCalledWith("❌ Failed to send text");
   });
 
 

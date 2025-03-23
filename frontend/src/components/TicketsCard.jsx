@@ -201,6 +201,7 @@ const TicketsCard = ({
 								ticket={selectedTicket}
 								setSelectedTicket={setSelectedTicket}
 								setTickets={setTickets}
+								fetchTickets={fetchTickets}
 							/>
 						</PopUp>
 

@@ -1,16 +1,25 @@
 import React from 'react';
 import { ArrowBigLeft, Lightbulb, Users, Bot } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Adam from '/members/Adam.jpg';
+import Siddhant from '/members/Siddhant.jpg';
+import Josiah from '/members/Josiah.jpg';
+import Dimitrios from '/members/Dimitrios.jpg';
+import Fahim from '/members/Fahim.jpg';
+import Lucas from '/members/Lucas.jpg';
+import Rahat from '/members/Rahat.jpg';
+import Ryan from '/members/Ryan.jpg';
+
 
 const members = [
-  { name: 'Josiah Chan', imageSrc: 'https://avatar.iran.liara.run/public/30', link: 'https://github.com/josiahwkc'},
-  { name: 'Rahat Chowdhury', imageSrc: 'https://avatar.iran.liara.run/public/48', link: 'https://github.com/rahacho'},
-  { name: 'Lucas Jaroenpanichying', imageSrc: 'https://avatar.iran.liara.run/public/12', link: 'https://github.com/Lluc4s'},
-  { name: 'Dimitrios Katsoulis', imageSrc: 'https://avatar.iran.liara.run/public/44', link: 'https://github.com/DKatsoulis12'},
-  { name: 'Siddhant Mohapatra', imageSrc: 'https://avatar.iran.liara.run/public/10' , link: 'https://github.com/SiddyWiddy' },
-  { name: 'Fahim Nouri Nasir', imageSrc: 'https://avatar.iran.liara.run/public/3', link: 'https://github.com/FahimNN'},
-  { name: 'Yau Ting Hiu Ryan', imageSrc: 'https://avatar.iran.liara.run/public/36', link: 'https://github.com/abbyryan414'},
-  { name: 'Adam Wood', imageSrc: 'https://avatar.iran.liara.run/public/43', link: 'https://github.com/Pluto-999'},
+  { name: 'Josiah Chan', imageSrc: Josiah, link: 'https://github.com/josiahwkc'},
+  { name: 'Rahat Chowdhury', imageSrc: Rahat, link: 'https://github.com/rahacho'},
+  { name: 'Lucas Jaroenpanichying', imageSrc: Lucas, link: 'https://github.com/Lluc4s'},
+  { name: 'Dimitrios Katsoulis', imageSrc: Dimitrios, link: 'https://github.com/DKatsoulis12'},
+  { name: 'Siddhant Mohapatra', imageSrc: Siddhant, link: 'https://github.com/SiddyWiddy' },
+  { name: 'Fahim Nouri Nasir', imageSrc: Fahim, link: 'https://github.com/FahimNN'},
+  { name: 'Yau Ting Hiu Ryan', imageSrc: Ryan, link: 'https://github.com/abbyryan414'},
+  { name: 'Adam Wood', imageSrc: Adam, link: 'https://github.com/Pluto-999'},
 ];
 
 const AboutUs = () => {
@@ -92,7 +101,7 @@ const MemberCard = ({ name, imageSrc, link }) => {
       transition={{ type: 'spring', stiffness: 300 }}
     >
       <a href={link} target="_blank" rel="noopener noreferrer" className='flex items-center gap-4 p-2'>
-        <img src={imageSrc} alt={name} className="h-16 w-16 rounded-full" />
+        <img src={imageSrc} alt={name} className="h-16 w-16 rounded-full shadow-md" />
         <h3 className="text-xl font-semibold text-gray-700">{name}</h3>
       </a>
     </motion.div>

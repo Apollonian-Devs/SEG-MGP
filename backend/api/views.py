@@ -330,23 +330,7 @@ class TicketPathView(views.APIView):
         except PermissionDenied:
             return Response({"error": "Permission denied"}, status=403)
         except Exception:
-            return Response({"error": "An error has occurred"}, status=500)
-
-
-'''class OverdueTicketsView(views.APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        try:
-            user = request.user
-            overdue_tickets = get_overdue_tickets(user) 
-            serializer = TicketSerializer(overdue_tickets, many=True)  
-            return Response({"tickets": serializer.data})  
-        except Exception:
-            return Response({"error": "An error has occurred"}, status=500)'''      
-    
-
-
+            return Response({"error": "An error has occurred"}, status=500)     
 
 class ChangeTicketDateView(views.APIView):
     permission_classes = [IsAuthenticated]

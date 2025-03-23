@@ -90,7 +90,7 @@ class TestSendResponse(TestCase):
         mock_smtp_instance.send.assert_called_once_with(
             to=self.student_user.email,
             subject="Message Recieved",
-            contents=f"Staff replied on Ticket #{ticket.id}",
+            contents=f"Staff replied to Ticket #{ticket.id}",
         )
 
     @patch("api.helpers.yagmail.SMTP")
@@ -116,7 +116,7 @@ class TestSendResponse(TestCase):
         mock_smtp_instance.send.assert_called_once_with(
             to=self.staff_user.email,
             subject="Message Recieved",
-            contents=f"Student replied on Ticket #{ticket.id}",
+            contents=f"Student replied to Ticket #{ticket.id}",
         )
 
 

@@ -31,6 +31,58 @@ def handle_attachments(message, attachments):
                 mime_type=att.get("mime_type", "application/octet-stream"),
             )
 
+
+def create_ticket_message_object(ticket, sender_profile, message_body, is_internal):
+    msg = TicketMessage.objects.create(
+        ticket=ticket,
+        sender_profile=sender_profile,
+        message_body=message_body,
+        is_internal=is_internal
+    )
+
+    return msg
+
+
+def create_ticket_status_history_object(ticket, old_status, new_status, changed_by_profile, notes):
+    status = TicketStatusHistory.objects.create(
+        ticket=ticket,
+        old_status=old_status,
+        new_status=new_status,
+        changed_by_profile=changed_by_profile,
+        notes=notes
+    )
+
+    return status
+
+def create_ticket_object(subject, description, created_by, status, priority, due_date):
+    ticket = Ticket(
+        subject=subject,
+        description=description,
+        created_by=created_by,
+        status=status,
+        priority=priority,
+        due_date=due_date
+    )
+
+    ticket.save()
+
+    return ticket
+
+def create_ticket_redirect_object(ticket, from_profile, to_profile):
+    redirect = TicketRedirect.objects.create(
+        ticket=ticket,
+        from_profile=from_profile,
+        to_profile=to_profile
+    )
+
+    return redirect
+
+def notify_user_of_change_to_ticket(message, to_user, ticket, email_subject):
+    create_notification(to_user, ticket, message)
+    send_email(to_user, email_subject, message)
+
+
+
 def send_query(student_user, subject, description, message_body, attachments=None):
     """
     Creates a new ticket for 'student' user.
@@ -49,33 +101,39 @@ def send_query(student_user, subject, description, message_body, attachments=Non
         raise ValueError("Message body is required")
     
 
-    ticket = Ticket(
-        subject=subject,
-        description=description,
-        created_by=student_user,  
-        status=STATUS_OPEN, 
-        priority=None,  
-        due_date=None,   
-    )
-    ticket.save()
+    # ticket = Ticket(
+    #     subject=subject,
+    #     description=description,
+    #     created_by=student_user,  
+    #     status=STATUS_OPEN, 
+    #     priority=None,  
+    #     due_date=None,   
+    # )
+    # ticket.save()
 
-    msg = TicketMessage.objects.create(
-        ticket=ticket,
-        sender_profile=student_user,
-        message_body=message_body,
-        is_internal=False
-    )
+    ticket = create_ticket_object(subject, description, student_user, STATUS_OPEN, None, None)
+
+    # msg = TicketMessage.objects.create(
+    #     ticket=ticket,
+    #     sender_profile=student_user,
+    #     message_body=message_body,
+    #     is_internal=False
+    # )
+
+    msg = create_ticket_message_object(ticket, student_user, message_body, False)
 
     if attachments:
         handle_attachments(msg, attachments)
 
-    TicketStatusHistory.objects.create(
-        ticket=ticket,
-        old_status=None,
-        new_status=STATUS_OPEN,
-        changed_by_profile=student_user,
-        notes="Ticket created by student."
-    )
+    # TicketStatusHistory.objects.create(
+    #     ticket=ticket,
+    #     old_status=None,
+    #     new_status=STATUS_OPEN,
+    #     changed_by_profile=student_user,
+    #     notes="Ticket created by student."
+    # )
+
+    create_ticket_status_history_object(ticket, None, STATUS_OPEN, student_user, "Ticket created by student.")
 
     return ticket
 
@@ -105,12 +163,13 @@ def send_response(sender_profile, ticket, message_body, is_internal=False, attac
         raise ValidationError("Cannot respond to a closed ticket.")
 
     # Create the new TicketMessage.
-    new_msg = TicketMessage.objects.create(
-        ticket=ticket,
-        sender_profile=sender_profile,
-        message_body=message_body,
-        is_internal=is_internal
-    )
+    # new_msg = TicketMessage.objects.create(
+    #     ticket=ticket,
+    #     sender_profile=sender_profile,
+    #     message_body=message_body,
+    #     is_internal=is_internal
+    # )
+    new_msg = create_ticket_message_object(ticket, sender_profile, message_body, is_internal)
 
     # Process attachments if provided.
     #-----written by chatgpt ------
@@ -129,24 +188,39 @@ def send_response(sender_profile, ticket, message_body, is_internal=False, attac
         old_status = ticket.status
         ticket.status = let_expected_status
         ticket.save()
-        TicketStatusHistory.objects.create(
-            ticket=ticket,
-            old_status=old_status,
-            new_status=ticket.status,
-            changed_by_profile=sender_profile,
-            notes="Staff responded to the ticket." if sender_profile.is_staff else "Student responded to the ticket."
-    )
+        # TicketStatusHistory.objects.create(
+        #     ticket=ticket,
+        #     old_status=old_status,
+        #     new_status=ticket.status,
+        #     changed_by_profile=sender_profile,
+        #     notes="Staff responded to the ticket." if sender_profile.is_staff else "Student responded to the ticket."
+        # )
+        create_ticket_status_history_object(ticket, old_status, ticket.status, sender_profile, 
+                                            ("Staff responded to the ticket." if sender_profile.is_staff else "Student responded to the ticket."))
+
 
     # Create a Notification for the other party.
     if sender_profile.is_staff:
-        message= f"Staff responded to Ticket #{ticket.id}"
-        create_notification(ticket.created_by, ticket, message)
-        send_email(ticket.created_by, "Message Recieved", f"Staff replied on Ticket #{ticket.id}")
+        # message= f"Staff responded to Ticket #{ticket.id}"
+        # create_notification(ticket.created_by, ticket, message)
+        # send_email(ticket.created_by, "Message Recieved", f"Staff replied on Ticket #{ticket.id}")
+        notify_user_of_change_to_ticket(
+            f"Staff replied to Ticket #{ticket.id}",
+            ticket.created_by,
+            ticket,
+            "Message Recieved"
+        )
     else:
         if ticket.assigned_to is not None:
-            message=f"Student replied on Ticket #{ticket.id}"
-            create_notification(ticket.assigned_to, ticket, message)
-            send_email(ticket.assigned_to, "Message Recieved", f"Student replied on Ticket #{ticket.id}")
+            # message=f"Student replied on Ticket #{ticket.id}"
+            # create_notification(ticket.assigned_to, ticket, message)
+            # send_email(ticket.assigned_to, "Message Recieved", f"Student replied on Ticket #{ticket.id}")
+            notify_user_of_change_to_ticket(
+                f"Student replied to Ticket #{ticket.id}",
+                ticket.assigned_to,
+                ticket, 
+                "Message Recieved"
+            )
 
     return new_msg
 
@@ -184,18 +258,26 @@ def redirect_query(ticket, from_user, to_user):
     ticket.save()
 
 
-    TicketRedirect.objects.create(
-        ticket=ticket,
-        from_profile=from_user,
-        to_profile=to_user,
+    # TicketRedirect.objects.create(
+    #     ticket=ticket,
+    #     from_profile=from_user,
+    #     to_profile=to_user,
+    # )
+
+    create_ticket_redirect_object(ticket, from_user, to_user)
+
+    # msg=f"Ticket #{ticket.id} has been redirected to you by {from_user.username}."
+
+    # create_notification(to_user, ticket, msg)
+
+    # send_email(to_user, 'Redirection of ticket', msg)
+
+    notify_user_of_change_to_ticket(
+        f"Ticket #{ticket.id} has been redirected to you by {from_user.username}.",
+        to_user,
+        ticket,
+        "Redirection of ticket"
     )
-
-    msg=f"Ticket #{ticket.id} has been redirected to you by {from_user.username}."
-
-    create_notification(to_user, ticket, msg)
-
-    send_email(to_user, 'Redirection of ticket', msg)
-
 
     return ticket
 
@@ -364,13 +446,15 @@ def changeTicketPriority(ticket, user):
 
     ticket.save()
 
-    TicketStatusHistory.objects.create(
-        ticket=ticket,
-        old_status=ticket.status,
-        new_status=ticket.status, 
-        changed_by_profile=user,
-        notes=f"Priority changed from {old_priority} to {ticket.priority}"
-    )
+    # TicketStatusHistory.objects.create(
+    #     ticket=ticket,
+    #     old_status=ticket.status,
+    #     new_status=ticket.status, 
+    #     changed_by_profile=user,
+    #     notes=f"Priority changed from {old_priority} to {ticket.priority}"
+    # )
+    create_ticket_status_history_object(ticket, ticket.status, ticket.status, user, 
+                                        (f"Priority changed from {old_priority} to {ticket.priority}"))
 
 
 def changeTicketStatus(ticket, user):
@@ -395,13 +479,15 @@ def changeTicketStatus(ticket, user):
 
     ticket.save()
 
-    TicketStatusHistory.objects.create(
-        ticket=ticket,
-        old_status=old_status,
-        new_status=ticket.status,
-        changed_by_profile=user,
-        notes=f"Status changed from {old_status} to {ticket.status}"
-    )  
+    # TicketStatusHistory.objects.create(
+    #     ticket=ticket,
+    #     old_status=old_status,
+    #     new_status=ticket.status,
+    #     changed_by_profile=user,
+    #     notes=f"Status changed from {old_status} to {ticket.status}"
+    # )  
+    create_ticket_status_history_object(ticket, old_status, ticket.status, user, 
+                                        (f"Status changed from {old_status} to {ticket.status}"))
 
 
 
@@ -448,25 +534,37 @@ def changeTicketDueDate(ticket, user, new_due_date):
 
         if ticket.status != STATUS_AWAITING_STUDENT:
             # Create a status history record for the change.
-            TicketStatusHistory.objects.create(
-                ticket=ticket,
-                old_status=ticket.status,
-                new_status=STATUS_AWAITING_STUDENT,
-                changed_by_profile=user,
-                notes=f"Due date changed to {new_due_date} and Ticket Status is Awaiting Student"
-            )
+            # TicketStatusHistory.objects.create(
+            #     ticket=ticket,
+            #     old_status=ticket.status,
+            #     new_status=STATUS_AWAITING_STUDENT,
+            #     changed_by_profile=user,
+            #     notes=f"Due date changed to {new_due_date} and Ticket Status is Awaiting Student"
+            # )
+            create_ticket_status_history_object(ticket, ticket.status, STATUS_AWAITING_STUDENT, user, 
+                                                (f"Due date changed to {new_due_date} and Ticket Status is Awaiting Student"))
 
             # Change the ticket status.
             ticket.status = STATUS_AWAITING_STUDENT
             ticket.save()
 
-        msg = (
+        # msg = (
+        #         f"Due date has been set/updated to {new_due_date.strftime('%d/%m/%Y, %H:%M:%S')} "
+        #         f"by {user.username}."
+        #     )
+
+        # create_notification(ticket.created_by, ticket, msg)
+        # send_email(ticket.created_by, 'Your due date of the ticket', (msg),)
+
+        notify_user_of_change_to_ticket(
+            (
                 f"Due date has been set/updated to {new_due_date.strftime('%d/%m/%Y, %H:%M:%S')} "
                 f"by {user.username}."
-            )
-
-        create_notification(ticket.created_by, ticket, msg)
-        send_email(ticket.created_by, 'Your due date of the ticket', (msg),)
+            ),
+            ticket.created_by,
+            ticket,
+            'Your due date of the ticket'
+        )
 
         return ticket
     

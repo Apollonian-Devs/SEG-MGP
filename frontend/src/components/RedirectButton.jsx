@@ -25,7 +25,7 @@ const RedirectButton = ({
 				to_profile: selectedOfficer
 					? selectedOfficer.is_superuser
 						? selectedOfficer.id
-						: selectedOfficer.user.id
+						: selectedOfficer.user?.id
 					: null,
 				department_id: departmentId,
 			},

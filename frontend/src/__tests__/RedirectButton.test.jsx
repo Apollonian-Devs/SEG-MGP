@@ -231,10 +231,45 @@ describe('RedirectButton Component', () => {
 
 		const errorCallback = toast.promise.mock.calls[0][1].error;
 
-		// Ensure the error callback is defined
 		expect(errorCallback).toBeDefined();
 	  
-		// Check if the error callback correctly returns the error message
+		expect(errorCallback(new Error('Test API Error'))).toBe(
+		  'Error redirecting ticket: Test API Error'
+		);
+
+		expect(toast.promise).toHaveBeenCalledWith(
+			expect.any(Promise),
+			expect.objectContaining({
+			  error: expect.any(Function),
+			})
+		  );
+
+	  });
+
+
+	  it('returns correct error toast when officer is provided incorrectly', async () => {
+		api.post.mockRejectedValue(new Error('Test API Error'));
+		const mockFetchTickets = vi.fn();
+	  
+		render(
+		  <RedirectButton
+			ticketid={1}
+			selectedOfficer={'null'}
+			departmentId={null}
+			fetchTickets={mockFetchTickets}
+		  />
+		);
+	  
+		fireEvent.click(screen.getByText(/Redirect/i));
+	  
+		await waitFor(() => {
+		  expect(api.post).toHaveBeenCalled();
+		});
+
+		const errorCallback = toast.promise.mock.calls[0][1].error;
+
+		expect(errorCallback).toBeDefined();
+	  
 		expect(errorCallback(new Error('Test API Error'))).toBe(
 		  'Error redirecting ticket: Test API Error'
 		);

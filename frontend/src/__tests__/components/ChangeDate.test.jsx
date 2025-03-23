@@ -47,12 +47,14 @@ describe("ChangeDate Component", () => {
         const mockTicket = {id: 1, due_date: '2025-12-31'}
         const mockSetSelectedTicket = vi.fn();
         const mockSetTickets = vi.fn();
+        const mockFetchTickets = vi.fn();
 
         render(<MemoryRouter>
             <ChangeDate 
             ticket={mockTicket} 
             setSelectedTicket={mockSetSelectedTicket}
             setTickets={mockSetTickets}
+            fetchTickets={mockFetchTickets}
             /></MemoryRouter>);
 
         const date = screen.getByPlaceholderText(/enter the new date/i);
@@ -91,6 +93,8 @@ describe("ChangeDate Component", () => {
         const updatedTickets = getSetTicketsCall([{ id: 1, due_date: "2025-12-31" }, {id: 2, due_date: "2025-12-30"}]); // initial tickets list
 
         expect(updatedTickets).toEqual([{ id: 1, due_date: "2025-12-25" }, {id: 2, due_date: "2025-12-30"}]);
+    
+        expect(mockFetchTickets).toHaveBeenCalledTimes(1);
     })
 
     it("Correct toast should be displayed when there is a 400 response to an invalid post request", async () => {

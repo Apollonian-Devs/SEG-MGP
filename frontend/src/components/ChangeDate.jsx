@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import handleApiError from "../utils/errorHandler.js";
 import { postWithAuth } from "../utils/apiUtils";
 
-const ChangeDate = ({ ticket, setSelectedTicket, setTickets }) => {
+const ChangeDate = ({ ticket, setSelectedTicket, setTickets, fetchTickets }) => {
 
     const[date, setDate] = useState(null);
     const navigate = useNavigate();
@@ -31,6 +31,8 @@ const ChangeDate = ({ ticket, setSelectedTicket, setTickets }) => {
             setTickets((prevTickets) =>
                 prevTickets.map((t) => (t.id === ticket.id ? { ...t, due_date: updatedDueDate } : t))
             );
+
+            await fetchTickets();
         }
         
         catch (error) {

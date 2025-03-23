@@ -1349,245 +1349,6 @@ class TestTicketPathView(TestCase):
         self.assertEqual(response.data["error"], "An error has occurred")
 
 
-#### TEST OVERDUETICKETS VIEW HERE ####
-        #TO BE DELETED WITH ADAM'S CONSENT
-class TestOverdueTicketsView(TestCase):
-    def setUp(self):
-        self.client = APIClient()
-
-
-    def authorize_student_user_with_overdue_ticket(self):
-        test_user = {
-            "username": "@testStudent",
-            "email": "test@email.com",
-            "password": "testpass",
-            "first_name": "first",
-            "last_name": "last"
-        }
-
-        self.client.post(reverse("register"), test_user)
-
-        response = self.client.post(reverse("get_token"), 
-                                    {"username": "@testStudent", 
-                                     "password": "testpass"})
-
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {response.json()["access"]}')
-
-        self.create_overdue_ticket(test_user)
-
-
-    def create_overdue_ticket(self, test_user):
-        
-        created_by, _ = User.objects.get_or_create(username=test_user["username"], defaults=test_user) # suggested by chatGPT
-        
-        ticket = Ticket.objects.create(
-            id=1,
-            subject="Test ticket",
-            description="This is a test ticket",
-            created_by=created_by, 
-            due_date=make_aware(datetime(2024, 12, 31, 0, 0, 0))
-        )
-
-        return ticket
-    
-    
-    def authorize_student_user(self):
-        test_user = {
-            "username": "@testStudent",
-            "email": "test@email.com",
-            "password": "testpass",
-            "first_name": "first",
-            "last_name": "last"
-        }
-
-        self.client.post(reverse("register"), test_user)
-
-        response = self.client.post(reverse("get_token"), 
-                                    {"username": "@testStudent", 
-                                     "password": "testpass"})
-
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {response.json()["access"]}')
-
-        self.create_ticket(test_user)
-
-    
-    def create_ticket(self, test_user):
-        
-        created_by, _ = User.objects.get_or_create(username=test_user["username"], defaults=test_user) # suggested by chatGPT
-        
-        ticket = Ticket.objects.create(
-            id=1,
-            subject="Test ticket",
-            description="This is a test ticket",
-            created_by=created_by, 
-            due_date=make_aware(datetime(2025, 12, 31, 0, 0, 0))
-        )
-
-        return ticket
-
-
-    '''def test_get_request_fails_when_user_is_not_authenticated(self):
-        response = self.client.get(reverse('overdue-tickets'))
-
-        self.assertEqual(response.status_code, 401) # not yet authenticated so the request will fail
-    '''
-
-
-    '''
-    def test_get_request_succeeds_with_valid_overdue_ticket(self):
-        self.authorize_student_user_with_overdue_ticket()
-
-        response = self.client.get(reverse('overdue-tickets'))
-        self.assertEqual(response.status_code, 200)
-
-        # get the details of the first and only ticket in the list of ticket dictionaries
-        self.assertEqual(response.data['tickets'][0]['id'], 1)
-        self.assertEqual(response.data['tickets'][0]['subject'], 'Test ticket')
-        self.assertEqual(response.data['tickets'][0]['description'], 'This is a test ticket')
-    '''
-
-    '''
-
-    def test_get_request_still_succeeds_with_no_overdue_tickets(self):
-        self.authorize_student_user()
-
-        response = self.client.get(reverse('overdue-tickets'))
-        self.assertEqual(response.status_code, 200)
-
-        # empty list returned in the response as there is no overdue tickets
-        self.assertEqual(response.data['tickets'], [])
-    '''
-
-    '''
-    @patch('api.views.get_overdue_tickets')
-    def test_get_request_fails_when_get_overdue_tickets_raises_an_exception(self, mock_get_overdue_tickets):
-        self.authorize_student_user()
-       
-        mock_get_overdue_tickets.side_effect = Exception("An exception was raised")
-
-        response = self.client.get(reverse("overdue-tickets"))
-
-        self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.data["error"], "An error has occurred")'''
-
-
-#### TEST UNANSWEREDTICKETS VIEW HERE ####
-    #TO BE DELETED WITH ADAM'S CONSENT
-class TestUnansweredTicketsView(TestCase):
-    def setUp(self):
-        self.client = APIClient()
-        self.student_user = User.objects.create_user(username="testStudent", password="testpass")
-
-    def authorize_student(self):
-        test_student = {
-            "username": "@testStudent",
-            "email": "test@email.com",
-            "password": "testpass",
-            "first_name": "first",
-            "last_name": "last"
-        }
-        
-        self.client.post(reverse("register"), test_student)
-
-        response = self.client.post(reverse("get_token"), 
-                                    {"username": "@testStudent", 
-                                     "password": "testpass"})
-
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {response.json()["access"]}')
-
-        self.create_ticket_for_student(test_student)
-
-    def create_ticket_for_student(self, student_data):
-        created_by, _ = User.objects.get_or_create(username=student_data["username"], defaults=student_data)
-
-        ticket = Ticket.objects.create(
-            subject="Test ticket 1",
-            description="This is a test ticket",
-            created_by=created_by,
-            status="Awaiting Student"
-        )
-
-        return ticket
-
-    def authorize_staff(self):
-        test_staff = {
-            "username": "@testStaff",
-            "email": "test@email.com",
-            "password": "testpass",
-            "first_name": "first",
-            "last_name": "last",
-            "is_staff": "true"
-        }
-        
-        self.client.post(reverse("register"), test_staff)
-
-        response = self.client.post(reverse("get_token"), 
-                                    {"username": "@testStaff", 
-                                     "password": "testpass"})
-
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {response.json()["access"]}')
-
-        self.create_ticket_for_staff(test_staff)
-
-    def create_ticket_for_staff(self, staff_data):
-        assigned_to, _ = User.objects.get_or_create(username=staff_data["username"], defaults=staff_data)
-
-        ticket = Ticket.objects.create(
-            id=2,
-            subject="Test ticket 2",
-            description="This is a test ticket",
-            created_by=self.student_user,
-            assigned_to=assigned_to,
-            status="Open"
-        )
-
-        return ticket
-
-    
-
-
-    
-    '''def test_get_request_succeeds_with_valid_student(self):
-        self.authorize_student()
-
-        response = self.client.get(reverse("unanswered-tickets"))
-
-        self.assertEqual(response.status_code, 200)
-        
-        # Should return the details of the ticket created by the student user
-        self.assertEqual(response.data["tickets"][0]["id"], 1)
-        self.assertEqual(response.data["tickets"][0]["subject"], "Test ticket 1")
-        self.assertEqual(response.data["tickets"][0]["description"], "This is a test ticket")'''
-
-
-    '''def test_get_request_succeeds_with_valid_staff(self):
-        self.authorize_staff()
-
-        response = self.client.get(reverse("unanswered-tickets"))
-
-        self.assertEqual(response.status_code, 200)
-
-        # Should return the details of the ticket assigned to the staff member
-        self.assertEqual(response.data["tickets"][0]["id"], 2)
-        self.assertEqual(response.data["tickets"][0]["subject"], "Test ticket 2")
-        self.assertEqual(response.data["tickets"][0]["description"], "This is a test ticket")'''
-
-    
-    #@patch('api.views.get_unanswered_tickets')
-    '''def test_get_request_fails_when_get_unanswered_tickets_raises_an_exception(self, mock_get_unanswered_tickets):
-        self.authorize_student()
-       
-        mock_get_unanswered_tickets.side_effect = Exception("An exception was raised")
-
-        response = self.client.get(reverse("unanswered-tickets"))
-
-        self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.data["error"], "An error has occurred")'''
-
-        
-
-
-
 #### TEST CHANGETICKETDATE VIEW HERE ####
 class TestChangeTicketDateView(TestCase):
     def setUp(self):
@@ -1709,6 +1470,13 @@ class TestDepartmentsListView(TestCase):
         self.assertEqual(response.data[1]["description"], "Handles Housing Issues")
 
 
+    def test_get_request_succeeds_with_no_departments(self):
+        response = self.client.get(reverse("departments-list"))
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(response.data, [])
+
     @patch("api.views.Department.objects.all")
     def test_get_request_fails_when_accessing_all_department_objects_raises_an_exception(self, mock_all_departments):
         mock_all_departments.side_effect = Exception("An exception was raised")
@@ -1718,3 +1486,171 @@ class TestDepartmentsListView(TestCase):
         self.assertEqual(response.status_code, 500)
 
 
+#### TEST SUGGESTDEPARTMENTVIEW HERE ####
+class TestSuggestDepartmentView(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.student_user = User.objects.create_user(username="testStudent", password="testpass")
+        self.client.force_authenticate(user=self.student_user)
+        self.ticket = Ticket.objects.create(id=1, 
+                                       subject="Test ticket",
+                                       description="This is a test ticket",
+                                       created_by=self.student_user)
+
+
+    def test_post_request_succeeds_with_valid_ticket_id_and_description_with_a_department_in_the_system(self):
+        department = Department.objects.create(name="IT Support", description="Handles IT Issues")
+
+        data = {"ticket_id": self.ticket.id, "description": self.ticket.description}
+
+        response = self.client.post(reverse("suggest-deparment"), data, format="json")
+
+        self.assertEqual(response.status_code, 200)
+
+
+    def test_post_request_fails_with_status_code_400_if_there_is_invalid_data(self):
+        data = {"ticket_id": self.ticket.id}
+
+        response = self.client.post(reverse("suggest-deparment"), data, format="json")
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data["error"], "Ticket ID and description are required.")
+
+
+    def test_post_request_fails_with_status_code_404_if_the_ticket_doesnt_exist(self):
+
+        data = {"ticket_id": 2, "description": self.ticket.description}
+
+        response = self.client.post(reverse("suggest-deparment"), data, format="json")
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.data["error"], "Ticket not found.")
+
+
+    def test_post_request_fails_with_status_code_500_if_there_are_no_departments_in_the_system(self):
+        data = {"ticket_id": self.ticket.id, "description": self.ticket.description}
+
+        response = self.client.post(reverse("suggest-deparment"), data, format="json")
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.data["error"], "No departments found in the system.")
+
+    
+    @patch("api.DepartmentSuggestionAI.open")
+    def test_post_request_fails_with_status_code_500_if_the_training_data_file_isnt_found(self, mock_training_data):
+        mock_training_data.side_effect = FileNotFoundError("File not found")
+
+        department = Department.objects.create(name="IT Support", description="Handles IT Issues")
+
+        data = {"ticket_id": self.ticket.id, "description": self.ticket.description}
+
+        response = self.client.post(reverse("suggest-deparment"), data, format="json")
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.data["error"], "Training data file not found.")
+
+
+#### TEST GROUPTICKETSVIEW HERE ####
+class TestGroupTicketsView(TestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+        self.student_user = User.objects.create_user(username="testStudent", password="testpass")
+
+    
+    def authorize_student(self):
+        test_user = {
+            "username": "@testStudent",
+            "email": "test@email.com",
+            "password": "testpass",
+            "first_name": "first",
+            "last_name": "last"
+        }
+
+        self.client.post(reverse("register"), test_user)
+
+        response = self.client.post(reverse("get_token"), 
+                                    {"username": "@testStudent", 
+                                     "password": "testpass"})
+
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {response.json()["access"]}') 
+
+
+    def authorize_admin(self):
+        test_user = {
+            "username": "@testStaff",
+            "email": "test@email.com",
+            "password": "testpass",
+            "first_name": "first",
+            "last_name": "last",
+            "is_staff": "true",
+            "is_superuser": "true",
+        }
+
+        self.client.post(reverse("register"), test_user)
+
+        response = self.client.post(reverse("get_token"), 
+                                    {"username": "@testStaff", 
+                                     "password": "testpass"})
+        
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {response.json()["access"]}') 
+
+        self.admin, _ = User.objects.get_or_create(username=test_user["username"], defaults=test_user)
+
+
+    def assign_ticket_to_admin(self, ticketID):
+        Ticket.objects.create(
+            id=ticketID,
+            subject=f"Test ticket {ticketID}",
+            description="This is a test ticket",
+            created_by=self.student_user,
+            assigned_to=self.admin
+        )
+
+    
+    def test_get_request_succeeds_with_admin_user_and_more_than_2_tickets_assigned_to_the_admin(self):
+        self.authorize_admin()
+
+        self.assign_ticket_to_admin(1)
+        self.assign_ticket_to_admin(2)
+        self.assign_ticket_to_admin(3)
+
+        response = self.client.get(reverse("user-tickets-grouping"))
+
+        self.assertEqual(response.status_code, 200)
+
+    
+    def test_get_request_fails_with_less_than_2_tickets_assigned_to_the_admin(self):
+        self.authorize_admin()
+
+        self.assign_ticket_to_admin(1)
+
+        response = self.client.get(reverse("user-tickets-grouping"))
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data["error"], "Not enough tickets available for clustering. Need at least 2.")
+
+    
+    def test_get_request_fails_with_student_user(self):
+        self.authorize_student()
+
+        response = self.client.get(reverse("user-tickets-grouping"))
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data["error"], "Permission denied")
+
+    
+    @patch("api.views.get_tags")
+    def test_get_request_fails_if_get_tags_throws_an_exception(self, mock_get_tags):
+        self.authorize_admin()
+
+        mock_get_tags.side_effect = Exception("An exception was thrown")
+
+        self.assign_ticket_to_admin(1)
+        self.assign_ticket_to_admin(2)
+        self.assign_ticket_to_admin(3)
+
+        response = self.client.get(reverse("user-tickets-grouping"))
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.data["error"], "An error has occurred: An exception was thrown")

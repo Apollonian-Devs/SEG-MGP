@@ -144,6 +144,7 @@ const TicketsCard = ({
 		setShowingTickets(filteredTickets);
 	};
 
+	
 	const clearFilters = () => {
 		setPriority('');
 		setStatus('');

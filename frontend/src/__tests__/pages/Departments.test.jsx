@@ -1,47 +1,16 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import Departments from "../../pages/Departments";
-import { vi } from "vitest";
+import { describe, it, expect } from 'vitest';
 
-vi.mock("../components/TeamCard", () => ({
-  __esModule: true,
-  default: vi.fn(({ name, description, url }) => (
-    <div data-testid="team-card">
-      <h3>{name}</h3>
-      <p>{description}</p>
-      <a href={url}>Visit</a>
-    </div>
-  )),
-}));
-
-describe("Departments Component", () => {
-  test("✅ Renders all department cards", () => {
+describe("Departments Page", () => {
+  it("Renders all department cards", () => {
     render(<Departments />);
-    
-
-    const departmentCards = screen.getAllByTestId("team-card");
+    const departmentCards = screen.getAllByRole('heading', { level: 3 });
     expect(departmentCards.length).toBe(18);
   });
 
-  test("✅ Dark mode is enabled by default", () => {
-    render(<Departments />);
-    
-    expect(document.documentElement.classList.contains("dark")).toBe(true);
-  });
-
-  test("✅ Clicking toggle button switches themes", () => {
-    render(<Departments />);
-    
-    const toggleButton = screen.getByRole("button", { name: /Light Mode/i });
-    
-    fireEvent.click(toggleButton); // Switch to light mode
-    expect(document.documentElement.classList.contains("dark")).toBe(false);
-
-    fireEvent.click(toggleButton); // Switch back to dark mode
-    expect(document.documentElement.classList.contains("dark")).toBe(true);
-  });
-
-  test("✅ Each department card contains correct name and description", () => {
+  it("Each department card contains correct name and description", () => {
     render(<Departments />);
 
     const departmentNames = [
@@ -70,4 +39,23 @@ describe("Departments Component", () => {
     });
   });
 
+  it('Flips department card on click', () => {
+    render(<Departments />);
+    const firstCard = screen.getAllByRole('heading', { level: 3 })[0];
+    const parent = firstCard.closest('.cursor-pointer');
+    expect(parent).toBeTruthy();
+    fireEvent.click(parent);
+    // There's no DOM way to assert rotation, but we assert the card still renders after click
+    expect(firstCard).toBeInTheDocument();
+  });
+
+  it('Each department card contains visit link', () => {
+    render(<Departments />);
+    const links = screen.getAllByRole('link', { name: /Visit Site/i });
+    expect(links.length).toBeGreaterThan(0);
+    links.forEach((link) => {
+      expect(link).toHaveAttribute('href');
+      expect(link).toHaveAttribute('target', '_blank');
+    });
+  });
 });

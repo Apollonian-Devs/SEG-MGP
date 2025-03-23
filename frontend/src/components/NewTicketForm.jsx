@@ -5,6 +5,9 @@ import GenericInput from './GenericInput';
 import { useFileInput } from '../utils/attachmentUtils';
 import { toast } from 'sonner';
 import { formatApiErrorMessage } from "../utils/errorHandler";
+import { ACCESS_TOKEN } from '../constants';
+import { postWithAuth } from '../utils/apiUtils';
+import { handleToastPromise } from '../utils/toastUtils';
 
 const NewTicketForm = ({ togglePopup, fetchTickets }) => {
     const [subject, setSubject] = useState('');
@@ -18,22 +21,27 @@ const NewTicketForm = ({ togglePopup, fetchTickets }) => {
         e.preventDefault();
 
         const payload = { subject, description, message, attachments };
-        const newTicketPromise = api.post('api/tickets/', payload);
-
-        toast.promise(newTicketPromise, {
-            loading: 'Loading...',
-            success: async () =>  {
-                togglePopup();
-                setSubject('');
-                setDescription('');
-                setMessage('');
-                setAttachments([]);
-                resetFileInput();
-				await fetchTickets();
-                return 'Ticket Submitted successfully';
+        const newTicketPromise = postWithAuth('api/tickets/', payload, {
+            headers: {
+              'Content-Type': 'application/json',
             },
-            error: (error) => formatApiErrorMessage(error, "Error submitting ticket"),
         });
+          
+
+        handleToastPromise(newTicketPromise, {
+            loading: 'Loading...',
+            successMessage: 'Ticket Submitted successfully',
+            successCallback: async () => {
+              togglePopup();
+              setSubject('');
+              setDescription('');
+              setMessage('');
+              setAttachments([]);
+              resetFileInput();
+              await fetchTickets();
+            },
+            errorCallback: (error) => formatApiErrorMessage(error, "Error submitting ticket"),
+          });
     };
 
     return (

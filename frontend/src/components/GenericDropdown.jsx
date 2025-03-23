@@ -45,7 +45,7 @@ const GenericDropdown = ({
 				setMenuPositionRight(false);
 			}
 		}
-	}, [isOpen]); // Run when isOpen changes
+	}, [isOpen]); 
 
   useEffect(() => {
 		const handleClickOutside = (event) => {

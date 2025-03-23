@@ -60,6 +60,7 @@ describe("Chat", () => {
           ticket={ticket}
           onClose={() => {}}
           user={{ id: 1, username: "User" }}
+          
         />
       );
     });
@@ -70,7 +71,8 @@ describe("Chat", () => {
       });
     });
 
-    expect(screen.getByText("Hello")).toBeInTheDocument();
+    expect(await screen.findByText("Hello")).toBeInTheDocument();
+
   });
 
 
@@ -111,6 +113,7 @@ describe("Chat", () => {
           ticket={ticket}
           onClose={() => {}}
           user={{ id: 1, username: "User" }}
+          fetchTickets={() => {}}
         />
       );
     });
@@ -137,7 +140,8 @@ describe("Chat", () => {
       );
     });
 
-    expect(screen.getByText("Hello")).toBeInTheDocument();
+    expect(await screen.findByText("Hello")).toBeInTheDocument();
+
   });
 
   it("failed to send a message (with error.response)", async () => {
@@ -404,6 +408,7 @@ describe("Chat", () => {
           ticket={ticket}
           onClose={() => {}}
           user={{ id: 1, username: "User" }}
+          fetchTickets={() => {}}
         />
       );
     });
@@ -440,6 +445,7 @@ describe("Chat", () => {
       );
     });
 
-    expect(screen.getByText("Hello")).toBeInTheDocument();
+    expect(await screen.findByText("Hello")).toBeInTheDocument();
+
   });
 });

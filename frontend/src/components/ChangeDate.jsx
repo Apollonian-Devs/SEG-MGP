@@ -6,6 +6,7 @@ import api from "../api";
 import { Navigate, useNavigate } from "react-router-dom";
 import { toast } from 'sonner';
 import handleApiError from "../utils/errorHandler.js";
+import { postWithAuth } from "../utils/apiUtils";
 
 const ChangeDate = ({ ticket, setSelectedTicket, setTickets }) => {
 
@@ -16,13 +17,8 @@ const ChangeDate = ({ ticket, setSelectedTicket, setTickets }) => {
         e.preventDefault();
 
         try {
-            const access = localStorage.getItem(ACCESS_TOKEN);
 
-            const response = await api.post(
-                "api/tickets/change-date", 
-                { id: ticket.id, due_date: date },
-                { headers: { Authorization: `Bearer ${access}` } }
-            );
+            const response = await postWithAuth("api/tickets/change-date", { id: ticket.id, due_date: date });
 
             if (response.status !== 201) return;
 

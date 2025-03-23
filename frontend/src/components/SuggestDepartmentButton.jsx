@@ -4,28 +4,28 @@ import { ACCESS_TOKEN } from '../constants';
 import GenericButton from './GenericButton';
 import { playSound } from "../utils/SoundUtils";
 import handleApiError from "../utils/errorHandler.js"
+import { postWithAuth } from '../utils/apiUtils';
 
 const SuggestDepartmentButton = ({ setSuggestedDepartments, tickets }) => {
 	const fetchSuggestedDepartment = async (ticketId, ticketDescription) => {
 		try {
-			const access = localStorage.getItem(ACCESS_TOKEN);
-			const response = await api.post(
+			const response = await postWithAuth(
 				'/api/suggested-department/',
 				{
-					ticket_id: ticketId,
-					description: ticketDescription,
+				  ticket_id: ticketId,
+				  description: ticketDescription,
 				},
 				{
-					headers: {
-						Authorization: `Bearer ${access}`,
-						'Content-Type': 'application/json',
-					},
+				  headers: {
+					'Content-Type': 'application/json',
+				  },
 				}
-			);
-			console.log(
+			  );
+			  
+			/*console.log(
 				'Fetched Suggested Department:',
 				response.data.suggested_department
-			);
+			);*/
 			return response.data.suggested_department;
 		} catch (error) {
 			handleApiError(error, "Error fetching suggested department");

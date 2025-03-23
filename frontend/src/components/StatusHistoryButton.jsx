@@ -3,7 +3,7 @@ import api from "../api";
 import { ACCESS_TOKEN } from "../constants";
 import GenericTable from "./GenericTable";
 import handleApiError from "../utils/errorHandler.js"
-
+import { getWithAuth } from "../utils/apiUtils";
 const StatusHistoryButton = ({ ticketId }) => {
     const [statusRecords, setStatusRecords] = useState([]);
     
@@ -11,12 +11,7 @@ const StatusHistoryButton = ({ ticketId }) => {
     
     const fetchRecords = async () => {
       try {
-        const access = localStorage.getItem(ACCESS_TOKEN);
-        const response = await api.get(`/api/ticket-status-history/${ticketId}/`, {
-          headers: {
-            Authorization: `Bearer ${access}`,
-          },
-        });
+        const response = await getWithAuth(`/api/ticket-status-history/${ticketId}/`);
 
         setStatusRecords(response.data.status_history);
       } catch (error) {

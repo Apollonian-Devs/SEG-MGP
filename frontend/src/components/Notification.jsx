@@ -8,7 +8,8 @@ import GenericTable from './GenericTable';
 import GenericButton from './GenericButton';
 import { playSound } from "../utils/SoundUtils";
 import handleApiError from '../utils/errorHandler';
-
+import { getWithAuth } from '../utils/apiUtils';
+import { postWithAuth } from '../utils/apiUtils';
 const NotificationsTab = ({ user }) => {
 	const [notifications, setNotifications] = useState([]);
 	const [isPopupOpen, setShowNotifications] = useState(false);
@@ -16,12 +17,7 @@ const NotificationsTab = ({ user }) => {
 
 	const fetchNotifications = async () => {
 		try {
-			const access = localStorage.getItem(ACCESS_TOKEN);
-			const response = await api.get('/api/user-notifications/', {
-				headers: {
-					Authorization: `Bearer ${access}`,
-				},
-			});
+			const response = await getWithAuth('/api/user-notifications/');
 			setNotifications(response.data.notifications);
 		} catch (error) {
 			handleApiError(error, "Error fetching notifications");
@@ -30,15 +26,7 @@ const NotificationsTab = ({ user }) => {
 
 	const markNotificationAsRead = async (notificationId, access) => {
 		try {
-			await api.post(
-				`/api/user-notifications/`,
-				{ id: notificationId },
-				{
-					headers: {
-						Authorization: `Bearer ${access}`,
-					},
-				}
-			);
+			await postWithAuth(`/api/user-notifications/`, { id: notificationId });
 		} catch (error) {
 			handleApiError(error, `Error marking notification ${notificationId} as read`);
 		}

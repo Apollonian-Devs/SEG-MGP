@@ -11,6 +11,8 @@ def create_ticket_redirect_object(ticket, from_profile, to_profile):
         from_profile=from_profile,
         to_profile=to_profile
     )
+    
+    return redirect
 
 def validate_redirection(from_user, to_user):
 

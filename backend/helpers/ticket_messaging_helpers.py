@@ -3,6 +3,30 @@ from django.contrib.auth.models import User
 from api.models import Ticket, TicketMessage
 
 
+
+def handle_attachments(message, attachments):
+    """Handles file attachments for a given message."""
+    for att in attachments:
+        if "file_name" in att and "file_path" in att:
+            TicketAttachment.objects.create(
+                message=message,
+                file_name=att["file_name"],
+                file_path=att["file_path"],
+                mime_type=att.get("mime_type", "application/octet-stream"),
+            )
+
+
+def create_ticket_message_object(ticket, sender_profile, message_body, is_internal):
+    msg = TicketMessage.objects.create(
+        ticket=ticket,
+        sender_profile=sender_profile,
+        message_body=message_body,
+        is_internal=is_internal
+    )
+
+    return msg
+
+
 def send_query(student_user, subject, description, message_body, attachments=None):
     """
     Creates a new ticket for 'student' user.

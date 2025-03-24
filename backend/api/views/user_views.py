@@ -1,7 +1,8 @@
 from rest_framework import views
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from api.helpers import get_tickets_for_user, get_notifications, mark_id_as_read, get_officers_same_department, is_chief_officer, get_overdue_tickets, get_default_superuser
+from api.helpers import get_tickets_for_user, get_notifications, mark_id_as_read, get_officers_same_department, is_chief_officer, get_overdue_tickets
+from api.models import get_default_superuser
 from api.models import Ticket, Notification
 from api.serializers import OfficerSerializer, UserSerializer, NotificationSerializer
 

@@ -71,7 +71,8 @@ class TestSendResponse(TestCase):
 
         self.assertFalse(TicketStatusHistory.objects.filter(ticket=ticket, old_status="Awaiting Student").exists())
 
-    @patch("api.helpers.yagmail.SMTP")
+    #@patch("api.helpers.yagmail.SMTP")
+    @patch("api.helpers.notification_helpers.yagmail.SMTP")
     def test_send_response_create_notification_for_staff(self, mock_yagmail):
         """ Test email sending for staff responses. """
         ticket = Ticket.objects.create(
@@ -93,7 +94,8 @@ class TestSendResponse(TestCase):
             contents=f"Staff replied to Ticket #{ticket.id}",
         )
 
-    @patch("api.helpers.yagmail.SMTP")
+    #@patch("api.helpers.yagmail.SMTP")
+    @patch("api.helpers.notification_helpers.yagmail.SMTP")
     def test_send_response_create_notification_for_assigned_to(self, mock_yagmail):
         """ Test email sending for student responses to assigned staff. """
         ticket = Ticket.objects.create(

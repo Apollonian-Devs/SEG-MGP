@@ -231,7 +231,7 @@ class TestTicketChangeStatusView(TestCase):
         self.assertEqual(response.data["error"], "Permission denied")
 
 
-    @patch('api.views.changeTicketStatus')
+    @patch("api.views.ticket_views.changeTicketStatus")
     def test_get_request_fails_when_changeTicketStatus_raises_an_exception(self, mock_changeTicketStatus):
         self.authorize_staff()
         
@@ -357,7 +357,7 @@ class TestTicketChangePriorityView(TestCase):
         self.assertEqual(response.data["error"], "Permission denied")
 
 
-    @patch('api.views.changeTicketPriority')
+    @patch('api.helpers.ticket_priority_helpers.changeTicketPriority')
     def test_get_request_fails_when_changeTicketPriority_raises_an_exception(self, mock_changeTicketPriority):
         self.authorize_staff()
        
@@ -616,7 +616,7 @@ class TestUserTicketsView(TestCase):
         self.assertEqual(response.data["tickets"][1] ["subject"], "Another test ticket assigned to an authorized staff")
 
 
-    @patch("api.views.get_tickets_for_user")
+    @patch("api.helpers.utility_helpers.get_tickets_for_user")
     def test_get_request_fails_when_get_tickets_for_user_raises_an_exception(self, mock_get_tickets_for_user):
         self.authorize_student()
 
@@ -732,7 +732,7 @@ class TestTicketSendResponseView(TestCase):
         self.assertEqual(response.status_code, 400)
 
 
-    @patch('api.views.TicketAttachment.objects.create')
+    @patch('api.helpers.ticket_messaging_helpers.TicketAttachment.objects.create')
     def test_post_request_fails_with_value_error_when_ticket_attachment_creation_raises_a_value_error(self, mock_create_value_error):
         self.authorize_user()
 
@@ -749,7 +749,7 @@ class TestTicketSendResponseView(TestCase):
         self.assertEqual(response.data["error"], "A value error was raised")
 
 
-    @patch('api.views.send_response')
+    @patch('api.views.ticket_views.send_response')
     def test_post_request_fails_with_exception_when_send_response_raises_an_exception(self, mock_send_response):
         self.authorize_user()
 
@@ -842,7 +842,7 @@ class TestTicketMessageHistoryView(TestCase):
         self.assertEqual(response.data['error'], "Ticket not found")
 
 
-    @patch('api.views.get_message_history')
+    @patch("api.helpers.ticket_messaging_helpers.get_message_history")
     def test_get_request_fails_when_get_message_history_raises_an_exception(self, mock_get_message_history):
         self.authorize_user()
        
@@ -953,7 +953,7 @@ class TestAllOfficersView(TestCase):
         self.assertEqual(response.data["admin"]["username"], "admin")
         
     
-    @patch("api.views.get_officers_same_department")        
+    @patch("api.helpers.utility_helpers.get_officers_same_department")        
     def test_get_request_fails_when_get_officers_same_department_raises_an_exception(self, mock_get_officers_same_department):
         self.authorize_staff()
 
@@ -992,7 +992,7 @@ class TestUserNotificationsView(TestCase):
         self.assertEqual(response.data["notifications"][0]["ticket_subject"], "Test ticket")
 
 
-    @patch("api.views.get_notifications")
+    @patch("api.helpers.notification_helpers.get_notifications")
     def test_get_request_fails_when_get_notifications_throws_an_exception(self, mock_get_notifications):
         mock_get_notifications.side_effect = Exception("An exception was raised")
 
@@ -1432,7 +1432,7 @@ class TestChangeTicketDateView(TestCase):
         self.assertEqual(response.data['error'], 'You cannot change the due date to be in the past.')
 
 
-    @patch('api.views.changeTicketDueDate')
+    @patch('api.helpers.ticket_priority_helpers.changeTicketDueDate')
     def test_get_request_fails_when_changeTicketDueDate_raises_an_exception(self, mock_changeTicketDueDate):
         self.authorize_user()
        
@@ -1477,7 +1477,7 @@ class TestDepartmentsListView(TestCase):
 
         self.assertEqual(response.data, [])
 
-    @patch("api.views.Department.objects.all")
+    @patch("api.views.department_views.Department.objects.all")
     def test_get_request_fails_when_accessing_all_department_objects_raises_an_exception(self, mock_all_departments):
         mock_all_departments.side_effect = Exception("An exception was raised")
 
@@ -1640,7 +1640,7 @@ class TestGroupTicketsView(TestCase):
         self.assertEqual(response.data["error"], "Permission denied")
 
     
-    @patch("api.views.get_tags")
+    @patch("api.helpers.ai_helpers.get_tags")
     def test_get_request_fails_if_get_tags_throws_an_exception(self, mock_get_tags):
         self.authorize_admin()
 

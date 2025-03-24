@@ -2,9 +2,20 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 from unittest.mock import patch
 from django.contrib.auth.models import User
-from api.models import Ticket, User, Department, Officer, TicketRedirect, TicketMessage, Notification
+from api.models import (
+    Ticket,
+    Department,
+    Officer,
+    TicketRedirect,
+    TicketMessage,
+    Notification,
+    TicketStatusHistory,   
+    TicketAttachment  
+)
+
 from api.serializers import *
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 class UserSerializerTestCase(TestCase):
 

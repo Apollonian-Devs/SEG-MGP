@@ -7,7 +7,8 @@ from api.helpers import send_email
 
 class TestSendEmail(TestCase):
 
-    @patch("api.helpers.yagmail.SMTP")
+    #@patch("api.helpers.yagmail.SMTP")
+    @patch("api.helpers.notification_helpers.yagmail.SMTP")
     def test_email_sent_successfully(self, mock_yagmail):
 
         user = User.objects.create_user(
@@ -30,7 +31,8 @@ class TestSendEmail(TestCase):
 
 
     @patch("builtins.print")  
-    @patch("api.helpers.yagmail.SMTP")
+    #@patch("api.helpers.yagmail.SMTP")
+    @patch("api.helpers.notification_helpers.yagmail.SMTP")
     def test_email_send_failure(self, mock_yagmail, mock_print):
 
         user = User.objects.create_user(
@@ -48,7 +50,8 @@ class TestSendEmail(TestCase):
         mock_print.assert_called_once_with("email not sent")
 
 
-    @patch("api.helpers.yagmail.SMTP")
+    #@patch("api.helpers.yagmail.SMTP")
+    @patch("api.helpers.notification_helpers.yagmail.SMTP")
     def test_email_not_sent_if_no_user(self, mock_yagmail):
 
         mock_smtp_instance = MagicMock()

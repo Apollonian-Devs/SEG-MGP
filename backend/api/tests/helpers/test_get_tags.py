@@ -37,7 +37,7 @@ class GetTagsTests(TestCase):
         self.assertIn("error", result)
         self.assertEqual(result["error"], "Not enough tickets available for clustering. Need at least 2.")
 
-    @patch("api.helpers.MessageGroupAI")
+    @patch("api.helpers.ai_helpers.MessageGroupAI")
     def test_successful_ticket_clustering(self, mock_ai):
         """Ensure tickets are correctly clustered when there are enough tickets."""
         ticket1 = Ticket.objects.create(
@@ -66,7 +66,7 @@ class GetTagsTests(TestCase):
             self.assertEqual(ai_response.verification_status, "Verified")
             self.assertEqual(ai_response.verified_by_profile, self.admin_user)
 
-    @patch("api.helpers.MessageGroupAI")
+    @patch("api.helpers.ai_helpers.MessageGroupAI")
     def test_clustering_failure(self, mock_ai):
         """Ensure an error message is returned when clustering fails."""
         Ticket.objects.create(

@@ -8,6 +8,7 @@ from .ticket_attachment import TicketAttachment
 from .ai_response import AIResponse
 from .notification import Notification
 
+
 __all__ = [
     "Department",
     "Officer",

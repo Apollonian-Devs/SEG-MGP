@@ -12,7 +12,7 @@ __all__ = [
     "DepartmentSerializer",
     "OfficerSerializer", 
     "TicketSerializer", "ChangeTicketDateSerializer",
-    "TIcketMessageSerializer", "TicketAttachmentSerializer",
+    "TicketMessageSerializer", "TicketAttachmentSerializer",
     "TicketRedirectSerializer", "TicketPathSerializer",
     "NotificationSerializer",
     "TicketStatusHistorySerializer",

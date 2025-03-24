@@ -2,12 +2,12 @@ import React, { act } from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { expect, vi } from 'vitest'; // Vitest for mocking
-import NewTicketForm from '../components/NewTicketForm';
-import api from '../api';
+import NewTicketForm from '../../components/NewTicketForm';
+import api from '../../api';
 import { toast } from 'sonner';
 
 // Mock API calls
-vi.mock('../api', async () => {
+vi.mock('../../api', async () => {
 	
 	return {
 		__esModule: true,

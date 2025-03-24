@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import TicketDetails from '../components/TicketDetails';
+import TicketDetails from '../../components/TicketDetails';
 
 describe("TicketDetails Component", () => {
     const mockTicket = {

@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import GenericTable from '../components/GenericTable';
+import {GenericTable} from '../../../components';
 
 describe('GenericTable', () => {
   const columnDefinition = [

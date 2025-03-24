@@ -1,6 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import GenericButton from '../components/GenericButton';
-import Popup from '../components/Popup';
+import Popup from '../../components/Popup';
 import userEvent from '@testing-library/user-event';
 
 describe('Popup', () => {

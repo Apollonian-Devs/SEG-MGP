@@ -1,14 +1,14 @@
-import Chat from "../components/Chat";
+import Chat from "../../components/Chat";
 import { render, screen, waitFor, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import api from "../api";
-import { ACCESS_TOKEN } from "../constants";
+import api from "../../api";
+import { ACCESS_TOKEN } from "../../constants";
 import { expect, vi } from "vitest";
 import { toast } from 'sonner';
 
 HTMLMediaElement.prototype.play = () => Promise.resolve();
 
-vi.mock("../api");
+vi.mock('../../api');
 
 describe("Chat", () => {
   beforeEach(() => {

@@ -1,11 +1,11 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import TicketPathButton from '../components/TicketPathButton';
-import api from "../api";
-import handleApiError from "../utils/errorHandler";
+import TicketPathButton from '../../components/TicketPathButton';
+import api from "../../api";
+import handleApiError from "../../utils/errorHandler";
 
-vi.mock("../api");
-vi.mock("../utils/errorHandler", () => ({
+vi.mock('../../api');
+vi.mock("../../utils/errorHandler", () => ({
   __esModule: true,
   default: vi.fn(),
 }));

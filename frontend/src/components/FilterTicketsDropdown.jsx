@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import GenericDropdown from './GenericDropdown';
+import {GenericDropdown} from '.';
 import { Filter, FilterX } from 'lucide-react';
-import GenericInput from './GenericInput';
-import GenericButton from './GenericButton';
+import {GenericInput} from '.';
+import {GenericButton} from '.';
 
 const FilterTicketsDropdown = ({
 	priority,

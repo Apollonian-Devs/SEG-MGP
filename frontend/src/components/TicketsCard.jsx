@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import api from '../api';
 import { ACCESS_TOKEN } from '../constants';
 import Chat from './Chat';
-import GenericButton from './GenericButton';
+import {GenericButton} from '.';
 import PopUp from './Popup';
-import GenericTable from './GenericTable';
+import {GenericTable} from '.';
 import OfficersDropdown from './OfficersDropdown';
 import DepartmentsDropdown from './DepartmentsDropdown';
 import RedirectButton from './RedirectButton';
@@ -30,7 +30,7 @@ import {
 	Sparkles,
 } from 'lucide-react';
 import FilterTicketsDropdown from './FilterTicketsDropdown';
-import GenericDropdown from './GenericDropdown';
+import {GenericDropdown} from '.';
 import TicketDetails from './TicketDetails';
 import { playSound } from '../utils/SoundUtils';
 import { toast } from 'sonner';

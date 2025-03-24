@@ -3,7 +3,7 @@ import { ACCESS_TOKEN } from '../constants';
 import api from '../api';
 import TicketsCard from '../components/TicketsCard';
 import NewTicketButton from '../components/NewTicketButton';
-import GenericDropdown from '../components/GenericDropdown';
+import  {GenericDropdown}  from '../components';
 import NotificationsTab from '../components/Notification';
 import { CircleUserRound } from 'lucide-react';
 import handleApiError from '../utils/errorHandler';

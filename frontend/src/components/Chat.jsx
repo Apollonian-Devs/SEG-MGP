@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import api from "../api";
 import { ACCESS_TOKEN } from "../constants";
-import GenericButton from "./GenericButton";
+import {GenericButton} from ".";
 import { handleFileChange } from "../utils/attachmentUtils";
 import { toast } from 'sonner';
 import { getWithAuth } from "../utils/apiUtils";

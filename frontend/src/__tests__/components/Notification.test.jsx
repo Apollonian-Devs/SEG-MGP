@@ -1,12 +1,12 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, beforeEach } from 'vitest';
-import NotificationsTab from '../components/Notification';
-import api from "../api";
+import NotificationsTab from '../../components/Notification';
+import api from "../../api";
 import { vi } from "vitest";
 import { toast } from "sonner";  
 
 
-vi.mock("../api");
+vi.mock('../../api');
 
 beforeAll(() => {
   window.HTMLMediaElement.prototype.play = vi.fn().mockImplementation(() => Promise.resolve());

@@ -2,8 +2,9 @@ from django.core.exceptions import ValidationError, PermissionDenied
 from django.contrib.auth.models import User
 from api.models import Ticket, TicketAttachment, TicketMessage
 from .utility_helpers import create_ticket_object
+from .notification_helpers import notify_user_of_change_to_ticket
 from .ticket_status_history_helpers import create_ticket_status_history_object, STATUS_OPEN, STATUS_IN_PROGRESS, STATUS_AWAITING_STUDENT, STATUS_CLOSED
-
+from django.utils import timezone
 
 
 def handle_attachments(message, attachments):

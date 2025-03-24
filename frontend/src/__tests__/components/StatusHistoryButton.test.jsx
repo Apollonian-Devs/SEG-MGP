@@ -1,12 +1,12 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import StatusHistoryButton from '../components/StatusHistoryButton';
-import api from "../api";
-import handleApiError from "../utils/errorHandler"; 
+import StatusHistoryButton from '../../components/StatusHistoryButton';
+import api from "../../api";
+import handleApiError from "../../utils/errorHandler"; 
 
 // Mock API and error handler
-vi.mock("../api");
-vi.mock("../utils/errorHandler", () => ({
+vi.mock('../../api');
+vi.mock("../../utils/errorHandler", () => ({
   __esModule: true,
   default: vi.fn(),
 }));

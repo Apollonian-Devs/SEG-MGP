@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import GenericButton from '../components/GenericButton';
+import {GenericButton} from '../../../components';
 import { describe, it, expect } from 'vitest';
 import '@testing-library/jest-dom/vitest';
 

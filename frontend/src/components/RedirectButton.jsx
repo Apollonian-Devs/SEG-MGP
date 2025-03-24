@@ -1,7 +1,7 @@
 import React from 'react';
 import { ACCESS_TOKEN } from '../constants';
 import api from '../api';
-import GenericButton from './GenericButton';
+import {GenericButton} from '.';
 import { toast } from 'sonner';
 import { playSound } from '../utils/SoundUtils';
 import { formatApiErrorMessage } from '../utils/errorHandler';

@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import GenericForm from '../../components/GenericForm'; 
+import {GenericForm} from '../../../components'; 
 
 describe('GenericForm Component', () => {
   it('renders with default button label', () => {

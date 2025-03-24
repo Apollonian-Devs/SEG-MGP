@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import React from 'react';
-import GenericDropdown from '../components/GenericDropdown';
+import {GenericDropdown} from '../../../components';
 import { describe, it, expect } from 'vitest';
 import '@testing-library/jest-dom/vitest';
 

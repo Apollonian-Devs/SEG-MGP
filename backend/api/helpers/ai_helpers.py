@@ -1,6 +1,6 @@
 from django.core.exceptions import ValidationError, PermissionDenied
 from django.contrib.auth.models import User
-from api.models import Ticket
+from api.models import Ticket, AIResponse
 from api.MessagesGroupingAI import *
 
 def get_tags(user):

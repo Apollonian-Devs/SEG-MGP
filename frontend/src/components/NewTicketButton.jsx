@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
 import NewTicketForm from './NewTicketForm';
-import GenericButton from './GenericButton';
+import {GenericButton} from '.';
 import Popup from './Popup';
 import { playSound } from "../utils/SoundUtils";
 

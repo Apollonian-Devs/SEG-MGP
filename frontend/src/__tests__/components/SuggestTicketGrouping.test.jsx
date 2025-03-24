@@ -59,12 +59,12 @@ export default SuggestTicketGroupingButton;
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
-import SuggestTicketGroupingButton from "../components/SuggestTicketGroupingButton";
-import api from "../api";
+import SuggestTicketGroupingButton from "../../components/SuggestTicketGroupingButton";
+import api from "../../api";
 import { toast } from "sonner";
 
 
-vi.mock("../api");
+vi.mock('../../api');
 vi.mock("sonner", () => ({
   toast: {
     success: vi.fn(),

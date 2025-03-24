@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "../api";
 import { ACCESS_TOKEN } from "../constants";
-import GenericTable from "./GenericTable";
+import {GenericTable} from ".";
 import handleApiError from "../utils/errorHandler.js";
 import { getWithAuth } from "../utils/apiUtils";
 

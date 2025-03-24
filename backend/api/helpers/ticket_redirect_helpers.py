@@ -1,9 +1,10 @@
 from django.utils import timezone
 from django.core.exceptions import ValidationError, PermissionDenied
 from django.contrib.auth.models import User
-from api.models import Ticket, TicketRedirect
+from api.models import Ticket, STATUS_CHOICES, TicketRedirect
+from .notification_helpers import notify_user_of_change_to_ticket
 
-
+STATUS_CLOSED = STATUS_CHOICES[3][0]
 
 def create_ticket_redirect_object(ticket, from_profile, to_profile):
     redirect = TicketRedirect.objects.create(

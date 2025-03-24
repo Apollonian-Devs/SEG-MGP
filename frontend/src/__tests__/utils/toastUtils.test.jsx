@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { handleToastPromise } from "../utils/toastUtils";
+import { handleToastPromise } from "../../utils/toastUtils";
 import { toast } from 'sonner';
 
 vi.mock("sonner", () => ({

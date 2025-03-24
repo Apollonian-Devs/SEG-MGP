@@ -1,12 +1,12 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
-import SuggestDepartmentButton from "../components/SuggestDepartmentButton";
-import api from "../api";
-import { ACCESS_TOKEN } from "../constants";
+import SuggestDepartmentButton from "../../components/SuggestDepartmentButton";
+import api from "../../api";
+import { ACCESS_TOKEN } from "../../constants";
 import { toast } from 'sonner';
 
-vi.mock("../api");
+vi.mock('../../api');
 
 describe("SuggestDepartmentButton", () => {
   const mockSetSuggestedDepartments = vi.fn();

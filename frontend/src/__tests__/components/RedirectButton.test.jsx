@@ -1,14 +1,14 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
-import RedirectButton from '../components/RedirectButton';
-import api from '../api';
+import RedirectButton from '../../components/RedirectButton';
+import api from '../../api';
 import { toast } from 'sonner';
 
 
 // ✅ Mock API module
-vi.mock('../api', async () => {
-	const actual = await vi.importActual('../api'); // Keep actual exports if needed
+vi.mock('../../api', async () => {
+	const actual = await vi.importActual('../../api'); // Keep actual exports if needed
 	return {
 		...actual,
 		default: { post: vi.fn() }, // Mock API calls

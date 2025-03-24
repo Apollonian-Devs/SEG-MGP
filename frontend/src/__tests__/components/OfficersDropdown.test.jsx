@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import OfficersDropdown from '../components/OfficersDropdown';
-import api from '../api'; 
+import OfficersDropdown from '../../components/OfficersDropdown';
+import api from '../../api'; 
 
 describe('OfficersDropdown Component', () => {
     it('renders with correct default text', () => {

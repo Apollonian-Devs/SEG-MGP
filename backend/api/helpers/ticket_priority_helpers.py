@@ -1,7 +1,11 @@
 from django.core.exceptions import ValidationError, PermissionDenied
 from django.contrib.auth.models import User
-from api.models import Ticket, PRIORITY_CHOICES
+from api.models import Ticket,STATUS_CHOICES, PRIORITY_CHOICES
 from .notification_helpers import notify_user_of_change_to_ticket
+from .ticket_status_history_helpers import create_ticket_status_history_object
+from django.utils import timezone
+
+STATUS_AWAITING_STUDENT = STATUS_CHOICES[2][0]  
 
 
 def changeTicketPriority(ticket, user):

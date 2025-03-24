@@ -1,12 +1,12 @@
 import { describe, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import DepartmentsDropdown from '../components/DepartmentsDropdown';
-import api from '../api';
-import { ACCESS_TOKEN } from '../constants';
+import DepartmentsDropdown from '../../components/DepartmentsDropdown';
+import api from '../../api';
+import { ACCESS_TOKEN } from '../../constants';
 import { toast } from 'sonner';
 
 
-vi.mock('../api');
+vi.mock('../../api');
 
 
 const mockLocalStorage = {

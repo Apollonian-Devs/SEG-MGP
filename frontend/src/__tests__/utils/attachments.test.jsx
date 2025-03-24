@@ -1,6 +1,6 @@
 import { describe, it, vi, expect } from 'vitest';
 import { renderHook } from '@testing-library/react';
-import { useFileInput } from "../utils/attachmentUtils";
+import { useFileInput } from "../../utils/attachmentUtils";
 
 describe('useFileInput', () => {
   it('should call handleFileChange and setAttachments with file metadata', () => {

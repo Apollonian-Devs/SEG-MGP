@@ -1,5 +1,5 @@
 import React from 'react';
-import GenericDropdown from '../components/GenericDropdown';
+import  {GenericDropdown}  from '../components';
 import { motion } from 'framer-motion';
 import { ArrowBigLeft } from 'lucide-react';
 

@@ -417,12 +417,8 @@ def get_tickets_for_user(user):
 
 
 def get_officers_same_department(user):
-    try:
-        officer = Officer.objects.get(user=user)
-        return Officer.objects.filter(department=officer.department).exclude(user=user)
-    except Officer.DoesNotExist:
-        return Officer.objects.none()
-
+    officer = Officer.objects.filter(user=user).first()
+    return Officer.objects.filter(department=officer.department).exclude(user=user) if officer else Officer.objects.none()
 
 
 
@@ -574,11 +570,13 @@ def changeTicketDueDate(ticket, user, new_due_date):
 
 def get_department_head(department_id):
     try:
-        officer = Officer.objects.filter(department_id=department_id, is_department_head=True).first()
-        return officer.user if officer else None
+        officer = Officer.objects.get(department_id=department_id, is_department_head=True)
+        return officer.user
     except Officer.DoesNotExist:
         return None
-
+    except Officer.MultipleObjectsReturned:
+        officer = Officer.objects.filter(department_id=department_id, is_department_head=True).first()
+        return officer.user if officer else None
 
 def is_chief_officer(user):
     """

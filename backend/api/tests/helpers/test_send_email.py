@@ -28,6 +28,26 @@ class TestSendEmail(TestCase):
 
         )
 
+
+    @patch("builtins.print")  
+    @patch("api.helpers.yagmail.SMTP")
+    def test_email_send_failure(self, mock_yagmail, mock_print):
+
+        user = User.objects.create_user(
+            username="officer1", 
+            email="testemail@example.com", 
+            password="password"
+        )
+
+        mock_smtp_instance = MagicMock()
+        mock_smtp_instance.send.side_effect = Exception("Failed to send email")
+        mock_yagmail.return_value = mock_smtp_instance
+
+        send_email(user, "Test Subject", "Test Body")
+
+        mock_print.assert_called_once_with("email not sent")
+
+
     @patch("api.helpers.yagmail.SMTP")
     def test_email_not_sent_if_no_user(self, mock_yagmail):
 

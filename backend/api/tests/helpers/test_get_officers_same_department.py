@@ -27,7 +27,7 @@ class TestGetOfficersSameDepartment:
 
     def test_returns_empty_queryset_if_officer_does_not_exist(self):
 
-        user = User.objects.create_user(username="no_officer", password="pass")
+        user = User.objects.create_user(username="no_officer", password="pass", is_staff=False)
 
         result = get_officers_same_department(user)
 

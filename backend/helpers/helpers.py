@@ -68,12 +68,6 @@ def create_ticket_object(subject, description, created_by, status, priority, due
 
     return ticket
 
-def create_ticket_redirect_object(ticket, from_profile, to_profile):
-    redirect = TicketRedirect.objects.create(
-        ticket=ticket,
-        from_profile=from_profile,
-        to_profile=to_profile
-    )
 
     return redirect
 
@@ -224,63 +218,6 @@ def send_response(sender_profile, ticket, message_body, is_internal=False, attac
 
     return new_msg
 
-def validate_redirection(from_user, to_user):
-
-    if from_user is None or to_user is None:
-        raise PermissionDenied("Invalid redirection: Users cannot be None.")
-    
-    if not (from_user.is_staff):
-        raise PermissionDenied("Only officers or admins can redirect tickets.")
-
-    if from_user == to_user:
-        raise ValidationError("Redirection failed: Cannot redirect the ticket to the same user.")
-
-
-
-def redirect_query(ticket, from_user, to_user):
-    """
-    Redirect ticket' from one user to another.
-    Officers can redirect within the same department
-    admins can redirect across departments.
-    """
-
-    if ticket is None:
-        raise ValidationError("Invalid ticket provided.")
-
-    if ticket.status == STATUS_CLOSED:
-        raise ValidationError("Redirection failed: Closed tickets cannot be redirected.")
-
-    
-    validate_redirection(from_user, to_user)
-
-    ticket.assigned_to = to_user
-    ticket.updated_at = timezone.now()
-    ticket.save()
-
-
-    # TicketRedirect.objects.create(
-    #     ticket=ticket,
-    #     from_profile=from_user,
-    #     to_profile=to_user,
-    # )
-
-    create_ticket_redirect_object(ticket, from_user, to_user)
-
-    # msg=f"Ticket #{ticket.id} has been redirected to you by {from_user.username}."
-
-    # create_notification(to_user, ticket, msg)
-
-    # send_email(to_user, 'Redirection of ticket', msg)
-
-    notify_user_of_change_to_ticket(
-        f"Ticket #{ticket.id} has been redirected to you by {from_user.username}.",
-        to_user,
-        ticket,
-        "Redirection of ticket"
-    )
-
-    return ticket
-
 
 def get_message_history(ticket):
     """
@@ -417,8 +354,12 @@ def get_tickets_for_user(user):
 
 
 def get_officers_same_department(user):
-    officer = Officer.objects.filter(user=user).first()
-    return Officer.objects.filter(department=officer.department).exclude(user=user) if officer else Officer.objects.none()
+    try:
+        officer = Officer.objects.get(user=user)
+        return Officer.objects.filter(department=officer.department).exclude(user=user)
+    except Officer.DoesNotExist:
+        return Officer.objects.none()
+
 
 
 
@@ -569,14 +510,9 @@ def changeTicketDueDate(ticket, user, new_due_date):
 
 
 def get_department_head(department_id):
-    try:
-        officer = Officer.objects.get(department_id=department_id, is_department_head=True)
-        return officer.user
-    except Officer.DoesNotExist:
-        return None
-    except Officer.MultipleObjectsReturned:
-        officer = Officer.objects.filter(department_id=department_id, is_department_head=True).first()
-        return officer.user if officer else None
+    officer = Officer.objects.filter(department_id=department_id, is_department_head=True).first()
+    return officer.user if officer else None
+
 
 def is_chief_officer(user):
     """

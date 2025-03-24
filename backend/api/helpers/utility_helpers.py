@@ -1,3 +1,9 @@
+from django.contrib.auth.models import User
+from api.models import Ticket, Officer, Department, TicketRedirect
+from django.core.exceptions import ValidationError, PermissionDenied
+
+
+
 def get_tickets_for_user(user):
     """
     Retrieve all tickets associated with a user.
@@ -5,7 +11,6 @@ def get_tickets_for_user(user):
     If the user is an officer, return tickets assigned to them.
     If the user is an admin, return all tickets.
     """
-
 
     if user.is_staff:
         tickets = Ticket.objects.filter(assigned_to=user)
@@ -28,7 +33,6 @@ def get_tickets_for_user(user):
         for ticket in tickets
     ]
 
-
 def get_officers_same_department(user):
     try:
         officer = Officer.objects.get(user=user)
@@ -46,7 +50,6 @@ def is_chief_officer(user):
     Checks if a user is a Chief Officer (department head).
     """
     return Officer.objects.filter(user=user, is_department_head=True).exists()
-
 
 
 def create_ticket_object(subject, description, created_by, status, priority, due_date):

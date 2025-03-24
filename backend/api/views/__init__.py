@@ -15,5 +15,5 @@ __all__ = [
     "TicketStatusHistoryView", "TicketPathView", "ChangeTicketDateView",
     "UserTicketsView", "UserNotificationsView", "AllOfficersView",
     "DepartmentsListView", "SuggestDepartmentView",
-    "GroupTicketsView"
+    "GroupTicketsView",
 ]

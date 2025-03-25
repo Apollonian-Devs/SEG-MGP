@@ -89,7 +89,7 @@ class NotificationTests(TestCase):
         self.assertIsNotNone(notification)
         self.assertIn("Due date has been set/updated", notification.message)
 
-    @patch("api.helpers.send_email")  
+    @patch("api.helpers.notification_helpers.send_email")  
     def test_email_is_sent_with_new_due_date(self, mock_send_email):
         """Test that an email is sent when the due date is updated"""
         new_due_date = timezone.now() + timedelta(days=10)

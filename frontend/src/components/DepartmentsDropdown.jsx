@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import GenericDropdown from './GenericDropdown';
-import GenericButton from './GenericButton';
+import {GenericDropdown} from '.';
+import {GenericButton} from '.';
 import api from '../api';
 import { ACCESS_TOKEN } from '../constants';
 import { University } from 'lucide-react';

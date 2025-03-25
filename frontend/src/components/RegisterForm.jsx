@@ -2,8 +2,8 @@ import React from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
-import GenericForm from './GenericForm';
-import GenericInput from './GenericInput';
+import {GenericForm} from '.';
+import {GenericInput} from '.';
 import { toast } from 'sonner';
 import handleApiError from '../utils/errorHandler';
 

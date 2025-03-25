@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import GenericInput from "./GenericInput";
+import {GenericInput} from ".";
 import { ACCESS_TOKEN } from "../constants";
-import GenericForm from "./GenericForm";
+import {GenericForm} from ".";
 import api from "../api";
 import { Navigate, useNavigate } from "react-router-dom";
 import { toast } from 'sonner';

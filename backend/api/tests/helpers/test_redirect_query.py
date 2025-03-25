@@ -74,7 +74,8 @@ class TestRedirectQuery(TestCase):
         self.assertEqual(notification.user_profile, self.staff_user2)
         self.assertIn("Ticket #", notification.message)
 
-    @patch("api.helpers.yagmail.SMTP")
+    #@patch("api.helpers.yagmail.SMTP")
+    @patch("api.helpers.notification_helpers.yagmail.SMTP")
     def test_email_sent_on_redirection(self, mock_yagmail):
         """ Ensure an email is sent to the new assignee upon redirection. """
         mock_smtp_instance = MagicMock()

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import api from '../api';
-import GenericForm from './GenericForm';
-import GenericInput from './GenericInput';
+import {GenericForm} from '.';
+import {GenericInput} from '.';
 import { useFileInput } from '../utils/attachmentUtils';
 import { toast } from 'sonner';
 import { formatApiErrorMessage } from "../utils/errorHandler";

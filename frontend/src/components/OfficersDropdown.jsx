@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import GenericDropdown from './GenericDropdown';
-import GenericButton from './GenericButton';
+import {GenericDropdown} from '.';
+import {GenericButton} from '.';
 import { User } from 'lucide-react';
 
 const OfficersDropdown = ({

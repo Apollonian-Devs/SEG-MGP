@@ -1,11 +1,9 @@
-from django.core.management.base import BaseCommand, CommandError
-# from random import randint, random, choice, sample
+from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from api.models import Department, Officer, Ticket, TicketMessage, Notification, TicketStatusHistory
-from api.management.ticketTemplates import ticket_templates_by_department, conversation_templates
+from .ticket_seeder import ticket_templates_by_department, conversation_templates
 import random
 from faker import Faker
-from random import randint
 from datetime import timedelta
 import django.utils.timezone as timezone
 
@@ -177,12 +175,12 @@ class Command(BaseCommand):
         self.seed_departments()  
         self.seed_users()  
         self.map_officers_by_department()
-        self.seed_ticket_notification_messages()
+        self.seed_tickets_notifications_and_messages()
 
         self.stdout.write("Database seeding complete!")
 
 
-    def seed_ticket_notification_messages(self):
+    def seed_tickets_notifications_and_messages(self):
         fixed_ticket_map = self.seed_tickets()
         self.seed_random_ticket_messages(fixed_ticket_map)  
         self.seed_notifications(fixed_ticket_map)

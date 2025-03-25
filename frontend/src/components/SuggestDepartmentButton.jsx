@@ -1,7 +1,7 @@
 import React from 'react';
 import api from '../api';
 import { ACCESS_TOKEN } from '../constants';
-import GenericButton from './GenericButton';
+import {GenericButton} from '.';
 import { playSound } from "../utils/SoundUtils";
 import handleApiError from "../utils/errorHandler.js"
 import { postWithAuth } from '../utils/apiUtils';

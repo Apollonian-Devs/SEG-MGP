@@ -2,7 +2,7 @@ import React from "react";
 import { toast } from "sonner";  // ✅ Import Sonner
 import api from "../api";
 import { ACCESS_TOKEN } from "../constants";
-import GenericButton from "./GenericButton";
+import {GenericButton} from ".";
 import { playSound } from "../utils/SoundUtils";
 import handleApiError from "../utils/errorHandler";
 

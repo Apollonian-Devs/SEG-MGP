@@ -172,6 +172,8 @@ class TicketRedirectView(views.APIView):
         else:
             print(f"Serializer errors: ", serializer.errors)
             return Response(serializer.errors, status=400)
+        
+        
 class TicketStatusHistoryView(views.APIView):
     permission_classes = [IsAuthenticated]
 

@@ -1,106 +1,32 @@
-import React, { useState } from "react";
-import KCLImage from "../assets/kcl_logo.jpg";
-import { ArrowBigLeft, Search } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-
+import { ArrowBigLeft, Search } from "lucide-react";
+import KCLImage from "../assets/kcl_logo.jpg";
+import departmentUrls from "../utils/departmentURLs"; // import your URL map
+import { getWithAuth } from "../utils/apiUtils";
+import handleApiError from "../utils/errorHandler";
+import api from "../api";
 const Departments = () => {
+  const [departments, setDepartments] = useState([]);
 
-  // List of departments with name, description, and URL
-  const departmentFixtures = [
-    { 
-      name: 'Faculty of Arts & Humanities', 
-      description: 'Covers literature, history, philosophy, and creative industries.', 
-      url: 'https://www.kcl.ac.uk/artshums',
-    },
-    { 
-      name: 'Faculty of Social Science & Public Policy', 
-      description: 'Focuses on global affairs, politics, and public policy.', 
-      url: 'https://www.kcl.ac.uk/sspp' 
-    },
-    { 
-      name: 'Faculty of Natural, Mathematical & Engineering Sciences', 
-      description: 'Includes mathematics, physics, informatics, and engineering.', 
-      url: 'https://www.kcl.ac.uk/nmes' 
-    },
-    { 
-      name: 'Faculty of Life Sciences & Medicine', 
-      description: 'Covers medical biosciences, cardiovascular studies, and pharmaceutical sciences.', 
-      url: 'https://www.kcl.ac.uk/lsm' 
-    },
-    { 
-      name: "King's Business School", 
-      description: 'Focuses on accounting, finance, marketing, and business strategy.', 
-      url: 'https://www.kcl.ac.uk/business' 
-    },
-    { 
-      name: 'The Dickson Poon School of Law', 
-      description: 'Specializes in legal studies and research.', 
-      url: 'https://www.kcl.ac.uk/law/index' 
-    },
-    { 
-      name: 'Faculty of Dentistry, Oral & Craniofacial Sciences', 
-      description: 'Covers dental sciences and oral healthcare.', 
-      url: 'https://www.kcl.ac.uk/dentistry' 
-    },
-    { 
-      name: 'Florence Nightingale Faculty of Nursing, Midwifery & Palliative Care', 
-      description: 'Focuses on nursing, midwifery, and palliative care.', 
-      url: 'https://www.kcl.ac.uk/nmpc' 
-    },
-    { 
-      name: 'Institute of Psychiatry, Psychology & Neuroscience', 
-      description: 'Researches mental health, neuroscience, and addiction studies.', 
-      url: 'https://www.kcl.ac.uk/ioppn' 
-    },
-    { 
-      name: 'IT', 
-      description: 'Handles technical support, student portals, and system security.', 
-      url: 'https://www.kcl.ac.uk/it/help-and-support' 
-    },
-    { 
-      name: 'HR', 
-      description: 'Manages staff recruitment, payroll, and work policies.', 
-      url: 'https://www.kcl.ac.uk/professional-services/hr' 
-    },
-    { 
-      name: 'Finance', 
-      description: 'Handles tuition fees, scholarships, and financial aid.', 
-      url: 'https://www.kcl.ac.uk/study/undergraduate/fees-and-funding/contact-us' 
-    },
-    { 
-      name: 'Wellbeing', 
-      description: 'Provides student counseling and wellbeing services.', 
-      url: 'https://www.kcl.ac.uk/student-life/wellbeing' 
-    },
-    { 
-      name: 'Maintenance', 
-      description: 'Manages building maintenance, plumbing, and electrical repairs.', 
-      url: 'https://self-service.kcl.ac.uk/article/KA-01949/en-us' 
-    },
-    { 
-      name: 'Housing', 
-      description: 'Oversees student accommodations, dorm assignments, and rent payments.', 
-      url: "https://www.kclsu.org/help/advice/othersupport/housing/"
-    },
-    { 
-      name: 'Admissions', 
-      description: 'Manages student applications, enrollment, and transfers.', 
-      url: 'https://www.kcl.ac.uk/study/undergraduate/how-to-apply/contact' 
-    },
-    { 
-      name: 'Library Services', 
-      description: 'Oversees book loans, research databases, and study spaces.', 
-      url: 'https://www.kcl.ac.uk/library' 
-    },
-    { 
-      name: 'Student Affairs', 
-      description: 'Handles extracurricular activities, student unions, and student complaints.', 
-      url: 'https://www.kcl.ac.uk/study-at-kings/student-services' 
-    }
-  ];
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const res = await api.get("/api/departments/");
+        const enriched = res.data.map((dept) => ({
+          ...dept,
+          url: departmentUrls[dept.name] || "#", // fallback to '#' if URL not found
+        }));
+        setDepartments(enriched);
+      } catch (error) {
+        handleApiError(error, "Error fetching departments");
+      }
+    };
+    fetchDepartments();
+  }, []);
 
   return (
-    <div className="min-w-[80%] flex flex-col gap-4 justify-center items-center" >
+    <div className="min-w-[80%] flex flex-col gap-4 justify-center items-center">
       <motion.a
         href="/"
         className="flex items-center gap-1 py-2 px-4 w-fit bg-customOrange-dark text-lg text-white font-semibold rounded-lg shadow-md hover:bg-customOrange-light transition-colors duration-500 ease-in-out"
@@ -112,6 +38,7 @@ const Departments = () => {
         <ArrowBigLeft size={20} />
         Back
       </motion.a>
+
       <motion.section
         className="p-10 bg-white text-black rounded-3xl shadow-lg w-full"
         initial={{ opacity: 0, y: 20 }}
@@ -125,16 +52,14 @@ const Departments = () => {
           </h2>
 
           <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {departmentFixtures.map((dept, index) => (
+            {departments.map((dept, index) => (
               <motion.li
-                key={index}
+                key={dept.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.15 }}
+                transition={{ delay: index * 0.1 }}
               >
                 <DepartmentCard
-                  key={index}
-                  index={index}
                   name={dept.name}
                   description={dept.description}
                   imageSrc={KCLImage}

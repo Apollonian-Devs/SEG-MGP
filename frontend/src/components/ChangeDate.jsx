@@ -20,7 +20,7 @@ const ChangeDate = ({ ticket, setSelectedTicket, setTickets, fetchTickets }) => 
 
             const response = await postWithAuth("api/tickets/change-date", { id: ticket.id, due_date: date });
 
-            if (response.status !== 201) return;
+            if (response.status !== 201) return; 
 
             toast.success("The due date for the ticket has been successfully updated");
 

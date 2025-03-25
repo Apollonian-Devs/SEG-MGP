@@ -49,14 +49,14 @@ const Chat = ({ ticket, onClose, user , fetchTickets}) => {
       await fetchTickets();
       
     } catch (err) {
-      // console.error("Full error object:", err);
-      // setError(err.response?.data || "Failed to send text");
-      // toast.error(`Failed to send message: ${err.response?.data?.detail || err.message}`);
       handleApiError(err, "Failed to send text")
     }
   };
   
-  
+ 
+
+
+
 
 
   return (
@@ -67,7 +67,7 @@ const Chat = ({ ticket, onClose, user , fetchTickets}) => {
             <h2 style={styles.chatTitle}>Chat for Ticket: {ticket.subject}</h2>
             <GenericButton 
               onClick={onClose} 
-              style={styles.closeButton} // Pass inline styles here
+              style={styles.closeButton} 
             >
               ✖
             </GenericButton>

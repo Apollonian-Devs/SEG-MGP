@@ -7,12 +7,17 @@ from api.models import Ticket, Notification
 from api.serializers import OfficerSerializer, UserSerializer, NotificationSerializer
 
 class UserTicketsView(views.APIView):
+    """
+    API endpoint to get all tickets associated with the logged-in user.
+    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         try:
-            get_overdue_tickets(request.user)
-            tickets = get_tickets_for_user(request.user)
+            user = request.user
+
+            get_overdue_tickets(user)
+            tickets = get_tickets_for_user(user)
             return Response({"tickets": tickets})
         except Exception:
             return Response({"error": "An error has occurred"}, status=500)
@@ -40,16 +45,31 @@ class UserNotificationsView(views.APIView):
             return Response({"error": "An error has occurred"}, status=500)
 
 class AllOfficersView(views.APIView):
+    """
+    API endpoint to get all officers currently registered.
+    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         try:
-            officers = get_officers_same_department(request.user)
-            officer_serializer = OfficerSerializer(officers, many=True)
-            admin_data = None
-            if is_chief_officer(request.user):
+            user = request.user
+            officers = get_officers_same_department(user)
+
+            officer_serializer = OfficerSerializer(officers, many=True) 
+
+            admin = None
+            if is_chief_officer(user):
                 admin = get_default_superuser()
-                admin_data = UserSerializer(admin).data if admin else None
-            return Response({"officers": officer_serializer.data, "admin": admin_data})
+                admin_serializer = UserSerializer(admin)
+                admin_data = admin_serializer.data
+            else:
+                admin_data = None
+
+            response_data = {
+                "officers": officer_serializer.data,
+                "admin": admin_data
+            }
+
+            return Response(response_data)
         except Exception:
             return Response({"error": "An error has occurred"}, status=500)

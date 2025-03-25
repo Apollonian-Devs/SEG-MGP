@@ -357,7 +357,7 @@ class TestTicketChangePriorityView(TestCase):
         self.assertEqual(response.data["error"], "Permission denied")
 
 
-    @patch('api.helpers.ticket_priority_helpers.changeTicketPriority')
+    @patch('api.views.ticket_views.changeTicketPriority')
     def test_get_request_fails_when_changeTicketPriority_raises_an_exception(self, mock_changeTicketPriority):
         self.authorize_staff()
        
@@ -616,7 +616,7 @@ class TestUserTicketsView(TestCase):
         self.assertEqual(response.data["tickets"][1] ["subject"], "Another test ticket assigned to an authorized staff")
 
 
-    @patch("api.helpers.utility_helpers.get_tickets_for_user")
+    @patch("api.views.user_views.get_tickets_for_user")
     def test_get_request_fails_when_get_tickets_for_user_raises_an_exception(self, mock_get_tickets_for_user):
         self.authorize_student()
 
@@ -766,6 +766,7 @@ class TestTicketSendResponseView(TestCase):
         self.assertEqual(response.data["error"], "An error has occurred")        
 
 
+
 #### TEST TICKETMESSAGEHISTORY VIEW HERE ####
 class TestTicketMessageHistoryView(TestCase):
     def setUp(self):
@@ -839,10 +840,10 @@ class TestTicketMessageHistoryView(TestCase):
 
         response = self.client.get(reverse('ticket-messages', kwargs={'ticket_id': 2}))
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.data['error'], "Ticket not found")
+        self.assertEqual(response.data['error'], "Ticket not found") 
 
 
-    @patch("api.helpers.ticket_messaging_helpers.get_message_history")
+    @patch("api.views.ticket_views.get_message_history")
     def test_get_request_fails_when_get_message_history_raises_an_exception(self, mock_get_message_history):
         self.authorize_user()
        
@@ -953,7 +954,7 @@ class TestAllOfficersView(TestCase):
         self.assertEqual(response.data["admin"]["username"], "admin")
         
     
-    @patch("api.helpers.utility_helpers.get_officers_same_department")        
+    @patch("api.views.user_views.get_officers_same_department")       
     def test_get_request_fails_when_get_officers_same_department_raises_an_exception(self, mock_get_officers_same_department):
         self.authorize_staff()
 
@@ -992,7 +993,7 @@ class TestUserNotificationsView(TestCase):
         self.assertEqual(response.data["notifications"][0]["ticket_subject"], "Test ticket")
 
 
-    @patch("api.helpers.notification_helpers.get_notifications")
+    @patch("api.views.user_views.get_notifications")
     def test_get_request_fails_when_get_notifications_throws_an_exception(self, mock_get_notifications):
         mock_get_notifications.side_effect = Exception("An exception was raised")
 
@@ -1432,7 +1433,7 @@ class TestChangeTicketDateView(TestCase):
         self.assertEqual(response.data['error'], 'You cannot change the due date to be in the past.')
 
 
-    @patch('api.helpers.ticket_priority_helpers.changeTicketDueDate')
+    @patch('api.views.ticket_views.changeTicketDueDate')
     def test_get_request_fails_when_changeTicketDueDate_raises_an_exception(self, mock_changeTicketDueDate):
         self.authorize_user()
        
@@ -1443,6 +1444,8 @@ class TestChangeTicketDateView(TestCase):
 
         self.assertEqual(response.status_code, 500)
         self.assertEqual(response.data["error"], "An error has occurred")
+
+    
 
 
 #### TEST DEPARTMENTSLIST VIEW HERE ####
@@ -1640,7 +1643,7 @@ class TestGroupTicketsView(TestCase):
         self.assertEqual(response.data["error"], "Permission denied")
 
     
-    @patch("api.helpers.ai_helpers.get_tags")
+    @patch("api.views.analytics_views.get_tags")
     def test_get_request_fails_if_get_tags_throws_an_exception(self, mock_get_tags):
         self.authorize_admin()
 

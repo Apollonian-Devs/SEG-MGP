@@ -10,6 +10,7 @@ class TestGetOfficersSameDepartment:
         
         user1 = User.objects.create_user(username="officer1", password="pass")
         officer1 = Officer.objects.create(user=user1, department=department)
+
     
         user2 = User.objects.create_user(username="officer2", password="pass")
         officer2 = Officer.objects.create(user=user2, department=department)
@@ -26,12 +27,15 @@ class TestGetOfficersSameDepartment:
         assert officer1 not in result  
 
     def test_returns_empty_queryset_if_officer_does_not_exist(self):
+        user = User.objects.create_user(username="no_officer", password="pass")
 
-        user = User.objects.create_user(username="no_officer", password="pass", is_staff=False)
+        # Force check: make sure no Officer exists
+        assert not Officer.objects.filter(user=user).exists()
 
         result = get_officers_same_department(user)
-
+        
         assert result.count() == 0
 
 
 
+    

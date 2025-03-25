@@ -40,6 +40,8 @@ def redirect_query(ticket, from_user, to_user):
     if ticket.status == STATUS_CLOSED:
         raise ValidationError("Redirection failed: Closed tickets cannot be redirected.")
     
+    
+
     validate_redirection(from_user, to_user)
 
     ticket.assigned_to = to_user

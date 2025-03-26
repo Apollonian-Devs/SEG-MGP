@@ -4,6 +4,17 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   base: '/static/',
+  build: {
+    outDir: '../backend/static',
+    assetsDir: 'assets',
+    manifest: true,  // Generate manifest.json
+    rollupOptions: {
+      output: {
+        assetFileNames: 'assets/[name]-[hash][extname]',
+        entryFileNames: 'assets/[name]-[hash].js',
+      }
+    }
+  },
   server: {
     proxy: {
       '/api': 'https://seg-mgp.onrender.com'

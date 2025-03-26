@@ -10,6 +10,26 @@ import Layout from './Layout';
 import Departments from './pages/Departments';
 import AboutUs from './pages/AboutUs';
 
+/**
+ * App - The main application component that defines all routes and layout.
+ *
+ * @component
+ *
+ * @routes
+ * - `/` - Home page.
+ * - `/dashboard` - Protected route for the user dashboard (requires authentication).
+ * - `/login` - Login page.
+ * - `/register` - Registration page (clears local storage before rendering).
+ * - `/logout` - Clears local storage and redirects to home.
+ * - `/helpfaq` - Help and FAQ page.
+ * - `/departments` - Departments page.
+ * - `/aboutus` - About Us page.
+ * - `*` - Catch-all route for 404 Not Found.
+ *
+ * @returns {JSX.Element}
+ */
+
+
 function Logout() {
 	localStorage.clear();
 	return <Navigate to="/" />;

@@ -2,6 +2,13 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
+/**
+ * @component
+ * NotFound - A 404 "Page Not Found" component providing a link back to the home page.
+ *
+ * @returns {JSX.Element}
+ */
+
 const NotFound = () => {
 	return (
 		<motion.div

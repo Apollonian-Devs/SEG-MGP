@@ -5,6 +5,23 @@ import {GenericButton} from '.';
 import Popup from './Popup';
 import { playSound } from "../utils/SoundUtils";
 
+/**
+ * @component
+ * NewTicketButton - A button component that opens a popup for creating a new ticket.
+ * 
+ * @state
+ * - isPopupOpen (boolean): Tracks whether the new ticket popup is open.
+ *
+ * @methods
+ * - togglePopup(): Toggles the visibility of the new ticket popup.
+ *
+ * @props
+ * - fetchTickets (function): A function to refresh the ticket list after a new ticket is created.
+ *
+ * @returns {JSX.Element}
+ */
+
+
 const NewTicketButton = ({fetchTickets}) => {
 	const [isPopupOpen, setPopupOpen] = useState(false);
 

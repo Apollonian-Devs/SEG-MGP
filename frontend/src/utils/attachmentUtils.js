@@ -1,5 +1,14 @@
 import { useRef } from 'react';
 
+/**
+ * @function
+ * handleFileChange - A utility function to process and store file attachments' metadata.
+ * 
+ * @param {Object} event - The file input change event.
+ * @param {Function} setAttachments - A state setter function to store the file metadata.
+ *
+ * @returns {void}
+ */
 
 export const handleFileChange = (event, setAttachments) => {
     const files = event.target.files;
@@ -13,6 +22,17 @@ export const handleFileChange = (event, setAttachments) => {
     setAttachments(fileMetadata);
 };
 
+/**
+ * @function
+ * useFileInput - A custom React hook providing functionalities for handling file attachments in forms.
+ * 
+ * @param {Function} setAttachments - A state setter function to store the file metadata.
+ *
+ * @returns {Object} - Contains:
+ *   - fileInputRef (React.RefObject<HTMLInputElement>): A ref to the file input element.
+ *   - handleChange (Function): Processes the file input change event.
+ *   - resetFileInput (Function): Resets the file input element.
+ */
 
 export const useFileInput = (setAttachments) => {
     const fileInputRef = useRef(null);

@@ -2,6 +2,13 @@ import React from 'react';
 import LoginForm from '../components/LoginForm';
 import logo from '../assets/logo.png';
 
+/**
+ * @component
+ * Login - A page component for rendering the user login form, including branding and registration link.
+ *
+ * @returns {JSX.Element}
+ */
+
 const Login = () => {
 	return (
 		<div className="bg-white w-[40vw] min-w-[300px] max-w-2xl rounded-lg drop-shadow-[0_20px_50px_rgba(0,0,0,0.1)] flex-col justify-start items-center p-10">

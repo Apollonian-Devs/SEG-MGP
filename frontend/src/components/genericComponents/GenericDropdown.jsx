@@ -1,7 +1,35 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { LucideChevronDown } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import GenericButton from './GenericButton';
+
+/**
+ * @component
+ * GenericDropdown - A customizable dropdown component that displays a menu when clicked, with dynamic positioning and an optional arrow indicator.
+ *
+ * @props
+ * - buttonName (ReactNode): The content to be displayed on the dropdown button (e.g., text or icon).
+ * - className (string): Custom CSS class for styling the dropdown button.
+ * - children (ReactNode): The content of the dropdown menu, typically a list of options or actions.
+ * - maxHeight (string): The maximum height of the dropdown menu (default is '128').
+ * - showArrow (boolean): Determines whether an arrow indicator is displayed next to the button (default is true).
+ * - dataTestId (string): A test ID for the dropdown button, used for automated testing.
+ *
+ * @state
+ * - isOpen (boolean): Tracks whether the dropdown menu is open or closed.
+ * - menuPositionAbove (boolean): Determines if the menu should be positioned above the button based on available space.
+ * - menuPositionRight (boolean): Determines if the menu should be aligned to the right based on available space.
+ * - dropdownWidth (number): Stores the width of the dropdown button to match the width of the menu.
+ *
+ * @methods
+ * - toggleDropdown(): Toggles the dropdown menu open or closed.
+ *
+ * @effects
+ * - useEffect for adjusting dropdown position: Calculates whether the menu should appear above or below the button and whether it should be aligned to the left or right.
+ * - useEffect for closing dropdown when clicking outside: Listens for clicks outside the dropdown to close it.
+ *
+ * @returns {JSX.Element}
+ */
 
 const GenericDropdown = ({
 	buttonName,

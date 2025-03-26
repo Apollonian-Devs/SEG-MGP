@@ -2,6 +2,31 @@ import React, { useState, useEffect } from 'react';
 import GenericDropdown from './GenericDropdown';
 import GenericButton from './GenericButton';
 
+/**
+ * @component
+ * GenericTable - A reusable table component with pagination and configurable row count.
+ *
+ * @props
+ * - tableClass (string): Custom CSS class for the table element.
+ * - bodyClass (string): Custom CSS class for the table body.
+ * - columnDefinition (ReactNode): Column headers for the table.
+ * - data (array): The dataset to be displayed in the table (default is an empty array).
+ * - dataName (string): The name of the data type, used when no data is found (default is 'data').
+ * - rowDefinition (function): A function that returns JSX elements representing a row.
+ *
+ * @state
+ * - currentPage (number): The current page number.
+ * - rowsPerPage (number): Number of rows to display per page.
+ *
+ * @methods
+ * - handleRowsPerPageChange(option): Updates the number of rows per page and adjusts pagination.
+ *
+ * @effects
+ * - Adjusts the current page when data length changes to prevent empty pages.
+ *
+ * @returns JSX.Element
+ */
+
 const GenericTable = ({
   tableClass = `min-w-full divide-y divide-gray-200`,
   bodyClass = 'divide-y divide-gray-200',
@@ -48,7 +73,7 @@ const GenericTable = ({
 					<GenericDropdown
 						buttonName={`${rowsPerPage} rows`}
 						className="border-2 outline-none border-gray-400 focus:border-customOrange-dark focus:text-customOrange-dark hover:border-customOrange-dark hover:text-customOrange-dark rounded-md transition-colors duration-500 px-2 py-0.5 gap-2"
-						maxHeight="200" // Adjust as needed
+						maxHeight="200"
 					>
 						<div className="flex flex-col">
 							{options.map((option) => (

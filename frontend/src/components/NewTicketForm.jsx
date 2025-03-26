@@ -1,13 +1,31 @@
 import React, { useState } from 'react';
-import api from '../api';
 import {GenericForm} from '.';
 import {GenericInput} from '.';
 import { useFileInput } from '../utils/attachmentUtils';
-import { toast } from 'sonner';
 import { formatApiErrorMessage } from "../utils/errorHandler";
-import { ACCESS_TOKEN } from '../constants';
 import { postWithAuth } from '../utils/apiUtils';
 import { handleToastPromise } from '../utils/toastUtils';
+
+/**
+ * @component
+ * NewTicketForm - A form component for submitting a new support ticket.
+ *
+ * @state
+ * - subject (string): Stores the subject of the ticket.
+ * - description (string): Stores the description of the ticket.
+ * - message (string): Stores the detailed message for the support team.
+ * - attachments (array): Stores the selected file attachments.
+ *
+ * @methods
+ * - handleSubmit(): Handles form submission and sends the new ticket data to the API.
+ *
+ * @props
+ * - togglePopup (function): Toggles the visibility of the new ticket popup.
+ * - fetchTickets (function): Refreshes the ticket list after a new ticket is created.
+ *
+ * @returns {JSX.Element}
+ */
+
 
 const NewTicketForm = ({ togglePopup, fetchTickets }) => {
     const [subject, setSubject] = useState('');

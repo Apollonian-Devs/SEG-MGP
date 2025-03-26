@@ -1,12 +1,27 @@
 import React from 'react';
-import { ACCESS_TOKEN } from '../constants';
-import api from '../api';
 import {GenericButton} from '.';
-import { toast } from 'sonner';
 import { playSound } from '../utils/SoundUtils';
 import { formatApiErrorMessage } from '../utils/errorHandler';
 import { postWithAuth } from '../utils/apiUtils';
 import { handleToastPromise } from '../utils/toastUtils';
+
+/**
+ * @component
+ * RedirectButton - A button component for redirecting a ticket to a selected officer or department.
+ *
+ * @props
+ * - ticketid (number | string): The ID of the ticket being redirected.
+ * - selectedOfficer (object | null): The officer to whom the ticket will be redirected.
+ * - departmentId (number | string | null): The department to which the ticket will be redirected.
+ * - fetchTickets (function): A function to refresh the ticket list after redirection.
+ * - dataTestId (string): The test ID for the button, used for testing purposes.
+ *
+ * @methods
+ * - handleRedirect(): Sends a request to redirect the ticket to the selected officer or department.
+ *
+ * @returns {JSX.Element}
+ */
+
 
 const RedirectButton = ({
 	ticketid,
@@ -15,8 +30,11 @@ const RedirectButton = ({
 	fetchTickets,
 	dataTestId,
 }) => {
+
+	const isDisabled = !selectedOfficer && !departmentId;
+
 	const handleRedirect = () => {
-		if (!selectedOfficer && !departmentId) {
+		if (isDisabled) {
 			return;
 		}
 
@@ -44,8 +62,6 @@ const RedirectButton = ({
 		  });
 		  
 	};
-
-	const isDisabled = !selectedOfficer && !departmentId;
 
 	return (
 		<GenericButton

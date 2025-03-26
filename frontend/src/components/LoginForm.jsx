@@ -8,10 +8,29 @@ import { Loader } from 'lucide-react';
 import { toast } from 'sonner';
 import handleApiError from "../utils/errorHandler";
 
+/**
+ * @component
+ * LoginForm - A user login form component.
+ *
+ * @state
+ * - username (string): Stores the user's inputted username.
+ * - password (string): Stores the user's inputted password.
+ * - error (string | null): Stores error messages if login fails.
+ * - isLoading (boolean): Tracks the loading state during form submission.
+ *
+ * @methods
+ * - handleSubmit(): Handles form submission, authenticates the user, and stores tokens.
+ *
+ * @effects
+ * - Redirects the user to the dashboard if already logged in.
+ *
+ * @returns {JSX.Element}
+ */
+
+
 const LoginForm = () => {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
-	const [error, setError] = useState(null);
 	const [isLoading, setLoading] = useState(false);
 	const navigate = useNavigate();
 

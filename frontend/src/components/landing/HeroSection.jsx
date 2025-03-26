@@ -5,6 +5,13 @@ import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 
+/**
+ * @component
+ * HeroSection - The main hero banner of the landing page showcasing core project information and navigation links.
+ *
+ * @returns {JSX.Element}
+ */
+
 const HeroSection = () => {
 	return (
 		<motion.div

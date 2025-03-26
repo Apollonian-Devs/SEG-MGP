@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import userEvent from '@testing-library/user-event';
-import HelpQA, {faqData} from '../../pages/HelpQ&A';
+import HelpQA from '../../pages/HelpQ&A';
+import { faqData } from '../../constants';
 
 describe("Help Q&A component", () => {
     it("renders the FAQ page heading", () => {

@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import api from '../api';
+import React, { useState } from 'react';
 import { ACCESS_TOKEN } from '../constants';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell } from '@fortawesome/free-solid-svg-icons';
@@ -10,6 +9,30 @@ import { playSound } from "../utils/SoundUtils";
 import handleApiError from '../utils/errorHandler';
 import { getWithAuth } from '../utils/apiUtils';
 import { postWithAuth } from '../utils/apiUtils';
+
+/**
+ * @component
+ * NotificationsTab - A notification panel for users to view and manage ticket-related notifications.
+ *
+ * @state
+ * - notifications (array): Stores the list of notifications.
+ * - isPopupOpen (boolean): Tracks whether the notification popup is open.
+ * - clickedNotifications (Set): Tracks notifications marked as read.
+ *
+ * @methods
+ * - fetchNotifications(): Fetches the list of notifications from the API.
+ * - markNotificationAsRead(notificationId): Marks a specific notification as read via the API.
+ * - markSetAsRead(): Marks all selected notifications as read.
+ * - handleNotificationClick(id): Toggles a notification's read status.
+ * - markAllRead(): Marks all notifications as read in the UI.
+ * - toggleNotifications(): Toggles the notification popup visibility.
+ *
+ * @props
+ * - user (object): The current logged-in user.
+ *
+ * @returns {JSX.Element}
+ */
+
 const NotificationsTab = ({ user }) => {
 	const [notifications, setNotifications] = useState([]);
 	const [isPopupOpen, setShowNotifications] = useState(false);
@@ -43,6 +66,10 @@ const NotificationsTab = ({ user }) => {
 			)
 		);
 	};
+
+	const markAllRead = () => {
+		setClickedNotifications(new Set(notifications.map((item) => item.id)));
+	};
 	
 
 	const handleNotificationClick = (id) => {
@@ -52,10 +79,6 @@ const NotificationsTab = ({ user }) => {
 			wasClicked ? newClicked.delete(id) : newClicked.add(id);
 			return newClicked;
 		});
-	};
-
-	const markAllRead = () => {
-		setClickedNotifications(new Set(notifications.map((item) => item.id)));
 	};
 
 	const toggleNotifications = () => {
@@ -121,7 +144,6 @@ const NotificationsTab = ({ user }) => {
 									{notification.message}
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-									{/* {notification.created_at || 'Not Set'} */}
 									{notification.created_at ? new Date(notification.created_at).toLocaleString() : "Not Set"}
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">

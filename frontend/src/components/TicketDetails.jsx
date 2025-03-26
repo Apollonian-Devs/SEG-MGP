@@ -1,5 +1,16 @@
 import React from "react";
 
+/**
+ * @component
+ * TicketDetails - A component that displays detailed information about a specific ticket.
+ *
+ * @props
+ * - ticket (object): The ticket object containing detailed information such as subject, description, status, priority, assigned user, and dates.
+ *
+ * @returns {JSX.Element}
+ */
+
+
 const TicketDetails = ({ ticket }) => {
 
   return (

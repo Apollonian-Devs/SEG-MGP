@@ -9,6 +9,13 @@ import {
 import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 
+/**
+ * @const features - An array of feature objects, each containing:
+ * @property {JSX.Element} icon - An icon component representing the feature visually.
+ * @property {string} text - A short label or title for the feature.
+ * @property {string} description - A brief explanation of the feature's purpose or functionality.
+ */
+
 export const features = [
 	{
 		icon: <Mail />,
@@ -47,6 +54,13 @@ export const features = [
 			'Seamlessly integrate with the university’s help desk for a unified support experience.',
 	},
 ];
+
+/**
+ * @component
+ * FeatureSection - Showcases the core features of the ticketing system with icons and descriptions.
+ *
+ * @returns {JSX.Element}
+ */
 
 const FeatureSection = () => {
 	const ref = useRef(null);

@@ -1,12 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import {GenericDropdown} from '.';
 import {GenericButton} from '.';
-import api from '../api';
-import { ACCESS_TOKEN } from '../constants';
 import { University } from 'lucide-react';
-import { toast } from "sonner";
 import handleApiError from "../utils/errorHandler.js";
 import { getWithAuth } from '../utils/apiUtils';
+
+/**
+ * DepartmentsDropdown - A dropdown component for selecting a department.
+ *
+ * @component
+ *
+ * @state
+ * - departments (array): Stores the list of available departments.
+ * - selectedDept (object | null): Stores the currently selected department.
+ * - loading (boolean): Tracks whether departments are being fetched.
+ *
+ * @methods
+ * - fetchDepartments(): Fetches the list of departments from the API.
+ * - handleSelect(department): Updates the selected department for the ticket.
+ *
+ * @returns {JSX.Element}
+ */
+
 
 const DepartmentsDropdown = ({ ticketId, setSelectedDepartments }) => {
 	const [departments, setDepartments] = useState([]);

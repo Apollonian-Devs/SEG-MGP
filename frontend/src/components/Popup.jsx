@@ -1,6 +1,20 @@
 import React from 'react';
 import {GenericButton} from '.';
 
+/** 
+ * @component
+ * Popup - A modal component that displays content in an overlay.
+ *
+ * @props
+ * - isOpen (boolean): Controls whether the popup is visible.
+ * - onClose (function): A function to close the popup.
+ * - children (ReactNode): The content to be displayed inside the popup.
+ * - width (string): Optional custom width for the popup (default is 'w-[500px]').
+ * - height (string): Optional custom height for the popup (default is 'h=[300px]').
+ *
+ * @returns {JSX.Element | null}
+ */
+
 const Popup = ({
 	isOpen,
 	onClose,

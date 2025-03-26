@@ -1,22 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import api from '../api';
-import { ACCESS_TOKEN } from '../constants';
-import Chat from './Chat';
-import {GenericButton} from '.';
-import PopUp from './Popup';
-import {GenericTable} from '.';
-import OfficersDropdown from './OfficersDropdown';
-import DepartmentsDropdown from './DepartmentsDropdown';
-import RedirectButton from './RedirectButton';
-import SuggestDepartmentButton from './SuggestDepartmentButton';
-import StatusHistoryButton from './StatusHistoryButton';
-import SuggestTicketGroupingButton from './SuggestTicketGroupingButton';
-import TicketPathButton from './TicketPathButton';
-import { formatApiErrorMessage } from '../utils/errorHandler';
-import { getWithAuth } from '../utils/apiUtils';
-import { handleToastPromise } from '../utils/toastUtils';
 
-import ChangeDate from './ChangeDate';
+// Import Icons
 import {
 	MessageSquareMore,
 	RefreshCw,
@@ -29,11 +13,74 @@ import {
 	XCircle,
 	Sparkles,
 } from 'lucide-react';
+
+// Import Components:
+// Buttons
+import Chat from './Chat';
+import GenericButton from './genericComponents/GenericButton';
+import RedirectButton from './RedirectButton';
+import SuggestDepartmentButton from './SuggestDepartmentButton';
+import StatusHistoryButton from './StatusHistoryButton';
+import SuggestTicketGroupingButton from './SuggestTicketGroupingButton';
+import TicketPathButton from './TicketPathButton';
+
+// Dropdowns
+import GenericDropdown from './genericComponents/GenericDropdown';
+import OfficersDropdown from './OfficersDropdown';
+import DepartmentsDropdown from './DepartmentsDropdown';
 import FilterTicketsDropdown from './FilterTicketsDropdown';
-import {GenericDropdown} from '.';
+
+import PopUp from './Popup';
+import GenericTable from './genericComponents/GenericTable';
+import ChangeDate from './ChangeDate';
 import TicketDetails from './TicketDetails';
-import { playSound } from '../utils/SoundUtils';
-import { toast } from 'sonner';
+
+// Utils
+import {formatApiErrorMessage} from '../utils/errorHandler';
+import {getWithAuth} from '../utils/apiUtils';
+import{handleToastPromise} from '../utils/toastUtils';
+
+
+/**
+ * @component
+ * TicketsCard - A card component that displays a list of tickets with filtering, sorting, and various actions like redirecting, chatting, and updating ticket status.
+ *
+ * @props
+ * - user (object): The logged-in user with role-specific permissions.
+ * - officers (array): List of officers available for ticket assignment.
+ * - admin (object | null): The admin user for handling specific ticket actions.
+ * - tickets (array): The list of tickets to display.
+ * - setTickets (function): A function to update the ticket list.
+ * - selectedTicket (object | null): The currently selected ticket.
+ * - setSelectedTicket (function): A function to set the currently selected ticket.
+ * - fetchTickets (function): A function to fetch the updated ticket list after actions.
+ *
+ * @state
+ * - showingTickets (array): The filtered and sorted list of tickets to display.
+ * - isChatOpen (boolean): Controls whether the chat popup is open.
+ * - selectedOfficers (object): Stores the selected officer for each ticket.
+ * - isChangeDateOpen (boolean): Controls whether the change date popup is open.
+ * - isHistoryOpen (boolean): Controls whether the status history popup is open.
+ * - isPathOpen (boolean): Controls whether the ticket path popup is open.
+ * - isDetailOpen (boolean): Controls whether the ticket details popup is open.
+ * - selectedDepartments (object): Stores the selected departments for tickets.
+ * - suggestedDepartments (object): Stores the suggested departments for tickets.
+ * - suggestedGrouping (object): Stores the suggested ticket groupings.
+ * - priority (string): The selected priority filter for tickets.
+ * - status (string): The selected status filter for tickets.
+ * - isOverdue (boolean): The selected overdue filter for tickets.
+ * - sortConfig (object): Configuration for sorting tickets by specific columns.
+ *
+ * @methods
+ * - handleSelectOfficer(ticketId, officer): Sets the selected officer for a ticket.
+ * - toggleChange(type, ticket_id): Toggles the change for priority or status of a ticket.
+ * - sortTickets(key): Sorts the tickets by the specified key (subject, status, priority).
+ * - applyFilters(): Applies the filters to the list of tickets.
+ * - clearFilters(): Clears the applied filters and shows all tickets.
+ * - toggleChangeDate(): Toggles the change date popup visibility.
+ *
+ * @returns {JSX.Element}
+ */
 
 const TicketsCard = ({
 	user,
@@ -45,7 +92,7 @@ const TicketsCard = ({
 	setSelectedTicket,
 	fetchTickets,
 }) => {
-
+	// States
 	const [showingTickets, setShowingTickets] = useState(tickets);
 	const [isChatOpen, setIsChatOpen] = useState(false);
 	const [selectedOfficers, setSelectedOfficers] = useState({});
@@ -56,13 +103,9 @@ const TicketsCard = ({
 	const [selectedDepartments, setSelectedDepartments] = useState({});
 	const [suggestedDepartments, setSuggestedDepartments] = useState({});
 	const [suggestedGrouping, setSuggestedGrouping] = useState({});
-
-	// Filtering State
 	const [priority, setPriority] = useState('');
 	const [status, setStatus] = useState('');
 	const [isOverdue, setIsOverdue] = useState(false);
-
-	// Sorting State
 	const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
 	// Icon mapping
@@ -73,16 +116,26 @@ const TicketsCard = ({
 		'Awaiting Student': <XCircle className="size-4 text-red-500" />,
 	};
 
+	const priorityColorBackground = (priorityType) => {
+		switch (priorityType) {
+			case 'High':
+				return 'bg-red-500 text-white';
+			case 'Medium':
+				return 'bg-yellow-500 text-white';
+			case 'Low':
+				return 'bg-green-500 text-white';
+			default:
+				return 'bg-gray-300 text-black';
+		}
+	};
+
+	// Methods
 	const handleSelectOfficer = (ticketId, officer) => {
 		setSelectedOfficers((prev) => ({
 			...prev,
 			[ticketId]: officer,
 		}));
 	};
-
-	useEffect(() => {
-		applyFilters();
-	}, [tickets]);
 
 	const toggleChange = async (type, ticket_id) => {
 		const path = type === 'priority' ? 'change-priority' : 'change-status';
@@ -95,11 +148,8 @@ const TicketsCard = ({
 			errorCallback: (error) =>
 				`Error changing ${type}: ${formatApiErrorMessage(error, "Something went wrong", { includePrefix: false })}`,
 		});
-		
-
 	};
 
-	// Sorting Function
 	const sortTickets = (key) => {
 		let direction = 'asc';
 		if (sortConfig.key === key && sortConfig.direction === 'asc') {
@@ -120,7 +170,6 @@ const TicketsCard = ({
 		setShowingTickets(sortedTickets);
 	};
 
-	// Filtering Functions
 	const applyFilters = () => {
 		if (!tickets || tickets.length === 0) {
 			setShowingTickets([]);
@@ -144,7 +193,6 @@ const TicketsCard = ({
 		setShowingTickets(filteredTickets);
 	};
 
-
 	const clearFilters = () => {
 		setPriority('');
 		setStatus('');
@@ -156,6 +204,10 @@ const TicketsCard = ({
 	const toggleChangeDate = () => {
 		setChangeDateOpen((prev) => !prev);
 	};
+
+	useEffect(() => {
+		applyFilters();
+	}, [tickets]);
 
 	return (
 		<>
@@ -358,17 +410,7 @@ const TicketsCard = ({
 												{ticket[key] || 'Not Set'}
 											</div>
 										) : key === 'priority' ? (
-											<div
-												className={`px-3 py-1 rounded-full text-center ${
-													ticket[key] === 'High'
-														? 'bg-red-500 text-white'
-														: ticket[key] === 'Medium'
-															? 'bg-yellow-500 text-white'
-															: ticket[key] === 'Low'
-																? 'bg-green-500 text-white'
-																: 'bg-gray-300 text-black'
-												}`}
-											>
+											<div className={`px-3 py-1 rounded-full text-center ${priorityColorBackground(ticket[key])}`}>
 												{ticket[key] || 'Not Set'}
 											</div>
 										) : (

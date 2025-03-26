@@ -1,5 +1,28 @@
 import React, { forwardRef } from 'react';
 
+/**
+ * @component
+ * GenericInput - A customizable input component that handles different input types (e.g., text, checkbox, file) with flexible styling and validation.
+ *
+ * @props
+ * - id (string): The ID for the input element, used for the label association.
+ * - label (string): The label for the input field.
+ * - labelClassName (string): Custom CSS class for styling the label (default is 'flex text-sm text-left font-medium text-black').
+ * - type (string): The type of input (e.g., 'text', 'checkbox', 'file').
+ * - required (boolean): Indicates whether the input is required (default is false).
+ * - checked (boolean): The checked state for checkbox inputs.
+ * - onChange (function): The function to handle input changes.
+ * - placeholder (string): The placeholder text for the input (default is '').
+ * - multiple (boolean): Whether the input supports multiple file selection (default is false).
+ * - name (string): The name attribute for the input.
+ * - value (string | boolean): The value of the input for non-checkbox types.
+ * - divClassName (string): Custom CSS class for the container div (default is 'flex flex-col gap-2').
+ * - className (string): Custom CSS class for the input field (default is a styled input field).
+ *
+ * @returns {JSX.Element}
+ */
+
+
 const GenericInput = forwardRef(
 	(
 		{

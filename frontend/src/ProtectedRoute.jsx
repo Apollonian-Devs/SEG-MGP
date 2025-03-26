@@ -7,6 +7,26 @@ import React, { useState, useEffect } from 'react';
 import { Loader } from 'lucide-react';
 import { toast } from 'sonner';
 
+/**
+ * @component
+ * ProtectedRoute - A higher-order component (HOC) that protects routes by verifying user tokens.
+ *
+ * @state
+ * - isAuthorized (boolean|null): Indicates whether the user is authorized. `null` denotes an unresolved state (loading).
+ *
+ * @methods
+ * - refreshToken(): Attempts to renew the access token using the stored refresh token.
+ * - auth(): Verifies the validity of the current access token or requests a new one if expired.
+ *
+ * @props
+ * - children (React.ReactNode): The protected component(s) to render upon successful authorization.
+ *
+ * @effects
+ * - Fetches the user's access token and verifies its validity.
+ *
+ * @returns {JSX.Element}
+ */
+
 function ProtectedRoute({ children }) {
 	const [isAuthorized, setIsAuthorized] = useState(null);
 

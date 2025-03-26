@@ -3,6 +3,28 @@ import {GenericDropdown} from '.';
 import {GenericButton} from '.';
 import { User } from 'lucide-react';
 
+/**
+ * @component
+ * OfficersDropdown - A dropdown menu for selecting an officer for a given ticket.
+ *
+ * @state
+ * - localOfficer (object | null): Stores the currently selected officer.
+ *
+ * @methods
+ * - handleSelect(officer): Updates the selected officer and triggers the parent callback.
+ * - getButtonLabel(): Returns the display name for the currently selected officer.
+ *
+ * @props
+ * - ticketId (string | number): The ID of the ticket associated with the selection.
+ * - officers (array): A list of available officers to assign.
+ * - admin (object | null): An optional admin user that can be selected.
+ * - onSelectOfficer (function): Callback function to handle officer selection.
+ * - defaultSelectedOfficer (object | null): The default pre-selected officer.
+ *
+ * @returns {JSX.Element}
+ */
+
+
 const OfficersDropdown = ({
 	ticketId,
 	officers,

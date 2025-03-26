@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { ACCESS_TOKEN } from '../constants';
-import api from '../api';
 import TicketsCard from '../components/TicketsCard';
 import NewTicketButton from '../components/NewTicketButton';
 import  {GenericDropdown}  from '../components';
@@ -8,6 +7,25 @@ import NotificationsTab from '../components/Notification';
 import { CircleUserRound } from 'lucide-react';
 import handleApiError from '../utils/errorHandler';
 import { getWithAuth } from '../utils/apiUtils';
+
+/**
+ * @component
+ *  Dashboard - The main user dashboard page for viewing and managing tickets.
+ * 
+ * @state
+ * - current_user (object|null): The current user's data; null if not yet fetched or an error occurs.
+ * - officers (object[]|null): Array of officers used for assigning or directing tickets (available if user is staff).
+ * - admin (object|null): Admin data retrieved from the backend; null if not fetched or user is not admin.
+ * - tickets (object[]|null): Array of tickets associated with the current user.
+ * - selectedTicket (object|null): Currently selected ticket for expanded view or manipulation.
+ *
+ * @methods
+ * - fetchCurrentUser(): Retrieves the current user's data from the server via an authenticated request.
+ * - fetchOfficers(): Fetches officers if the current user is staff.
+ * - fetchTickets(): Fetches the user's tickets from the server.
+ *
+ * @returns {JSX.Element}
+ */
 
 const Dashboard = () => {
 	const [current_user, setCurrent_user] = useState(null);
@@ -18,9 +36,9 @@ const Dashboard = () => {
 
 	const fetchCurrentUser = async () => {
 		try {
-		  const access = localStorage.getItem(ACCESS_TOKEN);
 		  const response = await getWithAuth('/api/current_user/');
 		  setCurrent_user(response.data);
+			console.log("hi: ", response.data);
 		} catch (error) {
 		  handleApiError(error, "Error fetching current user");
 		  setCurrent_user(null);

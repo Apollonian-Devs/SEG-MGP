@@ -19,7 +19,7 @@ from django.urls import path, include
 from api.views import CreateUserView, DepartmentsListView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from django.urls import re_path
-from django.views import TemplateView
+from django.views.generic import TemplateView
 
 urlpatterns = [
     path("admin/", admin.site.urls),

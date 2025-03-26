@@ -117,6 +117,14 @@ Note: If using Windows, remove the 3 from pip and python, such that all commands
 ```
 pip3 install -r requirements.txt
 ```
+**Troubleshooting for Linux Users:** If you get an error like: "fatal error: Python.h: No such file or directory", it's likely because the required development headers for Python are missing. This can be fixed via the following command:
+```
+sudo apt install python3.12-dev build-essential
+```
+Then re-run the required packages installation:
+```
+pip3 install -r requirements.txt
+```
 3. Migrate the database:
 ```
 python3 manage.py migrate

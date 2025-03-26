@@ -34,7 +34,6 @@ CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
     'https://apolloniandevs.onrender.com',
-    'https://*.onrender.com'
 ]
 
 STORAGES = {

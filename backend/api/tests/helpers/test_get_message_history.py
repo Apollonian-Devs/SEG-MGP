@@ -150,6 +150,8 @@ class TestGetMessageHistory(TestCase):
             "sender_role": "Student",
             "body": "Check formatting",
             "created_at": msg.created_at,
+            "attachments": []  
         }
 
         self.assertEqual(history[0], expected_message)
+

@@ -32,8 +32,7 @@ const NewTicketForm = ({ togglePopup, fetchTickets }) => {
     const [description, setDescription] = useState('');
     const [message, setMessage] = useState('');
     const [attachments, setAttachments] = useState([]);
-
-    const { fileInputRef, handleFileChange, resetFileInput } = useFileInput(setAttachments);
+    const { fileInputRef, handleChange, resetFileInput } = useFileInput(setAttachments);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -101,13 +100,13 @@ const NewTicketForm = ({ togglePopup, fetchTickets }) => {
                 />
 
                 <GenericInput
-                    id="attachments"
-                    label="Attachments"
-                    type="file"
-                    multiple={true}
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    placeholder="Optionally attach relevant files"
+                id="attachments"
+                label="Attachments"
+                type="file"
+                multiple={true}
+                ref={fileInputRef}
+                onChange={handleChange}  
+                placeholder="Optionally attach relevant files"
                 />
             </GenericForm>
         </>

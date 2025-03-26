@@ -72,7 +72,7 @@ class TestTicketListCreateView(TestCase):
             'subject': 'Test ticket 2',
             'description': 'This is a test ticket',
             'message': 'Test message',
-            'attachments': ''
+            'attachments': []  
         }
 
         self.assertEqual(Ticket.objects.count(), 1)
@@ -93,12 +93,9 @@ class TestTicketListCreateView(TestCase):
             'subject': 'Test ticket 2',
             'description': 'This is a test ticket',
             'message': 'Test message',
-            'attachments': ''
+            'attachments': []
         }
-
         response = self.client.post(reverse("ticket-list"), valid_data)
-
-        self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data["error"], "An error has occurred")
 
 

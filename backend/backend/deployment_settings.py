@@ -39,7 +39,7 @@ STORAGES = {
 
 DATABASES = {
     'default': dj_database_url.config(
-        default= os.environ.get('DATABASE_URL'),
-        conn_max_age = 600
+        default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3'),
+        conn_max_age=600
     )
 }

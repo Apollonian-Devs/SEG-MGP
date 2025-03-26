@@ -54,7 +54,30 @@ The deployed version of the application can be found at: **\_**
 
 ### Frontend
 
-1. Make sure you have nodeJS installed. (When you download nodeJS from the official website it normally comes with npm)
+1. Make sure you have nodeJS installed with npm. This can be done via the following instructions provided from the Node.js official website (https://nodejs.org/en/download).  
+   Note: The first set of commands for this first step are for Linux and MacOS users while the second set of commands are for Windows users.
+```
+curl -o- https://fnm.vercel.app/install | bash
+
+fnm install 22
+
+# Verify the Node.js version:
+node -v # Should print "v22.14.0".
+
+# Verify npm version:
+npm -v # Should print "10.9.2".
+```
+```
+winget install Schniz.fnm
+
+fnm install 22
+
+# Verify the Node.js version:
+node -v # Should print "v22.14.0".
+
+# Verify npm version:
+npm -v # Should print "10.9.2".
+```
 2. After cloning the repository, run the following command to install dependencies:
 ```
 npm install
@@ -74,51 +97,52 @@ npm run coverage
 ```
 ### Backend 
 
-First set up and activate a virtual environment in the root directory of the project.
-Note: The first set of commands for doing this are for Linux and MacOS users while the second set of commands are for Windows users.
+1. First set up and activate a virtual environment in the root directory of the project.  
+   Note: The first set of commands for this first step are for Linux and MacOS users while the second set of commands are for Windows users.
 
-⚠️ **Python Version Requirement:**
+⚠️ **Python Version Requirement:**  
 Please ensure you are using Python 3.12. We experienced issues when trying to use Python 3.13, specifically with an external AI library that we used not supporting this latest version, and therefore our application may not function properly if using Python 3.13. 
 ```
-$ python3.12 -m venv venv
-$ source venv/bin/activate
+python3.12 -m venv venv
+source venv/bin/activate
 ```
 ```
-> py -3.12 -m venv venv
-> venv/Scripts/activate
+py -3.12 -m venv venv
+venv/Scripts/activate
 ```
-**Ensure you are in the backend directory for the following instructions.**
-Note: If using Windows, remove the 3 from pip and python, such that all commands are either pip ... or python ...
-Install all the required packages:
+**Ensure you are in the backend directory for the following instructions.**  
+Note: If using Windows, remove the 3 from pip and python, such that all commands are either pip ... or python ...  
+
+2. Install all the required packages:
 ```
-$ pip3 install -r requirements.txt
+pip3 install -r requirements.txt
 ```
-Migrate the database:
+3. Migrate the database:
 ```
-$ python3 manage.py migrate
+python3 manage.py migrate
 ```
-Seed the database: 
+4. Seed the database: 
 ```
-$ python3 manage.py seed
+python3 manage.py seed
 ```
-Run the backend server:
+5. Run the backend server:
 ```
-$ python3 manage.py runserver
+python3 manage.py runserver
 ```
 
 #### Running tests for backend
 You can run all backend tests with the command:
 ```
-$ python3 manage.py test
+python3 manage.py test
 ```
 Obtain the coverage of the backend tests:
 ```
-$ coverage run manage.py test
+coverage run manage.py test
 ```
 You can either get a basic report on the command line interface (using the first command) or as a more detailed html report (using the second command):
 ```
-$ coverage report
-$ coverage html
+coverage report
+coverage html
 ```
 
 

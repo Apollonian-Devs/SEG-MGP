@@ -78,7 +78,7 @@ node -v # Should print "v22.14.0".
 # Verify npm version:
 npm -v # Should print "10.9.2".
 ```
-2. After cloning the repository, run the following command to install dependencies:
+2. After cloning the repository, **ensure you are in the frontend directory for the following commands.** Run the following command to install dependencies:
 ```
 npm install
 ```

@@ -18,6 +18,8 @@ from django.contrib import admin
 from django.urls import path, include
 from api.views import CreateUserView, DepartmentsListView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from django.urls import re_path
+from django.views import TemplateView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -26,5 +28,6 @@ urlpatterns = [
     path("api/token/refresh/", TokenRefreshView.as_view(), name="refresh"),
     path("api-auth/", include("rest_framework.urls")),
     path("api/", include("api.urls")),
-    path('api/departments/', DepartmentsListView.as_view(), name='departments-list')  
+    path('api/departments/', DepartmentsListView.as_view(), name='departments-list'),
+    re_path(r'^.*', TemplateView.as_view(template_name='index.html'))
 ]

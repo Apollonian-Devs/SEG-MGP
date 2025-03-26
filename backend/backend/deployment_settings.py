@@ -44,3 +44,13 @@ DATABASES = {
         conn_max_age=600
     )
 }
+
+TEMPLATES = [
+    {
+        'DIRS': [os.path.join(BASE_DIR, 'templates')]
+    }
+]
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
+]

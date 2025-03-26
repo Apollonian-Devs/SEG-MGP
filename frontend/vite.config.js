@@ -6,7 +6,7 @@ export default defineConfig({
   base: '/',
   server: {
     proxy: {
-      '/api': 'https://seg-mgp.onrender.com'
+      '/api': 'https://apolloniandevs.onrender.com'
     },
   },
   

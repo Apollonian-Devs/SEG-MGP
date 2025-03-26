@@ -22,11 +22,10 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173',
-    'http://localhost:5174',
-    'https://seg-mgp-frontend.onrender.com'
-]
+#CORS_ALLOWED_ORIGINS = [
+#    'http://localhost:5173',
+#    'http://localhost:5174',
+#]
 
 STORAGES = {
     "default":{
@@ -37,6 +36,8 @@ STORAGES = {
         "BACKEND" : "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DATABASES = {
     'default': dj_database_url.config(

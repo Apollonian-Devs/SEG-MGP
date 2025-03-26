@@ -25,7 +25,7 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
     'http://localhost:5174',
-    'https://seg-mgp-frontend.onrender.com'
+    'https://apolloniandevs.onrender.com/'
 ]
 
 STORAGES = {

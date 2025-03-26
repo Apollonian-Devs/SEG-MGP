@@ -22,10 +22,11 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
-#CORS_ALLOWED_ORIGINS = [
-#    'http://localhost:5173',
-#    'http://localhost:5174',
-#]
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'https://seg-mgp-frontend.onrender.com'
+]
 
 STORAGES = {
     "default":{

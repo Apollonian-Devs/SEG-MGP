@@ -4,7 +4,7 @@ from .settings import *
 from .settings import BASE_DIR
 
 
-ALLOWED_HOSTS = [os.environ.get('RENDER_EXTERNAL_HOSTNAME')]
+ALLOWED_HOSTS = [os.environ.get('RENDER_EXTERNAL_HOSTNAME'), 'seg-mgp.onrender.com']
 CSRF_TRUSTED_ORIGINS = ['https://'+os.environ.get('RENDER_EXTERNAL_HOSTNAME')]
 
 DEBUG = False
@@ -48,8 +48,18 @@ DATABASES = {
 
 TEMPLATES = [
     {
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
-    }
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
 ]
 
 STATICFILES_DIRS = [

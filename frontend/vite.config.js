@@ -24,6 +24,7 @@ export default defineConfig({
         target: 'https://apolloniandevs.onrender.com/',
         changeOrigin: true,
         secure: false,
+        rewrite: (path) => path.replace(/^\/api/, '')
       }
     },
   },

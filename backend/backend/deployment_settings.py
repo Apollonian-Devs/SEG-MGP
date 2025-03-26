@@ -14,18 +14,27 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware'
+    
 ]
 
 CORS_ALLOWED_ORIGINS = [
+    'https://apolloniandevs.onrender.com',
     'http://localhost:5173',
     'http://localhost:5174',
-    'https://apolloniandevs.onrender.com'
+
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://apolloniandevs.onrender.com',
+    'https://*.onrender.com'
 ]
 
 STORAGES = {

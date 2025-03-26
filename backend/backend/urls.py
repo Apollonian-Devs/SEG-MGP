@@ -30,9 +30,11 @@ urlpatterns = [
     path("api/token/refresh/", TokenRefreshView.as_view(), name="refresh"),
     path("api-auth/", include("rest_framework.urls")),
     path("api/", include("api.urls")),
-    path('api/departments/', DepartmentsListView.as_view(), name='departments-list'),
-    re_path(r'^.*', TemplateView.as_view(template_name='index.html'))
+    path('api/departments/', DepartmentsListView.as_view(), name='departments-list')
 ]
 
-if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+urlpatterns += [
+    re_path(r'^.*', TemplateView.as_view(template_name='index.html'))
+]

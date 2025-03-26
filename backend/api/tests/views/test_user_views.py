@@ -1,14 +1,10 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from api.models import Ticket, Department, Officer, TicketMessage, TicketAttachment, TicketRedirect, Notification
-from rest_framework.test import APIClient
 from django.urls import reverse
-from datetime import datetime
-from rest_framework import status
-from django.utils.timezone import make_aware
+from rest_framework.test import APIClient
 from unittest.mock import patch
 
-
+from api.models import Ticket, Department, Officer, Notification
 #### TEST ALLOFFICERSVIEW VIEW HERE ####
 class TestAllOfficersView(TestCase):
     def setUp(self):

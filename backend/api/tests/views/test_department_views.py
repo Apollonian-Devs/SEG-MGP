@@ -1,12 +1,11 @@
-from django.test import TestCase
-from django.contrib.auth.models import User
-from api.models import Ticket, Department, Officer, TicketMessage, TicketAttachment, TicketRedirect, Notification
-from rest_framework.test import APIClient
-from django.urls import reverse
-from datetime import datetime
-from rest_framework import status
-from django.utils.timezone import make_aware
 from unittest.mock import patch
+
+from django.contrib.auth.models import User
+from django.test import TestCase
+from django.urls import reverse
+from rest_framework.test import APIClient
+
+from api.models import Ticket, Department
 
 #### TEST DEPARTMENTSLIST VIEW HERE ####
 class TestDepartmentsListView(TestCase):

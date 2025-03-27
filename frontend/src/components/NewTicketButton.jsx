@@ -21,7 +21,6 @@ import { playSound } from "../utils/SoundUtils";
  * @returns {JSX.Element}
  */
 
-
 const NewTicketButton = ({fetchTickets}) => {
 	const [isPopupOpen, setPopupOpen] = useState(false);
 

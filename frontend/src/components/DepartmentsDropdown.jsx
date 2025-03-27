@@ -6,9 +6,8 @@ import handleApiError from "../utils/errorHandler.js";
 import { getWithAuth } from '../utils/apiUtils';
 
 /**
- * DepartmentsDropdown - A dropdown component for selecting a department.
- *
  * @component
+ * DepartmentsDropdown - A dropdown component for selecting a department.
  *
  * @state
  * - departments (array): Stores the list of available departments.

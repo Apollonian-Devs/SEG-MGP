@@ -116,6 +116,7 @@ const TicketsCard = ({
 		'Awaiting Student': <XCircle className="size-4 text-red-500" />,
 	};
 
+	// Colour mapping
 	const priorityColorBackground = (priorityType) => {
 		switch (priorityType) {
 			case 'High':

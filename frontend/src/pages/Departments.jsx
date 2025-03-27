@@ -5,6 +5,20 @@ import KCLImage from "../assets/kcl_logo.jpg";
 import departmentURLs from "../utils/departmentURLs"; // import your URL map
 import handleApiError from "../utils/errorHandler";
 import api from "../api";
+
+/**
+ * @component
+ * Departments - A page displaying a list of King's College departments with interactive department cards.
+ *
+ * @state
+ * - departments (array): Stores the list of departments retrieved from the API.
+ *
+ * @effects
+ * - Fetches department data from the API on component mount and enriches it with URLs.
+ *
+ * @returns {JSX.Element}
+ */
+
 const Departments = () => {
   const [departments, setDepartments] = useState([]);
 
@@ -79,6 +93,23 @@ const flipVariants = {
   front: { rotateX: 0 },
   back: { rotateX: 180 },
 };
+
+
+/**
+ * @component
+ * DepartmentCard - A flip-card component displaying department information.
+ *
+ * @props
+ * - name (string): The name of the department.
+ * - description (string): A brief description of the department.
+ * - url (string): The external link to the department's webpage.
+ * - imageSrc (string): The source URL for the department image.
+ *
+ * @state
+ * - flipped (boolean): Tracks whether the card is flipped to show the back side.
+ *
+ * @returns {JSX.Element}
+ */
 
 const DepartmentCard = ({ name, description, url, imageSrc }) => {
   const [flipped, setFlipped] = useState(false);

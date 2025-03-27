@@ -5,6 +5,13 @@ import { ArrowBigLeft } from 'lucide-react';
 import { faqData } from '../constants';
 
 console.log(faqData);
+
+/**
+ * @component
+ * HelpQA - A page displaying Frequently Asked Questions (FAQs) with interactive dropdowns.
+ *
+ * @returns {JSX.Element}
+ */
   
 const HelpQA = () => {
   return (

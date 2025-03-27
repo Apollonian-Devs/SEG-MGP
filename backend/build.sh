@@ -9,12 +9,12 @@ npm install
 npm run build
 
 # Create required Django directories
-mkdir -p ../backend/static/assets
-mkdir -p ../backend/templates
+mkdir -p ../backend/backend/static
+mkdir -p ../backend/backend/templates
 
-# Copy built files
-cp -r dist/assets/* ../backend/static/assets/
-cp dist/index.html ../backend/templates/
+# Copy files to INNER backend folder
+cp -r dist/assets/* ../backend/backend/static/
+cp dist/index.html ../backend/backend/templates/
 
 # Return to backend directory
 cd ../backend

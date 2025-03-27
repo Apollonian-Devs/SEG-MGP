@@ -3,11 +3,14 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  base: '/',
+  base: '/static/',
   server: {
     proxy: {
-      '/api': 'https://apolloniandevs.onrender.com'
+      '/api': 'https://seg-mgp.onrender.com'
     },
+  },
+  build: {
+    outDir: '../backend/backend/static'
   },
   
   test: {

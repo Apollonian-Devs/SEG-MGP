@@ -4,12 +4,6 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   base: '/',
-  server: {
-    proxy: {
-      '/api': 'https://apolloniandevs.onrender.com'
-    },
-  },
-  
   test: {
     globals: true,  
     environment: 'jsdom', 
@@ -22,6 +16,17 @@ export default defineConfig({
         '*.config.js',
         'src/main.jsx',
       ],
+    },
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+              return id.toString().split('node_modules/')[1].split('/')[0].toString();
+          }
+        }
+      },
     },
   },
 });

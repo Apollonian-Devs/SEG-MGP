@@ -34,11 +34,13 @@ STORAGES = {
 
     },
     "staticfiles": {
-        "BACKEND" : "whitenoise.storage.CompressedStaticFilesStorage",
+        "BACKEND" : "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_URL = 'static/'
+
 
 DATABASES = {
     'default': dj_database_url.config(

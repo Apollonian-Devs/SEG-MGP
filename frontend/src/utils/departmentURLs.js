@@ -1,4 +1,4 @@
-const departmentUrls = {
+const departmentURLs = {
     'Faculty of Arts & Humanities': 'https://www.kcl.ac.uk/artshums',
     'Faculty of Social Science & Public Policy': 'https://www.kcl.ac.uk/sspp',
     'Faculty of Natural, Mathematical & Engineering Sciences': 'https://www.kcl.ac.uk/nmes',
@@ -19,4 +19,4 @@ const departmentUrls = {
     'Student Affairs': 'https://www.kcl.ac.uk/study-at-kings/student-services',
   };
   
-  export default departmentUrls;
+  export default departmentURLs;

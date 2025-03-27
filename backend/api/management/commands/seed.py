@@ -1,11 +1,14 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from api.models import Department, Officer, Ticket, TicketMessage, Notification, TicketStatusHistory
-from .seeder_info import student_fixtures,officer_fixtures,chief_officer_fixtures,admin_fixtures,department_fixtures,ticket_fixtures,ticket_message_fixtures,notification_fixtures ,ticket_templates_by_department, conversation_templates
-import random
 from faker import Faker
 from datetime import timedelta
+from api.helpers.ticket_status_history_helpers import (create_ticket_status_history_object, changeTicketStatus)
+from .seeder_info import department_fixtures,student_fixtures,officer_fixtures,chief_officer_fixtures,admin_fixtures,ticket_fixtures,ticket_message_fixtures,notification_fixtures ,ticket_templates_by_department, conversation_templates
+import random
 import django.utils.timezone as timezone
+
+
 
 class Command(BaseCommand):
 
@@ -124,42 +127,53 @@ class Command(BaseCommand):
             self.create_user(admin)
 
     def create_user(self, data):
+        user = self.create_base_user(data)
+
+        if self.is_officer(data):
+            self.assign_officer_department(user, data)
+
+        return user
+
+
+    def create_base_user(self, data):
+        """Create a User with base fields."""
         user = User.objects.create_user(
-            username=data['username'],
-            email=data['email'],
+            username=data["username"],
+            email=data["email"],
             password=Command.DEFAULT_PASSWORD,
-            first_name=data['first_name'],
-            last_name=data['last_name'],
-            is_superuser=data['is_superuser'],
-            is_staff=data['is_staff'],
+            first_name=data["first_name"],
+            last_name=data["last_name"],
+            is_superuser=data["is_superuser"],
+            is_staff=data["is_staff"],
         )
+        return user
 
-        # Assign a single department to officers
-        if data['is_staff'] and not data['is_superuser']:
-            
-            if 'department' in data:
-                
-                department_object = Department.objects.filter(name=data['department']).first()
-                
-                if department_object:
-                    
-                    officer, created = Officer.objects.get_or_create(
-                        
-                        user=user,
-                        
-                        defaults={
-                            'department': department_object,
-                            'is_department_head': data.get('is_department_head', False)  # Ensure department head status is set
-                        }
-                        
-                    )
-                    
-                    self.stdout.write(f"Officer '{user.username}' assigned to department: {department_object.name}.")
-                    
-                else:
-                    
-                    self.stdout.write(self.style.ERROR(f"Department '{data['department']}' not found for officer '{user.username}'."))    
 
+    def is_officer(self, data):
+        """Check if user is an officer (staff but not superuser)."""
+        return data.get("is_staff") and not data.get("is_superuser")
+
+
+    def assign_officer_department(self, user, data):
+        """Assign an officer to a department if valid."""
+        department_name = data.get("department")
+        if not department_name:
+            self.stdout.write(self.style.WARNING(f"No department provided for officer '{user.username}'."))
+            return
+        department = Department.objects.filter(name=department_name).first()
+        if not department:
+            self.stdout.write(self.style.ERROR(f"Department '{department_name}' not found for officer '{user.username}'."))
+            return
+        Officer.objects.get_or_create(
+            user=user,
+            defaults={
+                "department": department,
+                "is_department_head": data.get("is_department_head", False),
+            },
+        )
+        self.stdout.write(f"Officer '{user.username}' assigned to department: {department.name}.")
+
+    
     def seed_random_user(self, is_staff=False, is_superuser=False, is_department_head=False, department=None):
         """
         Creates a User with the specified role and, if applicable, an Officer linked to a department.
@@ -263,67 +277,55 @@ class Command(BaseCommand):
 
 
     def generate_tickets_for_department(self, department):
-        """Generate 10 tickets for a given department and return the created tickets."""
         officers = self.officers_by_department.get(department.name, [])
         department_head = Officer.objects.filter(department=department, is_department_head=True).first()
-        admin = User.objects.filter(is_superuser=True).first()  # Get the first admin user
+        admin = User.objects.filter(is_superuser=True).first()
+        templates = ticket_templates_by_department.get(department.name, [])
+        generated_tickets = []
+        for template in templates[:10]:
+            ticket = self.create_ticket_from_template(template, department, officers, department_head, admin)
+            generated_tickets.append(ticket)
 
-        generated_tickets = []  # Store tickets
-
-        for ticket_template in ticket_templates_by_department[department.name]:
-            created_by = random.choice(User.objects.filter(is_staff=False))
-            assigned_to = (
-                department_head.user if department_head and random.random() < 0.1
-                else random.choice(officers).user if officers else None
-            )
-
-
-            # Determine if ticket is overdue (10% chance)
-            is_overdue = random.random() < 0.1
-            due_date = (
-                timezone.datetime(2024, 2, 26, tzinfo=timezone.get_current_timezone()) if is_overdue
-                else timezone.now() + timedelta(days=9)
-            )
-
-            # Create the Ticket
-            ticket = Ticket.objects.create(
-                subject=ticket_template["subject"],
-                description=ticket_template["description"],
-                created_by=created_by,
-                assigned_to=assigned_to,
-                status="In Progress",
-                priority=ticket_template["priority"],
-                due_date=due_date,
-                is_overdue=is_overdue
-            )
-
-            generated_tickets.append(ticket)  # Add to the list of created tickets
-
-            # First TicketStatusHistory Entry - Ticket Created by Student
-            TicketStatusHistory.objects.create(
-                ticket=ticket,
-                old_status=None,
-                new_status="Open",
-                changed_by_profile=created_by,
-                notes="Ticket created by student."
-            )
-
-            # Second TicketStatusHistory Entry - Ticket Assigned to Officer/Department Head
-            if assigned_to:
-                TicketStatusHistory.objects.create(
-                    ticket=ticket,
-                    old_status="Open",
-                    new_status="In Progress",
-                    changed_by_profile=admin,
-                    notes=f"Ticket assigned to {assigned_to.username}."
-                )
-
-            assigned_officer_name = assigned_to.username if assigned_to else "Unassigned"
-            self.stdout.write(f"Created Ticket: {ticket.subject} (Dept: {department.name}, Officer: {assigned_officer_name}, Overdue: {is_overdue})")
-
-        return generated_tickets  # Return created tickets
-
-
+        return generated_tickets
+    
+    def create_ticket_from_template(self, template, department, officers, department_head, admin):
+        created_by = random.choice(User.objects.filter(is_staff=False))
+        assigned_to = (
+            department_head.user if department_head and random.random() < 0.1
+            else random.choice(officers).user if officers else None
+        )
+        is_overdue = random.random() < 0.1
+        due_date = (
+            timezone.datetime(2024, 2, 26, tzinfo=timezone.get_current_timezone())
+            if is_overdue else timezone.now() + timedelta(days=9)
+        )
+        ticket = Ticket.objects.create(
+            subject=template["subject"],
+            description=template["description"],
+            created_by=created_by,
+            assigned_to=assigned_to,
+            status="Open",
+            priority=template["priority"],
+            due_date=due_date,
+            is_overdue=is_overdue
+        )
+        self._handle_ticket_status_history(ticket, created_by, assigned_to, admin)
+        assigned_name = assigned_to.username if assigned_to else "Unassigned"
+        self.stdout.write(
+            f"Created Ticket: {ticket.subject} (Dept: {department.name}, Officer: {assigned_name}, Overdue: {is_overdue})")
+        return ticket
+    
+    def _handle_ticket_status_history(self, ticket, created_by, assigned_to, admin):
+        # First entry: ticket created by student
+        create_ticket_status_history_object(
+            ticket=ticket,
+            old_status=None,
+            new_status="Open",
+            changed_by_profile=created_by,
+            notes="Ticket created by student.")
+        # Second entry: ticket assigned (and status changed)
+        if assigned_to:
+            changeTicketStatus(ticket, admin)
 
     def seed_random_ticket_messages(self, ticket_map):
         """Seed messages for all tickets."""

@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowBigLeft, Search } from "lucide-react";
 import KCLImage from "../assets/kcl_logo.jpg";
-import departmentUrls from "../utils/departmentURLs"; // import your URL map
-import { getWithAuth } from "../utils/apiUtils";
+import departmentURLs from "../utils/departmentURLs"; // import your URL map
 import handleApiError from "../utils/errorHandler";
 import api from "../api";
 const Departments = () => {
@@ -15,7 +14,7 @@ const Departments = () => {
         const res = await api.get("/api/departments/");
         const enriched = res.data.map((dept) => ({
           ...dept,
-          url: departmentUrls[dept.name] || "#", // fallback to '#' if URL not found
+          url: departmentURLs[dept.name] || "#", // fallback to '#' if URL not found
         }));
         setDepartments(enriched);
       } catch (error) {

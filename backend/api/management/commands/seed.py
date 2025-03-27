@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
-from api.models import Department, Officer, Ticket, TicketMessage, Notification, TicketStatusHistory
+from api.models import Department, Officer, Ticket, TicketMessage, Notification
 from faker import Faker
 from datetime import timedelta
 from api.helpers.ticket_status_history_helpers import (create_ticket_status_history_object, changeTicketStatus)
@@ -30,14 +30,16 @@ class Command(BaseCommand):
 
 
     def seed_tickets_notifications_and_messages(self):
+        """Seeds all fixed and random tickets and related models"""
         fixed_ticket_map = self.seed_tickets()
-        self.seed_random_ticket_messages(fixed_ticket_map)  
+        self.seed_ticket_messages(fixed_ticket_map)  
         self.seed_notifications(fixed_ticket_map)
         random_ticket_map = self.seed_random_tickets()  
-        self.seed_ticket_messages(random_ticket_map)  
+        self.seed_random_ticket_messages(random_ticket_map)  
         self.seed_random_notifications(random_ticket_map)
 
     def seed_departments(self):
+        """Seed departments using depaertment fixtures"""
         self.stdout.write("Seeding departments...")
         for department_data in department_fixtures:
             Department.objects.get_or_create(name=department_data['name'], defaults={'description': department_data['description']})
@@ -104,6 +106,7 @@ class Command(BaseCommand):
         self.stdout.write("200 random students seeded.")
    
     def seed_users(self):
+        """Seed every kind of user, both from fixtures and random ones"""
         self.stdout.write("Seeding users...")
         self.generate_user_fixtures()
         self.seed_department_heads()
@@ -114,6 +117,7 @@ class Command(BaseCommand):
 
 
     def generate_user_fixtures(self):
+        """Wrapper function for seeding user fixtures to avoid excessive nesting. Split up and made efficient using ChatGPT (along with methods called)"""
         for student in student_fixtures:
             self.create_user(student)
 
@@ -127,6 +131,7 @@ class Command(BaseCommand):
             self.create_user(admin)
 
     def create_user(self, data):
+        """Calls different methods depanding whether or not the user in question is an officer or not"""
         user = self.create_base_user(data)
 
         if self.is_officer(data):
@@ -136,7 +141,7 @@ class Command(BaseCommand):
 
 
     def create_base_user(self, data):
-        """Create a User with base fields."""
+        """Create a User with base fields, i.e. a student."""
         user = User.objects.create_user(
             username=data["username"],
             email=data["email"],
@@ -259,7 +264,7 @@ class Command(BaseCommand):
         self.stdout.write("Ticket messages seeded.")
 
     def seed_random_tickets(self):
-        """Seed tickets per department and return a ticket map."""
+        """Seed tickets per department and return a ticket map. Split up and made efficient using Chat GPT (along with generate_tickets_for_department, create_ticket_from_template and _handle_ticket_status_history)"""
         self.stdout.write("Seeding random tickets...")
 
         ticket_map = {}  # Store ticket objects by subject
@@ -277,6 +282,7 @@ class Command(BaseCommand):
 
 
     def generate_tickets_for_department(self, department):
+        """Generate up to 10 tickets for the given department using predefined templates."""
         officers = self.officers_by_department.get(department.name, [])
         department_head = Officer.objects.filter(department=department, is_department_head=True).first()
         admin = User.objects.filter(is_superuser=True).first()
@@ -289,6 +295,7 @@ class Command(BaseCommand):
         return generated_tickets
     
     def create_ticket_from_template(self, template, department, officers, department_head, admin):
+        """Create a Ticket instance from a predefined template and assign it to an officer or department head."""
         created_by = random.choice(User.objects.filter(is_staff=False))
         assigned_to = (
             department_head.user if department_head and random.random() < 0.1
@@ -316,6 +323,7 @@ class Command(BaseCommand):
         return ticket
     
     def _handle_ticket_status_history(self, ticket, created_by, assigned_to, admin):
+        """Record the ticket status history for a newly created ticket."""
         # First entry: ticket created by student
         create_ticket_status_history_object(
             ticket=ticket,
@@ -410,6 +418,7 @@ class Command(BaseCommand):
 
 
     def create_username(self, first_name, last_name):
+        """Create username for user"""
         base_username = '@' + first_name.lower() + last_name.lower()
         username = base_username
         counter = 1

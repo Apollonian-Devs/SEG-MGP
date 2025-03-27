@@ -1,3 +1,4 @@
+"""This is a separate file where all the fixtures employeed by seed.py are neatly stored in dictionaries"""
 student_fixtures = [
     {'username': '@johndoe', 'email': 'john.doe@example.org', 'first_name': 'John', 'last_name': 'Doe', 'is_staff': False, 'is_superuser': False},
     {'username': '@janedoe', 'email': 'jane.doe@example.org', 'first_name': 'Jane', 'last_name': 'Doe', 'is_staff': False, 'is_superuser': False},

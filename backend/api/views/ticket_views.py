@@ -86,6 +86,23 @@ class TicketChangeStatus(views.APIView):
 
 
 class TicketDelete(generics.DestroyAPIView):
+    """  
+    Deletes a ticket created by the authenticated user.
+
+    @permission: IsAuthenticated  
+
+    @method:  
+        - DELETE - Remove a ticket created by the requesting user  
+
+    @queryset:  
+        - Filters tickets where `created_by` matches the authenticated user  
+
+    @return:  
+        - 204: Ticket successfully deleted  
+        - 403: Permission denied  
+        - 404: Ticket not found  
+        - 500: Unexpected server error  
+    """
     serializer_class = TicketSerializer
     permission_classes = [IsAuthenticated]
 
@@ -94,6 +111,22 @@ class TicketDelete(generics.DestroyAPIView):
     
 
 class TicketMessageHistory(views.APIView):
+    """  
+    Retrieves the message history for a specific ticket.
+
+    @permission: IsAuthenticated  
+
+    @method:  
+        - GET - Retrieve message history for a given ticket  
+
+    @request_params (GET):  
+        - ticket_id (integer) - The ID of the ticket  
+
+    @return:  
+        - 200: List of messages associated with the ticket  
+        - 404: Ticket not found  
+        - 500: Unexpected server error  
+    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request, ticket_id):
@@ -112,6 +145,24 @@ class TicketMessageHistory(views.APIView):
             return Response({"error": "An error has occurred"}, status=500)
         
 class TicketRedirectView(views.APIView):
+    """  
+    Handles ticket redirection to another user or department.
+
+    @permission: IsAuthenticated  
+
+    @method:  
+        - POST - Redirect a ticket to another user or department  
+
+    @request_body (POST):  
+        - ticket (integer) - The ID of the ticket to be redirected  
+        - to_profile (integer) - The ID of the user receiving the ticket  
+        - department_id (integer, optional) - The ID of the department (for superusers)  
+
+    @return:  
+        - 201: Successfully redirected ticket  
+        - 400: Invalid request (e.g., no department head found)  
+        - 500: Unexpected server error  
+    """
     permission_classes = [IsAuthenticated]
     def post(self, request):
         request.data['from_profile'] = request.user.id
@@ -161,6 +212,23 @@ class TicketRedirectView(views.APIView):
 
 
 class TicketChangePriority(views.APIView):
+    """  
+    Changes the priority of a specified ticket.
+
+    @permission: IsAuthenticated  
+
+    @method:  
+        - GET - Change the priority of a given ticket  
+
+    @request_params (GET):  
+        - id (integer) - The ID of the ticket whose priority is being changed  
+
+    @return:  
+        - 200: Priority successfully changed  
+        - 403: Permission denied  
+        - 404: Ticket not found  
+        - 500: Unexpected server error  
+    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request, id):
@@ -179,6 +247,22 @@ class TicketChangePriority(views.APIView):
 
         
 class TicketStatusHistoryView(views.APIView):
+    """  
+    Retrieves the status change history of a specific ticket.
+
+    @permission: IsAuthenticated  
+
+    @method:  
+        - GET - Retrieve the status change history for a given ticket  
+
+    @request_params (GET):  
+        - ticket_id (integer) - The ID of the ticket whose history is being retrieved  
+
+    @return:  
+        - 200: List of status change history records  
+        - 403: Permission denied  
+        - 500: Unexpected server error  
+    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request, ticket_id):
@@ -193,6 +277,22 @@ class TicketStatusHistoryView(views.APIView):
 
 
 class TicketPathView(views.APIView):
+    """  
+    Retrieves the redirection path of a specific ticket.
+
+    @permission: IsAuthenticated  
+
+    @method:  
+        - GET - Retrieve the redirection path for a given ticket  
+
+    @request_params (GET):  
+        - ticket_id (integer) - The ID of the ticket whose path is being retrieved  
+
+    @return:  
+        - 200: List of redirection path records  
+        - 403: Permission denied  
+        - 500: Unexpected server error  
+    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request, ticket_id):
@@ -262,6 +362,24 @@ class TicketSendResponseView(views.APIView):
             return Response({"error": "An error has occurred"}, status=500)
         
 class ChangeTicketDateView(views.APIView):
+    """  
+    Changes the due date of a specified ticket.
+
+    @permission: IsAuthenticated  
+
+    @method:  
+        - POST - Update the due date of a given ticket  
+
+    @request_body (POST):  
+        - id (integer) - The ID of the ticket whose due date is being changed  
+        - due_date (string) - The new due date in a valid date format  
+
+    @return:  
+        - 201: Successfully updated ticket due date  
+        - 400: Invalid input (e.g., incorrect date format)  
+        - 404: Ticket not found  
+        - 500: Unexpected server error  
+    """
     permission_classes = [IsAuthenticated]
 
     def post(self, request):

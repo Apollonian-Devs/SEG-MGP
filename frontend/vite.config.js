@@ -4,12 +4,6 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   base: '/',
-  server: {
-    proxy: {
-      '/api': 'https://apolloniandevs.onrender.com'
-    },
-  },
-  
   test: {
     globals: true,  
     environment: 'jsdom', 
@@ -22,6 +16,18 @@ export default defineConfig({
         '*.config.js',
         'src/main.jsx',
       ],
+    },
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            return 'vendor'; // Group all vendor dependencies into a 'vendor' chunk
+          }
+          // You can add more custom logic here
+        },
+      },
     },
   },
 });

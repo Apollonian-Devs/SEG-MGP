@@ -1,0 +1,48 @@
+{
+  "index.html": {
+    "file": "index-mBUu-QWN.js",
+    "name": "index",
+    "src": "index.html",
+    "isEntry": true,
+    "css": [
+      "index-BKEtAQQw.css"
+    ],
+    "assets": [
+      "feel-me-think-about-it-CUJ4vE7T.gif",
+      "coding-CDJa40Zh.gif",
+      "question-mwPTfS5q.png",
+      "logo-black-B_wovVTC.png",
+      "notificationSound-BykV4V3r.mov",
+      "logo-6TE5HpCe.png",
+      "kcl_logo-CQ1AurRM.jpg"
+    ]
+  },
+  "src/assets/coding.gif": {
+    "file": "coding-CDJa40Zh.gif",
+    "src": "src/assets/coding.gif"
+  },
+  "src/assets/feel-me-think-about-it.gif": {
+    "file": "feel-me-think-about-it-CUJ4vE7T.gif",
+    "src": "src/assets/feel-me-think-about-it.gif"
+  },
+  "src/assets/kcl_logo.jpg": {
+    "file": "kcl_logo-CQ1AurRM.jpg",
+    "src": "src/assets/kcl_logo.jpg"
+  },
+  "src/assets/logo-black.png": {
+    "file": "logo-black-B_wovVTC.png",
+    "src": "src/assets/logo-black.png"
+  },
+  "src/assets/logo.png": {
+    "file": "logo-6TE5HpCe.png",
+    "src": "src/assets/logo.png"
+  },
+  "src/assets/notificationSound.mov": {
+    "file": "notificationSound-BykV4V3r.mov",
+    "src": "src/assets/notificationSound.mov"
+  },
+  "src/assets/question.png": {
+    "file": "question-mwPTfS5q.png",
+    "src": "src/assets/question.png"
+  }
+}

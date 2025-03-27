@@ -27,10 +27,9 @@ MIDDLEWARE = [
 #    'http://localhost:5174',
 #]
 
-CORS_ALLOWED_ORIGINS = [
-    'https://seg-mgp-65aa.onrender.com'
-]
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
+
 
 
 STORAGES = {

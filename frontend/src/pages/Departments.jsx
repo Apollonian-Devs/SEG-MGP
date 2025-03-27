@@ -1,12 +1,31 @@
-import React, { useState } from "react";
-import KCLImage from "../assets/kcl_logo.jpg";
-import { ArrowBigLeft, Search } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { departmentFixtures } from "../constants";
-
+import { ArrowBigLeft, Search } from "lucide-react";
+import KCLImage from "../assets/kcl_logo.jpg";
+import departmentURLs from "../utils/departmentURLs"; // import your URL map
+import handleApiError from "../utils/errorHandler";
+import api from "../api";
 const Departments = () => {
+  const [departments, setDepartments] = useState([]);
+
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const res = await api.get("/api/departments/");
+        const enriched = res.data.map((dept) => ({
+          ...dept,
+          url: departmentURLs[dept.name] || "#", // fallback to '#' if URL not found
+        }));
+        setDepartments(enriched);
+      } catch (error) {
+        handleApiError(error, "Error fetching departments");
+      }
+    };
+    fetchDepartments();
+  }, []);
+
   return (
-    <div className="min-w-[80%] flex flex-col gap-4 justify-center items-center" >
+    <div className="min-w-[80%] flex flex-col gap-4 justify-center items-center">
       <motion.a
         href="/"
         className="flex items-center gap-1 py-2 px-4 w-fit bg-customOrange-dark text-lg text-white font-semibold rounded-lg shadow-md hover:bg-customOrange-light transition-colors duration-500 ease-in-out"
@@ -18,6 +37,7 @@ const Departments = () => {
         <ArrowBigLeft size={20} />
         Back
       </motion.a>
+
       <motion.section
         className="p-10 bg-white text-black rounded-3xl shadow-lg w-full"
         initial={{ opacity: 0, y: 20 }}
@@ -31,16 +51,14 @@ const Departments = () => {
           </h2>
 
           <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {departmentFixtures.map((dept, index) => (
+            {departments.map((dept, index) => (
               <motion.li
-                key={index}
+                key={dept.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.15 }}
+                transition={{ delay: index * 0.1 }}
               >
                 <DepartmentCard
-                  key={index}
-                  index={index}
                   name={dept.name}
                   description={dept.description}
                   imageSrc={KCLImage}

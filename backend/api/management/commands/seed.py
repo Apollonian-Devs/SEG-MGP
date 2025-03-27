@@ -1,163 +1,12 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from api.models import Department, Officer, Ticket, TicketMessage, Notification, TicketStatusHistory
-from .ticket_seeder import ticket_templates_by_department, conversation_templates
-import random
 from faker import Faker
 from datetime import timedelta
+from api.helpers.ticket_status_history_helpers import (create_ticket_status_history_object, changeTicketStatus)
+from .seeder_info import department_fixtures,student_fixtures,officer_fixtures,chief_officer_fixtures,admin_fixtures,ticket_fixtures,ticket_message_fixtures,notification_fixtures ,ticket_templates_by_department, conversation_templates
+import random
 import django.utils.timezone as timezone
-
-student_fixtures = [
-    {'username': '@johndoe', 'email': 'john.doe@example.org', 'first_name': 'John', 'last_name': 'Doe', 'is_staff': False, 'is_superuser': False},
-    {'username': '@janedoe', 'email': 'jane.doe@example.org', 'first_name': 'Jane', 'last_name': 'Doe', 'is_staff': False, 'is_superuser': False},
-    {'username': '@charlie', 'email': 'charlie.johnson@example.org', 'first_name': 'Charlie', 'last_name': 'Johnson', 'is_staff': False, 'is_superuser': False},
-]
-
-officer_fixtures = [
-    {'username': '@officer1', 'email': 'officer1@example.org', 'first_name': 'Officer', 'last_name': 'One', 'is_staff': True, 'is_superuser': False, 'department': 'IT'},
-    {'username': '@officer2', 'email': 'officer2@example.org', 'first_name': 'Officer', 'last_name': 'Two', 'is_staff': True, 'is_superuser': False, 'department': 'HR'},
-    {'username': '@officer3', 'email': 'officer3@example.org', 'first_name': 'Officer', 'last_name': 'Three', 'is_staff': True, 'is_superuser': False, 'department': 'Finance'},
-    {'username': '@officer4', 'email': 'officer4@example.org', 'first_name': 'Officer', 'last_name': 'Four', 'is_staff': True, 'is_superuser': False, 'department': 'IT'},
-]
-
-chief_officer_fixtures = [
-
-    {'username': '@chiefofficer1', 'email': 'chiefofficer1@example.org', 'first_name': 'ChiefOfficer', 'last_name': 'One', 'is_staff': True, 'is_superuser': False, 'is_department_head': True,'department': 'IT'},
-
-    {'username': '@chiefofficer2', 'email': 'chiefofficer2@example.org', 'first_name': 'ChiefOfficer', 'last_name': 'Two', 'is_staff': True, 'is_superuser': False, 'is_department_head': True, 'department': 'HR'},
-
-    {'username': '@chiefofficer3', 'email': 'chiefofficer3@example.org', 'first_name': 'ChiefOfficer', 'last_name': 'Three', 'is_staff': True, 'is_superuser': False, 'is_department_head': True, 'department': 'Finance'},
-
-    {'username': '@chiefofficer4', 'email': 'chiefofficer4@example.org', 'first_name': 'ChiefOfficer', 'last_name': 'Four', 'is_staff': True, 'is_superuser': False, 'is_department_head': True, 'department': 'Wellbeing'},
-    
-    {'username': '@chiefofficer5', 'email': 'chiefofficer5@example.org', 'first_name': 'ChiefOfficer', 'last_name': 'Five', 'is_staff': True, 'is_superuser': False, 'is_department_head': True,'department': 'Maintenance'},
-
-    {'username': '@chiefofficer6', 'email': 'chiefofficer6@example.org', 'first_name': 'ChiefOfficer', 'last_name': 'Six', 'is_staff': True, 'is_superuser': False, 'is_department_head': True, 'department': 'Housing'},
-
-    {'username': '@chiefofficer7', 'email': 'chiefofficer7@example.org', 'first_name': 'ChiefOfficer', 'last_name': 'Seven', 'is_staff': True, 'is_superuser': False, 'is_department_head': True, 'department': 'Admissions'},
-
-    {'username': '@chiefofficer8', 'email': 'chiefofficer8@example.org', 'first_name': 'ChiefOfficer', 'last_name': 'Eight', 'is_staff': True, 'is_superuser': False, 'is_department_head': True, 'department': 'Library Services'},
-]
-
-
-
-
-
-admin_fixtures = [
-    {'username': '@admin1', 'email': 'admin1@example.org', 'first_name': 'Admin', 'last_name': 'One', 'is_staff': True, 'is_superuser': True},
-]
-
-department_fixtures = [
-    # King's College London Faculties
-    {'name': 'Faculty of Arts & Humanities', 'description': 'Covers literature, history, philosophy, and creative industries.'},
-    {'name': 'Faculty of Social Science & Public Policy', 'description': 'Focuses on global affairs, politics, and public policy.'},
-    {'name': 'Faculty of Natural, Mathematical & Engineering Sciences', 'description': 'Includes mathematics, physics, informatics, and engineering.'},
-    {'name': 'Faculty of Life Sciences & Medicine', 'description': 'Covers medical biosciences, cardiovascular studies, and pharmaceutical sciences.'},
-    {'name': "King's Business School", 'description': 'Focuses on accounting, finance, marketing, and business strategy.'},
-    {'name': 'The Dickson Poon School of Law', 'description': 'Specializes in legal studies and research.'},
-    {'name': 'Faculty of Dentistry, Oral & Craniofacial Sciences', 'description': 'Covers dental sciences and oral healthcare.'},
-    {'name': 'Florence Nightingale Faculty of Nursing, Midwifery & Palliative Care', 'description': 'Focuses on nursing, midwifery, and palliative care.'},
-    {'name': 'Institute of Psychiatry, Psychology & Neuroscience', 'description': 'Researches mental health, neuroscience, and addiction studies.'},
-
-    # Administrative & Service Departments
-    {'name': 'IT', 'description': 'Handles technical support, student portals, and system security.'},
-    {'name': 'HR', 'description': 'Manages staff recruitment, payroll, and work policies.'},
-    {'name': 'Finance', 'description': 'Handles tuition fees, scholarships, and financial aid.'},
-    {'name': 'Wellbeing', 'description': 'Provides student counseling and wellbeing services.'},
-    {'name': 'Maintenance', 'description': 'Manages building maintenance, plumbing, and electrical repairs.'},
-    {'name': 'Housing', 'description': 'Oversees student accommodations, dorm assignments, and rent payments.'},
-    {'name': 'Admissions', 'description': 'Manages student applications, enrollment, and transfers.'},
-    {'name': 'Library Services', 'description': 'Oversees book loans, research databases, and study spaces.'},
-    {'name': 'Student Affairs', 'description': 'Handles extracurricular activities, student unions, and student complaints.'},
-]
-
-
-ticket_fixtures = [
-    {
-        'subject': 'Lost Student ID',
-        'description': 'I lost my ID card near the library. Need help getting a replacement.',
-        'created_by': '@johndoe',   
-        'assigned_to': '@officer1', 
-        'status': 'Open',
-        'priority': 'High',
-    },
-    {
-        'subject': 'Check My Fees',
-        'description': 'Not sure how much I owe in tuition fees this semester.',
-        'created_by': '@janedoe',
-        'assigned_to': '@officer2',
-        'status': 'Open',
-        'priority': 'Medium',
-    },
-    {
-        'subject': 'Dorm Maintenance Issue',
-        'description': 'There is a water leak in my dorm room sink.',
-        'created_by': '@charlie',
-        'assigned_to': '@officer2',
-        'status': 'In Progress',
-        'priority': 'High',
-    },
-]
-
-
-
-ticket_message_fixtures = [
-    {
-        'ticket_subject': 'Lost Student ID',
-        'messages': [
-            {'sender': '@johndoe', 'body': 'Hello, I lost my ID. What should I do?', 'is_internal': False},
-            {'sender': '@officer1', 'body': 'You can visit the card office for a replacement.', 'is_internal': False},
-        ]
-    },
-    {
-        'ticket_subject': 'Check My Fees',
-        'messages': [
-            {'sender': '@janedoe', 'body': 'Could you clarify my outstanding fees?', 'is_internal': False},
-            {'sender': '@officer2', 'body': 'Please check your student portal for updated fee details.', 'is_internal': False},
-        ]
-    },
-    {
-        'ticket_subject': 'Dorm Maintenance Issue',
-        'messages': [
-            {'sender': '@charlie', 'body': 'Hello, I am having leakage issues in my dorm room. I live on Room 101 on the Waterloo accommodation. There are mold and moisture patches forming on the walls. Please send someone to check immediately!', 'is_internal': False},
-            {'sender': '@charlie', 'body': 'My dorm sink is leaking. Any updates?', 'is_internal': False},
-            {'sender': '@officer2', 'body': 'Maintenance has been notified and will check soon.', 'is_internal': False},
-            {'sender': '@officer2', 'body': 'Internal note: Leak might need urgent plumbing services.', 'is_internal': True},
-        ]
-    },
-]
-
-
-
-notification_fixtures = [
-    {
-        'user_profile': '@johndoe',
-        'ticket_subject': 'Lost Student ID',
-        'message': 'Your ticket regarding your lost ID has been updated.',
-    },
-    {
-        'user_profile': '@janedoe',
-        'ticket_subject': 'Check My Fees',
-        'message': 'An officer has responded to your ticket about fees.',
-    },
-    {
-        'user_profile': '@charlie',
-        'ticket_subject': 'Dorm Maintenance Issue',
-        'message': 'Maintenance is addressing the leak in your dorm.',
-    },
-    {
-        'user_profile': '@officer1',
-        'ticket_subject': 'Lost Student ID',
-        'message': 'The student has responded to the lost ID ticket.',
-    },
-    {
-        'user_profile': '@officer2',
-        'ticket_subject': 'Dorm Maintenance Issue',
-        'message': 'Urgent plumbing services may be required for the dorm issue.',
-    },
-]
-
-
 
 
 
@@ -278,42 +127,53 @@ class Command(BaseCommand):
             self.create_user(admin)
 
     def create_user(self, data):
+        user = self.create_base_user(data)
+
+        if self.is_officer(data):
+            self.assign_officer_department(user, data)
+
+        return user
+
+
+    def create_base_user(self, data):
+        """Create a User with base fields."""
         user = User.objects.create_user(
-            username=data['username'],
-            email=data['email'],
+            username=data["username"],
+            email=data["email"],
             password=Command.DEFAULT_PASSWORD,
-            first_name=data['first_name'],
-            last_name=data['last_name'],
-            is_superuser=data['is_superuser'],
-            is_staff=data['is_staff'],
+            first_name=data["first_name"],
+            last_name=data["last_name"],
+            is_superuser=data["is_superuser"],
+            is_staff=data["is_staff"],
         )
+        return user
 
-        # Assign a single department to officers
-        if data['is_staff'] and not data['is_superuser']:
-            
-            if 'department' in data:
-                
-                department_object = Department.objects.filter(name=data['department']).first()
-                
-                if department_object:
-                    
-                    officer, created = Officer.objects.get_or_create(
-                        
-                        user=user,
-                        
-                        defaults={
-                            'department': department_object,
-                            'is_department_head': data.get('is_department_head', False)  # Ensure department head status is set
-                        }
-                        
-                    )
-                    
-                    self.stdout.write(f"Officer '{user.username}' assigned to department: {department_object.name}.")
-                    
-                else:
-                    
-                    self.stdout.write(self.style.ERROR(f"Department '{data['department']}' not found for officer '{user.username}'."))    
 
+    def is_officer(self, data):
+        """Check if user is an officer (staff but not superuser)."""
+        return data.get("is_staff") and not data.get("is_superuser")
+
+
+    def assign_officer_department(self, user, data):
+        """Assign an officer to a department if valid."""
+        department_name = data.get("department")
+        if not department_name:
+            self.stdout.write(self.style.WARNING(f"No department provided for officer '{user.username}'."))
+            return
+        department = Department.objects.filter(name=department_name).first()
+        if not department:
+            self.stdout.write(self.style.ERROR(f"Department '{department_name}' not found for officer '{user.username}'."))
+            return
+        Officer.objects.get_or_create(
+            user=user,
+            defaults={
+                "department": department,
+                "is_department_head": data.get("is_department_head", False),
+            },
+        )
+        self.stdout.write(f"Officer '{user.username}' assigned to department: {department.name}.")
+
+    
     def seed_random_user(self, is_staff=False, is_superuser=False, is_department_head=False, department=None):
         """
         Creates a User with the specified role and, if applicable, an Officer linked to a department.
@@ -417,67 +277,55 @@ class Command(BaseCommand):
 
 
     def generate_tickets_for_department(self, department):
-        """Generate 10 tickets for a given department and return the created tickets."""
         officers = self.officers_by_department.get(department.name, [])
         department_head = Officer.objects.filter(department=department, is_department_head=True).first()
-        admin = User.objects.filter(is_superuser=True).first()  # Get the first admin user
+        admin = User.objects.filter(is_superuser=True).first()
+        templates = ticket_templates_by_department.get(department.name, [])
+        generated_tickets = []
+        for template in templates[:10]:
+            ticket = self.create_ticket_from_template(template, department, officers, department_head, admin)
+            generated_tickets.append(ticket)
 
-        generated_tickets = []  # Store tickets
-
-        for ticket_template in ticket_templates_by_department[department.name]:
-            created_by = random.choice(User.objects.filter(is_staff=False))
-            assigned_to = (
-                department_head.user if department_head and random.random() < 0.1
-                else random.choice(officers).user if officers else None
-            )
-
-
-            # Determine if ticket is overdue (10% chance)
-            is_overdue = random.random() < 0.1
-            due_date = (
-                timezone.datetime(2024, 2, 26, tzinfo=timezone.get_current_timezone()) if is_overdue
-                else timezone.now() + timedelta(days=9)
-            )
-
-            # Create the Ticket
-            ticket = Ticket.objects.create(
-                subject=ticket_template["subject"],
-                description=ticket_template["description"],
-                created_by=created_by,
-                assigned_to=assigned_to,
-                status="In Progress",
-                priority=ticket_template["priority"],
-                due_date=due_date,
-                is_overdue=is_overdue
-            )
-
-            generated_tickets.append(ticket)  # Add to the list of created tickets
-
-            # First TicketStatusHistory Entry - Ticket Created by Student
-            TicketStatusHistory.objects.create(
-                ticket=ticket,
-                old_status=None,
-                new_status="Open",
-                changed_by_profile=created_by,
-                notes="Ticket created by student."
-            )
-
-            # Second TicketStatusHistory Entry - Ticket Assigned to Officer/Department Head
-            if assigned_to:
-                TicketStatusHistory.objects.create(
-                    ticket=ticket,
-                    old_status="Open",
-                    new_status="In Progress",
-                    changed_by_profile=admin,
-                    notes=f"Ticket assigned to {assigned_to.username}."
-                )
-
-            assigned_officer_name = assigned_to.username if assigned_to else "Unassigned"
-            self.stdout.write(f"Created Ticket: {ticket.subject} (Dept: {department.name}, Officer: {assigned_officer_name}, Overdue: {is_overdue})")
-
-        return generated_tickets  # Return created tickets
-
-
+        return generated_tickets
+    
+    def create_ticket_from_template(self, template, department, officers, department_head, admin):
+        created_by = random.choice(User.objects.filter(is_staff=False))
+        assigned_to = (
+            department_head.user if department_head and random.random() < 0.1
+            else random.choice(officers).user if officers else None
+        )
+        is_overdue = random.random() < 0.1
+        due_date = (
+            timezone.datetime(2024, 2, 26, tzinfo=timezone.get_current_timezone())
+            if is_overdue else timezone.now() + timedelta(days=9)
+        )
+        ticket = Ticket.objects.create(
+            subject=template["subject"],
+            description=template["description"],
+            created_by=created_by,
+            assigned_to=assigned_to,
+            status="Open",
+            priority=template["priority"],
+            due_date=due_date,
+            is_overdue=is_overdue
+        )
+        self._handle_ticket_status_history(ticket, created_by, assigned_to, admin)
+        assigned_name = assigned_to.username if assigned_to else "Unassigned"
+        self.stdout.write(
+            f"Created Ticket: {ticket.subject} (Dept: {department.name}, Officer: {assigned_name}, Overdue: {is_overdue})")
+        return ticket
+    
+    def _handle_ticket_status_history(self, ticket, created_by, assigned_to, admin):
+        # First entry: ticket created by student
+        create_ticket_status_history_object(
+            ticket=ticket,
+            old_status=None,
+            new_status="Open",
+            changed_by_profile=created_by,
+            notes="Ticket created by student.")
+        # Second entry: ticket assigned (and status changed)
+        if assigned_to:
+            changeTicketStatus(ticket, admin)
 
     def seed_random_ticket_messages(self, ticket_map):
         """Seed messages for all tickets."""

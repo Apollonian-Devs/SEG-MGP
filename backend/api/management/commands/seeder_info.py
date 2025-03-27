@@ -1,3 +1,150 @@
+student_fixtures = [
+    {'username': '@johndoe', 'email': 'john.doe@example.org', 'first_name': 'John', 'last_name': 'Doe', 'is_staff': False, 'is_superuser': False},
+    {'username': '@janedoe', 'email': 'jane.doe@example.org', 'first_name': 'Jane', 'last_name': 'Doe', 'is_staff': False, 'is_superuser': False},
+    {'username': '@charlie', 'email': 'charlie.johnson@example.org', 'first_name': 'Charlie', 'last_name': 'Johnson', 'is_staff': False, 'is_superuser': False},
+]
+
+officer_fixtures = [
+    {'username': '@officer1', 'email': 'officer1@example.org', 'first_name': 'Officer', 'last_name': 'One', 'is_staff': True, 'is_superuser': False, 'department': 'IT'},
+    {'username': '@officer2', 'email': 'officer2@example.org', 'first_name': 'Officer', 'last_name': 'Two', 'is_staff': True, 'is_superuser': False, 'department': 'HR'},
+    {'username': '@officer3', 'email': 'officer3@example.org', 'first_name': 'Officer', 'last_name': 'Three', 'is_staff': True, 'is_superuser': False, 'department': 'Finance'},
+    {'username': '@officer4', 'email': 'officer4@example.org', 'first_name': 'Officer', 'last_name': 'Four', 'is_staff': True, 'is_superuser': False, 'department': 'IT'},
+]
+
+chief_officer_fixtures = [
+
+    {'username': '@chiefofficer1', 'email': 'chiefofficer1@example.org', 'first_name': 'ChiefOfficer', 'last_name': 'One', 'is_staff': True, 'is_superuser': False, 'is_department_head': True,'department': 'IT'},
+
+    {'username': '@chiefofficer2', 'email': 'chiefofficer2@example.org', 'first_name': 'ChiefOfficer', 'last_name': 'Two', 'is_staff': True, 'is_superuser': False, 'is_department_head': True, 'department': 'HR'},
+
+    {'username': '@chiefofficer3', 'email': 'chiefofficer3@example.org', 'first_name': 'ChiefOfficer', 'last_name': 'Three', 'is_staff': True, 'is_superuser': False, 'is_department_head': True, 'department': 'Finance'},
+
+    {'username': '@chiefofficer4', 'email': 'chiefofficer4@example.org', 'first_name': 'ChiefOfficer', 'last_name': 'Four', 'is_staff': True, 'is_superuser': False, 'is_department_head': True, 'department': 'Wellbeing'},
+    
+    {'username': '@chiefofficer5', 'email': 'chiefofficer5@example.org', 'first_name': 'ChiefOfficer', 'last_name': 'Five', 'is_staff': True, 'is_superuser': False, 'is_department_head': True,'department': 'Maintenance'},
+
+    {'username': '@chiefofficer6', 'email': 'chiefofficer6@example.org', 'first_name': 'ChiefOfficer', 'last_name': 'Six', 'is_staff': True, 'is_superuser': False, 'is_department_head': True, 'department': 'Housing'},
+
+    {'username': '@chiefofficer7', 'email': 'chiefofficer7@example.org', 'first_name': 'ChiefOfficer', 'last_name': 'Seven', 'is_staff': True, 'is_superuser': False, 'is_department_head': True, 'department': 'Admissions'},
+
+    {'username': '@chiefofficer8', 'email': 'chiefofficer8@example.org', 'first_name': 'ChiefOfficer', 'last_name': 'Eight', 'is_staff': True, 'is_superuser': False, 'is_department_head': True, 'department': 'Library Services'},
+]
+
+
+admin_fixtures = [
+    {'username': '@admin1', 'email': 'admin1@example.org', 'first_name': 'Admin', 'last_name': 'One', 'is_staff': True, 'is_superuser': True},
+]
+
+department_fixtures = [
+    # King's College London Faculties
+    {'name': 'Faculty of Arts & Humanities', 'description': 'Covers literature, history, philosophy, and creative industries.'},
+    {'name': 'Faculty of Social Science & Public Policy', 'description': 'Focuses on global affairs, politics, and public policy.'},
+    {'name': 'Faculty of Natural, Mathematical & Engineering Sciences', 'description': 'Includes mathematics, physics, informatics, and engineering.'},
+    {'name': 'Faculty of Life Sciences & Medicine', 'description': 'Covers medical biosciences, cardiovascular studies, and pharmaceutical sciences.'},
+    {'name': "King's Business School", 'description': 'Focuses on accounting, finance, marketing, and business strategy.'},
+    {'name': 'The Dickson Poon School of Law', 'description': 'Specializes in legal studies and research.'},
+    {'name': 'Faculty of Dentistry, Oral & Craniofacial Sciences', 'description': 'Covers dental sciences and oral healthcare.'},
+    {'name': 'Florence Nightingale Faculty of Nursing, Midwifery & Palliative Care', 'description': 'Focuses on nursing, midwifery, and palliative care.'},
+    {'name': 'Institute of Psychiatry, Psychology & Neuroscience', 'description': 'Researches mental health, neuroscience, and addiction studies.'},
+
+    # Administrative & Service Departments
+    {'name': 'IT', 'description': 'Handles technical support, student portals, and system security.'},
+    {'name': 'HR', 'description': 'Manages staff recruitment, payroll, and work policies.'},
+    {'name': 'Finance', 'description': 'Handles tuition fees, scholarships, and financial aid.'},
+    {'name': 'Wellbeing', 'description': 'Provides student counseling and wellbeing services.'},
+    {'name': 'Maintenance', 'description': 'Manages building maintenance, plumbing, and electrical repairs.'},
+    {'name': 'Housing', 'description': 'Oversees student accommodations, dorm assignments, and rent payments.'},
+    {'name': 'Admissions', 'description': 'Manages student applications, enrollment, and transfers.'},
+    {'name': 'Library Services', 'description': 'Oversees book loans, research databases, and study spaces.'},
+    {'name': 'Student Affairs', 'description': 'Handles extracurricular activities, student unions, and student complaints.'},
+]
+
+
+ticket_fixtures = [
+    {
+        'subject': 'Lost Student ID',
+        'description': 'I lost my ID card near the library. Need help getting a replacement.',
+        'created_by': '@johndoe',   
+        'assigned_to': '@officer1', 
+        'status': 'Open',
+        'priority': 'High',
+    },
+    {
+        'subject': 'Check My Fees',
+        'description': 'Not sure how much I owe in tuition fees this semester.',
+        'created_by': '@janedoe',
+        'assigned_to': '@officer2',
+        'status': 'Open',
+        'priority': 'Medium',
+    },
+    {
+        'subject': 'Dorm Maintenance Issue',
+        'description': 'There is a water leak in my dorm room sink.',
+        'created_by': '@charlie',
+        'assigned_to': '@officer2',
+        'status': 'In Progress',
+        'priority': 'High',
+    },
+]
+
+
+
+ticket_message_fixtures = [
+    {
+        'ticket_subject': 'Lost Student ID',
+        'messages': [
+            {'sender': '@johndoe', 'body': 'Hello, I lost my ID. What should I do?', 'is_internal': False},
+            {'sender': '@officer1', 'body': 'You can visit the card office for a replacement.', 'is_internal': False},
+        ]
+    },
+    {
+        'ticket_subject': 'Check My Fees',
+        'messages': [
+            {'sender': '@janedoe', 'body': 'Could you clarify my outstanding fees?', 'is_internal': False},
+            {'sender': '@officer2', 'body': 'Please check your student portal for updated fee details.', 'is_internal': False},
+        ]
+    },
+    {
+        'ticket_subject': 'Dorm Maintenance Issue',
+        'messages': [
+            {'sender': '@charlie', 'body': 'Hello, I am having leakage issues in my dorm room. I live on Room 101 on the Waterloo accommodation. There are mold and moisture patches forming on the walls. Please send someone to check immediately!', 'is_internal': False},
+            {'sender': '@charlie', 'body': 'My dorm sink is leaking. Any updates?', 'is_internal': False},
+            {'sender': '@officer2', 'body': 'Maintenance has been notified and will check soon.', 'is_internal': False},
+            {'sender': '@officer2', 'body': 'Internal note: Leak might need urgent plumbing services.', 'is_internal': True},
+        ]
+    },
+]
+
+
+
+notification_fixtures = [
+    {
+        'user_profile': '@johndoe',
+        'ticket_subject': 'Lost Student ID',
+        'message': 'Your ticket regarding your lost ID has been updated.',
+    },
+    {
+        'user_profile': '@janedoe',
+        'ticket_subject': 'Check My Fees',
+        'message': 'An officer has responded to your ticket about fees.',
+    },
+    {
+        'user_profile': '@charlie',
+        'ticket_subject': 'Dorm Maintenance Issue',
+        'message': 'Maintenance is addressing the leak in your dorm.',
+    },
+    {
+        'user_profile': '@officer1',
+        'ticket_subject': 'Lost Student ID',
+        'message': 'The student has responded to the lost ID ticket.',
+    },
+    {
+        'user_profile': '@officer2',
+        'ticket_subject': 'Dorm Maintenance Issue',
+        'message': 'Urgent plumbing services may be required for the dorm issue.',
+    },
+]
+
 ticket_templates_by_department = {
     # King's College London Faculties
     "Faculty of Arts & Humanities": [

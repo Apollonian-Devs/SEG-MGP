@@ -171,7 +171,7 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    height: "100vh", 
+    height: "90vh", 
     overflow: "hidden", 
   },
   
@@ -184,7 +184,7 @@ const styles = {
     boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.1)",
     flexDirection: "column",
     overflow: "hidden", 
-    maxHeight: "80vh", 
+    maxHeight: "100vh", 
   },
   
   chatHeader: {

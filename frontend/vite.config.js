@@ -4,14 +4,18 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   base: '/static/',
+  build: {
+    outDir: '../backend/backend/static', // Directly build into Django's static
+    assetsDir: '.', // Remove assets subdirectory
+    manifest: true,
+    emptyOutDir: true,
+  },
   server: {
     proxy: {
       '/api': 'https://seg-mgp.onrender.com'
     },
   },
-  build: {
-    outDir: '../backend/backend/static'
-  },
+
   
   test: {
     globals: true,  

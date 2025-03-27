@@ -23,10 +23,9 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
-            return 'vendor'; // Group all vendor dependencies into a 'vendor' chunk
+              return id.toString().split('node_modules/')[1].split('/')[0].toString();
           }
-          // You can add more custom logic here
-        },
+        }
       },
     },
   },

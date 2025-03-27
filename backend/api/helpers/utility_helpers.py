@@ -21,6 +21,7 @@ def get_tickets_for_user(user):
             "updated_at": ticket.updated_at,
             "due_date": ticket.due_date,
             "is_overdue": ticket.is_overdue,
+            "closed_at": ticket.closed_at,
             "assigned_to": ticket.assigned_to.username if ticket.assigned_to else None
         }
         for ticket in tickets

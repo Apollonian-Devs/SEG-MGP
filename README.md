@@ -48,7 +48,7 @@ The backend is built with [Django](https://www.djangoproject.com/). It includes 
 
 ## Deployed version of the application
 
-The deployed version of the application can be found at: **https://apolloniandevs.onrender.com/**
+The deployed version of the application can be found at: **https://seg-mgp-65aa.onrender.com/**
 
 ## Installation instructions
 

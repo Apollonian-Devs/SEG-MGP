@@ -61,6 +61,19 @@ class GetTicketsForUserTests(TestCase):
         self.assertEqual(tickets[1]["id"], self.student_ticket2.id)
         self.assertEqual(tickets[2]["id"], self.student_ticket3.id)
 
+    def test_closed_at_field_is_returned_correctly(self):
+        """Ensure closed_at is included and reflects actual status"""
+        self.student_ticket1.status = "Closed"
+        self.student_ticket1.closed_at = timezone.now()
+        self.student_ticket1.save()
+
+        tickets = get_tickets_for_user(self.student)
+
+        # Find the closed one
+        closed_ticket = next((t for t in tickets if t["id"] == self.student_ticket1.id), None)
+        self.assertIsNotNone(closed_ticket)
+        self.assertIsNotNone(closed_ticket["closed_at"])
+
 
     def test_officer_sees_assigned_tickets(self):
         """Officers should only see tickets assigned to them"""

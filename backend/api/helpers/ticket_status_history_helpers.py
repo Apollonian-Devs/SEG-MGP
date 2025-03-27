@@ -1,6 +1,6 @@
-from django.core.exceptions import ValidationError, PermissionDenied
-from django.contrib.auth.models import User
-from api.models import Ticket, TicketStatusHistory, STATUS_CHOICES
+from django.core.exceptions import PermissionDenied
+from api.models import TicketStatusHistory, STATUS_CHOICES
+from django.utils import timezone
 
 STATUS_OPEN = STATUS_CHOICES[0][0]  
 STATUS_IN_PROGRESS = STATUS_CHOICES[1][0]  
@@ -63,6 +63,11 @@ def changeTicketStatus(ticket, user):
     else:
         current_index = status_list.index(old_status)
         ticket.status = status_list[(current_index + 1) % len(status_list)]
+    
+    if ticket.status == STATUS_CLOSED:
+        ticket.closed_at = timezone.now()
+    else:
+        ticket.closed_at = None
 
     ticket.save()
     create_ticket_status_history_object(ticket, old_status, ticket.status, user, 

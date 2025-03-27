@@ -55,17 +55,24 @@ def send_query(student_user, subject, description, message_body, attachments=Non
     if student_user is None or student_user.is_staff:
         raise PermissionDenied("Only student users can create tickets.")
 
-    # Validate required fields
-    if not subject or not description or not message_body:
-        raise ValueError("Subject, description and message body are required")
+
+    if not subject:
+        raise ValueError("Subject is required")
+    if not description:
+        raise ValueError("Description is required")
+    if not message_body:
+        raise ValueError("Message body is required")
+
 
     ticket = create_ticket_object(subject, description, student_user, STATUS_OPEN, None, None)
+
     msg = create_ticket_message_object(ticket, student_user, message_body, False)
 
     if attachments:
         handle_attachments(msg, attachments)
 
     create_ticket_status_history_object(ticket, None, STATUS_OPEN, student_user, "Ticket created by student.")
+
     return ticket
 
 def send_response(sender_profile, ticket, message_body, is_internal=False, attachments=None):
@@ -83,8 +90,10 @@ def send_response(sender_profile, ticket, message_body, is_internal=False, attac
     """
     if sender_profile is None:
         raise PermissionDenied("No authenticated user to send a response.")
-    if ticket is None or ticket.status == STATUS_CLOSED:
-        raise ValidationError("Invalid or closed ticket provided.")
+    if ticket is None:
+        raise ValidationError("Invalid ticket provided.")
+    if ticket.status == STATUS_CLOSED:
+        raise ValidationError("Cannot respond to a closed ticket.")
 
     new_msg = create_ticket_message_object(ticket, sender_profile, message_body, is_internal)
 

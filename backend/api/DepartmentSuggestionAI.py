@@ -118,7 +118,11 @@ def suggest_department(ticket_id, ticket_description):
     
     # Format and store results
     department = fetch_department(suggested_department)
-    response_data = format_response(department, suggested_department or "Unknown", confidence_score)
+    if not department:
+        suggested_department = "Unknown"
+
+    response_data = format_response(department, suggested_department, confidence_score)
+
     save_ai_response(ticket, ticket_description, suggested_department, confidence_score)
     
     return response_data, 200

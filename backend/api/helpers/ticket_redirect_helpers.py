@@ -32,10 +32,12 @@ def validate_redirection(from_user, to_user):
     """
     if from_user is None or to_user is None:
         raise PermissionDenied("Invalid redirection: Users cannot be None.")
-    if not from_user.is_staff:
+    
+    if not (from_user.is_staff):
         raise PermissionDenied("Only officers or admins can redirect tickets.")
+
     if from_user == to_user:
-        raise ValidationError("Cannot redirect the ticket to the same user.")
+        raise ValidationError("Redirection failed: Cannot redirect the ticket to the same user.")
 
 def redirect_query(ticket, from_user, to_user):
     """
@@ -49,8 +51,9 @@ def redirect_query(ticket, from_user, to_user):
     """
     if ticket is None:
         raise ValidationError("Invalid ticket provided.")
+
     if ticket.status == STATUS_CLOSED:
-        raise ValidationError("Closed tickets cannot be redirected.")
+        raise ValidationError("Redirection failed: Closed tickets cannot be redirected.")
 
     validate_redirection(from_user, to_user)
 

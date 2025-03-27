@@ -131,6 +131,7 @@ def get_message_history(ticket):
     """
     Return a list of all messages for a given ticket sorted by creation date ascending.
     Only include messages where is_internal is False.
+    Each message includes its attachments, if any.
     """
     if ticket is None:
         raise ValueError("Ticket is None")
@@ -147,6 +148,16 @@ def get_message_history(ticket):
         else:
             sender_role = "Student"
 
+        # Fetch attachments for this message
+        attachments = TicketAttachment.objects.filter(message=m)
+        attachment_list = [
+            {
+                "file_name": a.file_name,
+                "file_path": a.file_path,
+                "mime_type": a.mime_type
+            }
+            for a in attachments
+        ]
         
         msg_list.append({
             "message_id": m.id,
@@ -154,5 +165,7 @@ def get_message_history(ticket):
             "sender_role": sender_role,
             "body": m.message_body,
             "created_at": m.created_at,
+            "attachments": attachment_list,  # ✅ Attachments included here
         })
+
     return msg_list

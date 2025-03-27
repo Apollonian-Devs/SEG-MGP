@@ -35,9 +35,10 @@ The backend is built with [Django](https://www.djangoproject.com/). It includes 
 
 - `api/`: API application folder
   - `migrations/`: Database migration files
-  - `models.py`: Database models
-  - `views.py`: Handles the logic for requests
-  - `serializers.py`: Serializers for converting data
+  - `models/`: Database models
+  - `views/`: Handles the logic for requests
+  - `serializers/`: Serializers for converting data
+  - - `helpers/`: Helpers for maintaining communication between views and database
   - `urls.py`: URL routing for the app
 - `backend/`: Backend configuration folder
   - `settings.py`: Configuration settings for the backend

@@ -48,7 +48,7 @@ The backend is built with [Django](https://www.djangoproject.com/). It includes 
 
 ## Deployed version of the application
 
-The deployed version of the application can be found at: **\_**
+The deployed version of the application can be found at: **https://apolloniandevs.onrender.com/**
 
 ## Installation instructions
 
@@ -57,4 +57,5 @@ Please see the separate Developer's Manual for full installation instructions.
 
 ## Sources
 
-The packages used by backend are specified in `requirements.txt`
+The packages used by backend are specified in `requirements.txt`, and can be installed with pip install -r requreiments.txt
+The packages used by the frontend are specified in 'package.json', and can be installed with npm install

@@ -1,14 +1,27 @@
 import React, { useState, useEffect } from "react";
-import api from "../api";
-import { ACCESS_TOKEN } from "../constants";
 import {GenericTable} from ".";
 import handleApiError from "../utils/errorHandler.js";
 import { getWithAuth } from "../utils/apiUtils";
 
+/**
+ * @component
+ * TicketPathButton - A button component that displays the ticket's path, including information about where the ticket was redirected from and to.
+ *
+ * @props
+ * - ticketId (number | string): The ID of the ticket whose path is being fetched.
+ *
+ * @state
+ * - pathRecords (array): Stores the ticket's path records, including redirection details.
+ *
+ * @methods
+ * - fetchRecords(): Fetches the ticket path data for the specified ticket ID from the API.
+ *
+ * @returns {JSX.Element}
+ */
+
+
 const TicketPathButton = ({ ticketId }) => {
     const [pathRecords, setPathRecords] = useState([]);
-    
-   
     
     const fetchRecords = async () => {
       try {
@@ -16,7 +29,6 @@ const TicketPathButton = ({ ticketId }) => {
 
         setPathRecords(response.data.ticket_path);
       } catch (error) {
-        // console.error("Error fetching ticket path:", error.response?.data || error.message);
         handleApiError(error, "Error fetching ticket path");
       } 
     };
@@ -27,8 +39,6 @@ const TicketPathButton = ({ ticketId }) => {
 
     return (
       <>
-
-          
           <GenericTable
               columnDefinition={[
                 <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">
@@ -52,15 +62,9 @@ const TicketPathButton = ({ ticketId }) => {
                 </tr>
               )} 
             />
-            
-
-       
-
       </>
     );
   };
-    
-
 
 export default TicketPathButton;
     

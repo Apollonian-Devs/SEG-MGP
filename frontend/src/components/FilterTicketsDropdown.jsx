@@ -4,6 +4,28 @@ import { Filter, FilterX } from 'lucide-react';
 import {GenericInput} from '.';
 import {GenericButton} from '.';
 
+/**
+ * @component
+ * FilterTicketsDropdown - A dropdown component for filtering tickets by status, priority, and overdue status.
+ *
+ * @state
+ * - isFilterActive (boolean): Tracks whether filters are applied.
+ *
+ * @props
+ * - priority (string): The selected priority filter.
+ * - status (string): The selected status filter.
+ * - isOverdue (boolean): The selected overdue filter.
+ * - setPriority (function): Updates the selected priority.
+ * - setStatus (function): Updates the selected status.
+ * - setIsOverdue (function): Updates the selected overdue status.
+ * - applyFilters (function): Applies the selected filters.
+ * - clearFilters (function): Clears all filters.
+ * - dataTestId (string): Data test ID for testing purposes.
+ *
+ * @returns {JSX.Element}
+ */
+
+
 const FilterTicketsDropdown = ({
 	priority,
 	status,

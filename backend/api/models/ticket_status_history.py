@@ -12,4 +12,3 @@ class TicketStatusHistory(models.Model):
 
     def __str__(self):
         return f"Ticket #{self.ticket.id} from {self.old_status} to {self.new_status}"
-

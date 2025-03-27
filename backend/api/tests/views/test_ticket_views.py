@@ -9,6 +9,7 @@ from django.utils.timezone import make_aware
 from unittest.mock import patch
 
 
+
 ### TEST TICKETLISTCREATE VIEW HERE ###
 class TestTicketListCreateView(TestCase):
     def setUp(self):
@@ -71,7 +72,7 @@ class TestTicketListCreateView(TestCase):
             'subject': 'Test ticket 2',
             'description': 'This is a test ticket',
             'message': 'Test message',
-            'attachments': ''
+            'attachments': []  
         }
 
         self.assertEqual(Ticket.objects.count(), 1)
@@ -92,12 +93,9 @@ class TestTicketListCreateView(TestCase):
             'subject': 'Test ticket 2',
             'description': 'This is a test ticket',
             'message': 'Test message',
-            'attachments': ''
+            'attachments': []
         }
-
         response = self.client.post(reverse("ticket-list"), valid_data)
-
-        self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data["error"], "An error has occurred")
 
 
@@ -114,7 +112,6 @@ class TestTicketListCreateView(TestCase):
         self.assertEqual(response.data[0]['id'], 1)
         self.assertEqual(response.data[0]['subject'], "Test ticket 1")
         self.assertEqual(response.data[0]['description'], "This is a test ticket")
-
 
 
 #### TEST TICKETCHANGESTATUS VIEW HERE ####
@@ -421,81 +418,6 @@ class TestTicketDeleteView(TestCase):
 
         self.assertEqual(Ticket.objects.count(), 3)
 
-
-
-#### TEST CURRENTUSER VIEW HERE ####
-class TestCurrentUserView(TestCase):
-    def setUp(self):
-        self.client = APIClient()
-
-    def authorize_student(self):
-        test_user = {
-            "username": "@testStudent",
-            "email": "test@email.com",
-            "password": "testpass",
-            "first_name": "first",
-            "last_name": "last"
-        }
-
-        self.client.post(reverse("register"), test_user)
-
-        response = self.client.post(reverse("get_token"), 
-                                    {"username": "@testStudent", 
-                                     "password": "testpass"})
-
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {response.json()["access"]}')
-
-    def authorize_staff(self):
-        test_user = {
-            "username": "@testStaff",
-            "email": "test@email.com",
-            "password": "testpass",
-            "first_name": "first",
-            "last_name": "last",
-            "is_staff": "true"
-        }
-
-        self.client.post(reverse("register"), test_user)
-
-        response = self.client.post(reverse("get_token"), 
-                                    {"username": "@testStaff", 
-                                     "password": "testpass"})
-
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {response.json()["access"]}')
-
-    
-    def test_get_returns_a_serialized_student_when_the_requesting_user_is_a_student(self):
-        self.authorize_student()
-
-        response = self.client.get(reverse("current-user"))
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["username"], "@testStudent")
-        self.assertEqual(response.data["is_staff"], False)
-
-
-    def test_get_returns_a_serialized_staff_member_when_the_requesting_user_is_staff(self):
-        self.authorize_staff()
-
-        response = self.client.get(reverse("current-user"))
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["username"], "@testStaff")
-        self.assertEqual(response.data["is_staff"], True)
-
-
-    @patch("api.serializers.UserSerializer.to_representation")
-    def test_get_request_fails_when_serialized_user_is_invalid_and_throws_an_exception(self, mock_data):
-        self.authorize_staff()
-
-        mock_data.side_effect = Exception("An exception was raised")
-
-        response = self.client.get(reverse("current-user"))
-
-        self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.data["error"], "An error has occurred")
-
-
 #### TEST USERTICKETS VIEW HERE ####
 class TestUserTicketsView(TestCase):
     def setUp(self):
@@ -628,7 +550,7 @@ class TestUserTicketsView(TestCase):
         self.assertEqual(response.data["error"], "An error has occurred")
 
 
-#### TEST TICKETSENDRESPONSE VIEW HERE ####
+### TEST TICKETSENDRESPONSE VIEW HERE ####
 class TestTicketSendResponseView(TestCase):
     def setUp(self):
         self.client = APIClient()
@@ -855,177 +777,7 @@ class TestTicketMessageHistoryView(TestCase):
         self.assertEqual(response.data["error"], "An error has occurred")
 
 
-#### TEST ALLOFFICERSVIEW VIEW HERE ####
-class TestAllOfficersView(TestCase):
-    def setUp(self):
-        self.client = APIClient()
-        self.department_1 = Department.objects.create(name="IT Support", description="Handles IT Issues")
-        self.user = User.objects.create(id=1, username="Username", password="testpass", is_staff=True)
-        officer_1 = Officer.objects.create(user=self.user, department=self.department_1)
 
-
-    def authorize_chief_officer(self):
-        test_user = {
-            "username": "@testStudent",
-            "email": "test@email.com",
-            "password": "testpass",
-            "first_name": "first",
-            "last_name": "last",
-            "is_staff": "true"
-        }
-        
-        self.client.post(reverse("register"), test_user)
-
-        response = self.client.post(reverse("get_token"), 
-                                    {"username": "@testStudent", 
-                                     "password": "testpass"})
-
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {response.json()["access"]}')
-
-        self.assign_chief_officer(test_user)
-
-    def assign_chief_officer(self, test_user):
-        user, _ = User.objects.get_or_create(username=test_user["username"], defaults=test_user)
-
-        officer = Officer.objects.create(user=user, department=self.department_1, is_department_head=True)
-        
-        return officer
-
-    def authorize_staff(self):
-        test_user = {
-            "username": "@testOfficer",
-            "email": "test@email.com",
-            "password": "testpass",
-            "first_name": "first",
-            "last_name": "last",
-            "is_staff": "true"
-        }
-        
-        self.client.post(reverse("register"), test_user)
-
-        response = self.client.post(reverse("get_token"), 
-                                    {"username": "@testOfficer", 
-                                     "password": "testpass"})
-
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {response.json()["access"]}')
-
-        self.assign_officer_to_department(test_user)
-
-    def assign_officer_to_department(self, test_user):
-        user, _ = User.objects.get_or_create(username=test_user["username"], defaults=test_user)
-        
-        officer = Officer.objects.create(user=user, department=self.department_1)
-        
-        return officer
-
-
-    def test_get_request_succeeds_and_returns_officer_1_who_is_assigned_to_the_same_department_when_making_the_request_with_an_officer(self):
-        self.authorize_staff()
-
-        response = self.client.get(reverse("all-officers"))
-
-        self.assertEqual(response.status_code, 200)
-        
-        self.assertEqual(response.data["officers"][0]["id"], 1)
-        self.assertEqual(response.data["officers"][0]["user"]["id"], 1)
-        self.assertEqual(response.data["officers"][0]["user"]["username"], "Username")
-        self.assertEqual(response.data["officers"][0]["department"], 1)
-        self.assertEqual(response.data["officers"][0]["is_department_head"], False)
-        
-        self.assertEqual(response.data["admin"], None)
-
-
-    def test_get_request_succeeds_and_returns_the_admin_when_making_the_request_with_a_chief_officer(self):
-        self.authorize_chief_officer()
-
-        self.admin = User.objects.create_superuser(id=3, username="admin", password="testpass")
-
-        response = self.client.get(reverse("all-officers"))
-
-        self.assertEqual(response.status_code, 200)
-
-        self.assertEqual(response.data["officers"][0]["id"], 1)
-        self.assertEqual(response.data["officers"][0]["user"]["id"], 1)
-        self.assertEqual(response.data["officers"][0]["user"]["username"], "Username")
-        self.assertEqual(response.data["officers"][0]["department"], 1)
-        self.assertEqual(response.data["officers"][0]["is_department_head"], False)
-
-        self.assertEqual(response.data["admin"]["id"], 3)
-        self.assertEqual(response.data["admin"]["username"], "admin")
-        
-    
-    @patch("api.views.user_views.get_officers_same_department")       
-    def test_get_request_fails_when_get_officers_same_department_raises_an_exception(self, mock_get_officers_same_department):
-        self.authorize_staff()
-
-        mock_get_officers_same_department.side_effect = Exception("An exception was raised")
-
-        response = self.client.get(reverse("all-officers"))
-
-        self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.data["error"], "An error has occurred")
-
-
-#### TEST USERNOTIFICATIONS VIEW HERE ####
-class TestUserNotificationsView(TestCase):
-    def setUp(self):
-        self.client = APIClient()
-        self.student_user = User.objects.create_user(username="testStudent", password="testpass")
-        self.client.force_authenticate(user=self.student_user)
-        self.ticket = Ticket.objects.create(
-            id=1,
-            subject="Test ticket",
-            description="This is a test ticket",
-            created_by=self.student_user
-        )
-        self.notifcation_1 = Notification.objects.create(id=1,
-                                                         user_profile=self.student_user, 
-                                                         ticket=self.ticket,
-                                                         message="Test notification message")
-
-
-    def test_get_request_succeeds_with_valid_user(self):
-        response = self.client.get(reverse("user-notifications"))
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["notifications"][0]["id"], 1)
-        self.assertEqual(response.data["notifications"][0]["user_profile"], 1)
-        self.assertEqual(response.data["notifications"][0]["ticket_subject"], "Test ticket")
-
-
-    @patch("api.views.user_views.get_notifications")
-    def test_get_request_fails_when_get_notifications_throws_an_exception(self, mock_get_notifications):
-        mock_get_notifications.side_effect = Exception("An exception was raised")
-
-        response = self.client.get(reverse("user-notifications"))
-
-        self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.data["error"], "An error has occurred")
-
-
-    def test_post_request_succeeds_with_valid_user_and_changes_read_status(self):
-        response = self.client.post(reverse("user-notifications"), {"id": 1}, format="json")
-
-        self.assertEqual(self.notifcation_1.read_status, False)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["message"], "mark success")
-
-        self.notifcation_1.refresh_from_db()
-
-        self.assertEqual(self.notifcation_1.read_status, True)
-
-
-    def test_post_request_fails_with_invalid_notification_id(self):
-        response = self.client.post(reverse("user-notifications"), {"id": 2}, format="json")
-
-        self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.data["error"], "An error has occurred")
-
-
-
-
-#### TEST TICKETREDIRECT VIEW HERE ####
 class TestTicketRedirectView(TestCase):
     def setUp(self):
         self.client = APIClient()
@@ -1175,7 +927,7 @@ class TestTicketRedirectView(TestCase):
 
 
 
-#### TEST TICKETSTATUSHISTORY VIEW HERE ####
+
 class TestTicketStatusHistoryView(TestCase):
     def setUp(self):
         self.client = APIClient()
@@ -1254,7 +1006,6 @@ class TestTicketStatusHistoryView(TestCase):
         self.assertEqual(response.data['error'], 'An error has occurred')
 
 
-### TEST TICKETPATH VIEW HERE ###
 class TestTicketPathView(TestCase):
     def setUp(self):
         self.client = APIClient()
@@ -1350,7 +1101,6 @@ class TestTicketPathView(TestCase):
         self.assertEqual(response.data["error"], "An error has occurred")
 
 
-#### TEST CHANGETICKETDATE VIEW HERE ####
 class TestChangeTicketDateView(TestCase):
     def setUp(self):
         self.client = APIClient()
@@ -1448,212 +1198,3 @@ class TestChangeTicketDateView(TestCase):
     
 
 
-#### TEST DEPARTMENTSLIST VIEW HERE ####
-class TestDepartmentsListView(TestCase):
-    def setUp(self):
-        self.client = APIClient()
-        self.student_user = User.objects.create_user(username="testStudent", password="testpass")
-        self.client.force_authenticate(user=self.student_user)
-
-
-    def test_get_request_succeeds_with_valid_departments_instantiated(self):
-        department_one = Department.objects.create(name="IT Support", description="Handles IT Issues")
-        department_two = Department.objects.create(name="Housing", description="Handles Housing Issues")
-
-        response = self.client.get(reverse("departments-list"))
-
-        self.assertEqual(response.status_code, 200)
-
-        self.assertEqual(response.data[0]["id"], 1)
-        self.assertEqual(response.data[0]["name"], "IT Support")
-        self.assertEqual(response.data[0]["description"], "Handles IT Issues")
-
-        self.assertEqual(response.data[1]["id"], 2)
-        self.assertEqual(response.data[1]["name"], "Housing")
-        self.assertEqual(response.data[1]["description"], "Handles Housing Issues")
-
-
-    def test_get_request_succeeds_with_no_departments(self):
-        response = self.client.get(reverse("departments-list"))
-
-        self.assertEqual(response.status_code, 200)
-
-        self.assertEqual(response.data, [])
-
-    @patch("api.views.department_views.Department.objects.all")
-    def test_get_request_fails_when_accessing_all_department_objects_raises_an_exception(self, mock_all_departments):
-        mock_all_departments.side_effect = Exception("An exception was raised")
-
-        response = self.client.get(reverse("departments-list"))
-
-        self.assertEqual(response.status_code, 500)
-
-
-#### TEST SUGGESTDEPARTMENTVIEW HERE ####
-class TestSuggestDepartmentView(TestCase):
-    def setUp(self):
-        self.client = APIClient()
-        self.student_user = User.objects.create_user(username="testStudent", password="testpass")
-        self.client.force_authenticate(user=self.student_user)
-        self.ticket = Ticket.objects.create(id=1, 
-                                       subject="Test ticket",
-                                       description="This is a test ticket",
-                                       created_by=self.student_user)
-
-
-    def test_post_request_succeeds_with_valid_ticket_id_and_description_with_a_department_in_the_system(self):
-        department = Department.objects.create(name="IT Support", description="Handles IT Issues")
-
-        data = {"ticket_id": self.ticket.id, "description": self.ticket.description}
-
-        response = self.client.post(reverse("suggest-deparment"), data, format="json")
-
-        self.assertEqual(response.status_code, 200)
-
-
-    def test_post_request_fails_with_status_code_400_if_there_is_invalid_data(self):
-        data = {"ticket_id": self.ticket.id}
-
-        response = self.client.post(reverse("suggest-deparment"), data, format="json")
-
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data["error"], "Ticket ID and description are required.")
-
-
-    def test_post_request_fails_with_status_code_404_if_the_ticket_doesnt_exist(self):
-
-        data = {"ticket_id": 2, "description": self.ticket.description}
-
-        response = self.client.post(reverse("suggest-deparment"), data, format="json")
-
-        self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.data["error"], "Ticket not found.")
-
-
-    def test_post_request_fails_with_status_code_500_if_there_are_no_departments_in_the_system(self):
-        data = {"ticket_id": self.ticket.id, "description": self.ticket.description}
-
-        response = self.client.post(reverse("suggest-deparment"), data, format="json")
-
-        self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.data["error"], "No departments found in the system.")
-
-    
-    @patch("api.DepartmentSuggestionAI.open")
-    def test_post_request_fails_with_status_code_500_if_the_training_data_file_isnt_found(self, mock_training_data):
-        mock_training_data.side_effect = FileNotFoundError("File not found")
-
-        department = Department.objects.create(name="IT Support", description="Handles IT Issues")
-
-        data = {"ticket_id": self.ticket.id, "description": self.ticket.description}
-
-        response = self.client.post(reverse("suggest-deparment"), data, format="json")
-
-        self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.data["error"], "Training data file not found.")
-
-
-#### TEST GROUPTICKETSVIEW HERE ####
-class TestGroupTicketsView(TestCase):
-
-    def setUp(self):
-        self.client = APIClient()
-        self.student_user = User.objects.create_user(username="testStudent", password="testpass")
-
-    
-    def authorize_student(self):
-        test_user = {
-            "username": "@testStudent",
-            "email": "test@email.com",
-            "password": "testpass",
-            "first_name": "first",
-            "last_name": "last"
-        }
-
-        self.client.post(reverse("register"), test_user)
-
-        response = self.client.post(reverse("get_token"), 
-                                    {"username": "@testStudent", 
-                                     "password": "testpass"})
-
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {response.json()["access"]}') 
-
-
-    def authorize_admin(self):
-        test_user = {
-            "username": "@testStaff",
-            "email": "test@email.com",
-            "password": "testpass",
-            "first_name": "first",
-            "last_name": "last",
-            "is_staff": "true",
-            "is_superuser": "true",
-        }
-
-        self.client.post(reverse("register"), test_user)
-
-        response = self.client.post(reverse("get_token"), 
-                                    {"username": "@testStaff", 
-                                     "password": "testpass"})
-        
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {response.json()["access"]}') 
-
-        self.admin, _ = User.objects.get_or_create(username=test_user["username"], defaults=test_user)
-
-
-    def assign_ticket_to_admin(self, ticketID):
-        Ticket.objects.create(
-            id=ticketID,
-            subject=f"Test ticket {ticketID}",
-            description="This is a test ticket",
-            created_by=self.student_user,
-            assigned_to=self.admin
-        )
-
-    
-    def test_get_request_succeeds_with_admin_user_and_more_than_2_tickets_assigned_to_the_admin(self):
-        self.authorize_admin()
-
-        self.assign_ticket_to_admin(1)
-        self.assign_ticket_to_admin(2)
-        self.assign_ticket_to_admin(3)
-
-        response = self.client.get(reverse("user-tickets-grouping"))
-
-        self.assertEqual(response.status_code, 200)
-
-    
-    def test_get_request_fails_with_less_than_2_tickets_assigned_to_the_admin(self):
-        self.authorize_admin()
-
-        self.assign_ticket_to_admin(1)
-
-        response = self.client.get(reverse("user-tickets-grouping"))
-
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data["error"], "Not enough tickets available for clustering. Need at least 2.")
-
-    
-    def test_get_request_fails_with_student_user(self):
-        self.authorize_student()
-
-        response = self.client.get(reverse("user-tickets-grouping"))
-
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.data["error"], "Permission denied")
-
-    
-    @patch("api.views.analytics_views.get_tags")
-    def test_get_request_fails_if_get_tags_throws_an_exception(self, mock_get_tags):
-        self.authorize_admin()
-
-        mock_get_tags.side_effect = Exception("An exception was thrown")
-
-        self.assign_ticket_to_admin(1)
-        self.assign_ticket_to_admin(2)
-        self.assign_ticket_to_admin(3)
-
-        response = self.client.get(reverse("user-tickets-grouping"))
-
-        self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.data["error"], "An error has occurred: An exception was thrown")

@@ -7,6 +7,25 @@ import {GenericInput} from '.';
 import { toast } from 'sonner';
 import handleApiError from '../utils/errorHandler';
 
+/**
+ * @component
+ * RegisterForm - A user registration form component.
+ *
+ * @state
+ * - username (string): Stores the inputted username.
+ * - first_name (string): Stores the inputted first name.
+ * - last_name (string): Stores the inputted last name.
+ * - email (string): Stores the inputted email.
+ * - password (string): Stores the inputted password.
+ * - loading (boolean): Tracks the loading state during form submission.
+ *
+ * @methods
+ * - handleSubmit(): Handles form submission, sends registration data to the API, and navigates to login on success.
+ *
+ * @returns JSX.Element
+ */
+
+
 const RegisterForm = () => {
 	const [username, setUsername] = useState('');
 	const [first_name, setFirst_name] = useState('');

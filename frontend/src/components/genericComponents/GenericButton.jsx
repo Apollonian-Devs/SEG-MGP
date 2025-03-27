@@ -1,6 +1,27 @@
 import React, { useState } from "react";
 import "./GenericButton.css";
 
+/**
+ * @component
+ * GenericButton - A customizable button component with a ripple effect on click.
+ *
+ * @props
+ * - children (ReactNode): The content of the button, typically text or icons.
+ * - onClick (function): The function to be called when the button is clicked.
+ * - className (string): Custom CSS class for the button's styling.
+ * - type (string): The type of the button (default is "button").
+ * - style (object): Custom inline styles for the button.
+ * - dataTestId (string): A test ID for use in automated testing (default is "generic-button").
+ *
+ * @state
+ * - ripples (array): Tracks the state of each ripple effect, including position and size.
+ *
+ * @methods
+ * - createRipple(event): Creates a ripple effect based on the button's position and the click event.
+ *
+ * @returns {JSX.Element}
+ */
+
 const GenericButton = ({ 
   children, 
   onClick, 

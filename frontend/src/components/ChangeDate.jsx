@@ -1,12 +1,24 @@
 import React, { useState } from "react";
 import {GenericInput} from ".";
-import { ACCESS_TOKEN } from "../constants";
 import {GenericForm} from ".";
-import api from "../api";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from 'sonner';
 import handleApiError from "../utils/errorHandler.js";
 import { postWithAuth } from "../utils/apiUtils";
+
+/**
+ * @component
+ * ChangeDate - Popup for staff to change a ticket's due date.
+ *
+ * @state
+ * - date (string | null): Stores the selected due date.
+ *
+ * @methods
+ * - handleSubmit(): Handles form submission and updates the ticket's due date via an API call.
+ *
+ * @returns {JSX.Element}
+ */
+
 
 const ChangeDate = ({ ticket, setSelectedTicket, setTickets, fetchTickets }) => {
 
@@ -20,7 +32,7 @@ const ChangeDate = ({ ticket, setSelectedTicket, setTickets, fetchTickets }) => 
 
             const response = await postWithAuth("api/tickets/change-date", { id: ticket.id, due_date: date });
 
-            if (response.status !== 201) return;
+            if (response.status !== 201) return; 
 
             toast.success("The due date for the ticket has been successfully updated");
 

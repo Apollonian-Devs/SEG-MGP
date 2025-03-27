@@ -1,6 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
-import api from "../api";
-import { ACCESS_TOKEN } from "../constants";
+import React, { useState, useEffect } from "react";
 import {GenericButton} from ".";
 import { handleFileChange } from "../utils/attachmentUtils";
 import { toast } from 'sonner';
@@ -8,11 +6,31 @@ import { getWithAuth } from "../utils/apiUtils";
 import { postWithAuth } from "../utils/apiUtils";
 import handleApiError from "../utils/errorHandler.js";
 
+/**
+ * @component
+ * Chat - A chat interface for users to communicate within a ticket.
+ *
+ * @state
+ * - messages (array): Stores the list of messages for the ticket.
+ * - loading (boolean): Indicates whether messages are being fetched.
+ * - error (string | null): Stores error messages if fetching fails.
+ * - attachments (array): Stores the selected file attachments.
+ * - message_body (string): Stores the input message content.
+ *
+ * @methods
+ * - fetchMessages(): Fetches messages for the given ticket.
+ * - handleSubmit(): Handles form submission and sends a new message.
+ *
+ * @returns {JSX.Element}
+ */
+
+
 const Chat = ({ ticket, onClose, user , fetchTickets}) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [attachments, setAttachments] = useState([]);
+  const [message_body, setMessage_body] = useState("");
 
   // Fetch messages for the given ticket
   const fetchMessages = async () => {
@@ -20,18 +38,11 @@ const Chat = ({ ticket, onClose, user , fetchTickets}) => {
       const response = await getWithAuth(`/api/tickets/${ticket.id}/messages/`);
       setMessages(response.data.messages);
     } catch (error) {
-      // setError(error.response?.data || "Failed to fetch messages");
       handleApiError(error, (error.response?.data || "Failed to fetch messages"));
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchMessages();
-  }, [ticket.id]);
-
-  const [message_body, setMessage_body] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,15 +60,14 @@ const Chat = ({ ticket, onClose, user , fetchTickets}) => {
       await fetchTickets();
       
     } catch (err) {
-      // console.error("Full error object:", err);
-      // setError(err.response?.data || "Failed to send text");
-      // toast.error(`Failed to send message: ${err.response?.data?.detail || err.message}`);
       handleApiError(err, "Failed to send text")
     }
   };
-  
-  
 
+  useEffect(() => {
+    fetchMessages();
+  }, [ticket.id]);
+  
 
   return (
     <div style={styles.container}>
@@ -67,7 +77,7 @@ const Chat = ({ ticket, onClose, user , fetchTickets}) => {
             <h2 style={styles.chatTitle}>Chat for Ticket: {ticket.subject}</h2>
             <GenericButton 
               onClick={onClose} 
-              style={styles.closeButton} // Pass inline styles here
+              style={styles.closeButton} 
             >
               ✖
             </GenericButton>
@@ -76,8 +86,6 @@ const Chat = ({ ticket, onClose, user , fetchTickets}) => {
 
           {loading ? (
             <p>Loading messages...</p>
-          // ) : error ? (
-          //   <p style={{ color: "red" }}>{error}</p>
           ) : (
             <div style={styles.chatHistory}>
               {messages.length === 0 ? (

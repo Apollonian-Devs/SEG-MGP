@@ -36,7 +36,7 @@ def get_tickets_for_user(user):
 
 def get_officers_same_department(user): 
     officer = Officer.objects.filter(user=user).first()
-    return Officer.objects.filter(department=officer.department).exclude(user=user) if officer else None
+    return Officer.objects.filter(department=officer.department).exclude(user=user) if officer else Officer.objects.none()
 
 
 def get_department_head(department_id): 

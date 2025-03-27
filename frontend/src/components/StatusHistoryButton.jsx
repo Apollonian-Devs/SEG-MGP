@@ -1,13 +1,26 @@
 import React, { useState, useEffect } from "react";
-import api from "../api";
-import { ACCESS_TOKEN } from "../constants";
 import {GenericTable} from ".";
 import handleApiError from "../utils/errorHandler.js"
 import { getWithAuth } from "../utils/apiUtils";
+
+/**
+ * @component
+ * StatusHistoryButton - A button component that displays the status change history of a ticket.
+ *
+ * @props
+ * - ticketId (number | string): The ID of the ticket for which status history is being fetched.
+ *
+ * @state
+ * - statusRecords (array): Stores the list of status history records for the given ticket.
+ *
+ * @methods
+ * - fetchRecords(): Fetches the status history for the given ticket using an API call.
+ *
+ * @returns {JSX.Element}
+ */
+
 const StatusHistoryButton = ({ ticketId }) => {
     const [statusRecords, setStatusRecords] = useState([]);
-    
-   
     
     const fetchRecords = async () => {
       try {
@@ -25,8 +38,6 @@ const StatusHistoryButton = ({ ticketId }) => {
 
     return (
       <>
-
-          
           <GenericTable
               columnDefinition={[
                 <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">
@@ -67,15 +78,9 @@ const StatusHistoryButton = ({ ticketId }) => {
                 </tr>
               )} 
             />
-            
-
-       
-
       </>
     );
   };
     
-
-
 export default StatusHistoryButton;
     

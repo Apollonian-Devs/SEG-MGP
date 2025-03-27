@@ -3,6 +3,12 @@ import question from '../../assets/question.png';
 import { motion, useInView } from 'framer-motion';
 import React, { useRef } from 'react';
 
+/**
+ * @const checklistItems - A list of workflow steps including:
+ * @property {string} title - A concise title for the step.
+ * @property {string} description - A brief explanation of the step.
+ */
+
 export const checklistItems = [
 	{
 		title: 'Easy Ticket Submission',
@@ -25,6 +31,13 @@ export const checklistItems = [
 			'Ensure your tickets reach the right support team for faster resolution.',
 	},
 ];
+
+/**
+ * @component
+ * Workflow - Displays a step-by-step overview of the ticket submission process, animated upon scrolling into view.
+ *
+ * @returns {JSX.Element}
+ */
 
 const Workflow = () => {
 	const ref = useRef(null);

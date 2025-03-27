@@ -52,74 +52,7 @@ The deployed version of the application can be found at: **\_**
 
 ## Installation instructions
 
-### Frontend
-
-1. Make sure you have nodeJS installed. (When you download nodeJS from the official website it normally comes with npm)
-2. After cloning the repository, run the following command to install dependencies:
-```
-npm install
-```
-3. Running the application
-```
-npm run dev
-```
-#### Running tests for frontend
-Test:
-```
-npm run test
-```
-Coverage:
-```
-npm run coverage
-```
-### Backend 
-
-First set up and activate a virtual environment in the root directory of the project.
-Note: The first set of commands for doing this are for Linux and MacOS users while the second set of commands are for Windows users.
-
-⚠️ **Python Version Requirement:**
-Please ensure you are using Python 3.12. We experienced issues when trying to use Python 3.13, specifically with an external AI library that we used not supporting this latest version, and therefore our application may not function properly if using Python 3.13. 
-```
-$ python3.12 -m venv venv
-$ source venv/bin/activate
-```
-```
-> py -3.12 -m venv venv
-> venv/Scripts/activate
-```
-**Ensure you are in the backend directory for the following instructions.**
-Note: If using Windows, remove the 3 from pip and python, such that all commands are either pip ... or python ...
-Install all the required packages:
-```
-$ pip3 install -r requirements.txt
-```
-Migrate the database:
-```
-$ python3 manage.py migrate
-```
-Seed the database: 
-```
-$ python3 manage.py seed
-```
-Run the backend server:
-```
-$ python3 manage.py runserver
-```
-
-#### Running tests for backend
-You can run all backend tests with the command:
-```
-$ python3 manage.py test
-```
-Obtain the coverage of the backend tests:
-```
-$ coverage run manage.py test
-```
-You can either get a basic report on the command line interface (using the first command) or as a more detailed html report (using the second command):
-```
-$ coverage report
-$ coverage html
-```
+Please see the separate Developer's Manual for full installation instructions.
 
 
 ## Sources

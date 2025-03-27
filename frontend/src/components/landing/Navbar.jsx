@@ -1,6 +1,13 @@
 import React from 'react';
 import logoBlack from '../../assets/logo-black.png';
 
+/**
+ * @component
+ * Navbar - The top navigation bar for the site, showcasing the logo, quick links, and login/register call-to-action buttons.
+ *
+ * @returns {JSX.Element}
+ */
+
 const Navbar = () => {
 	return (
 		<nav className="sticky top-0 z-50 py-3 px-4 bg-customOrange-dark shadow-lg">

@@ -25,3 +25,5 @@ dist-ssr
 
 // Ignore the coverage folder
 coverage/*
+
+.env

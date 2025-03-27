@@ -2,6 +2,17 @@ import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { Toaster } from 'sonner';
 
+/**
+ * @component
+ * Layout - A wrapper component that provides consistent styling and positioning
+ * for child components. It also conditionally adjusts its background for the home page.
+ *
+ * @props
+ * - children (React.ReactNode): The content to be rendered within the layout.
+ *
+ * @returns {JSX.Element}
+ */
+
 const Layout = ({ children }) => {
 	const location = useLocation();
 	const isHomePage = location.pathname === '/';

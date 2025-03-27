@@ -5,6 +5,16 @@ from api.models import Department
 from api.DepartmentSuggestionAI import suggest_department
 
 class DepartmentsListView(APIView):
+    """  
+    Lists all available departments.
+
+    @permission: AllowAny  
+    @method: GET - Retrieve all departments  
+
+    @return:  
+        - 200: List of department objects  
+        - 500: Unexpected server error  
+    """
     permission_classes = [AllowAny]
 
     def get(self, request):
@@ -19,6 +29,21 @@ class DepartmentsListView(APIView):
             return Response({"error": "An error has occurred"}, status=500)
 
 class SuggestDepartmentView(APIView):
+    """  
+    Suggests department for a ticket using AI.
+
+    @permission: IsAuthenticated  
+    @method: POST - Get department suggestion  
+
+    @request_body:  
+        - ticket_id (int)  
+        - description (string)  
+
+    @return:  
+        - 200: Suggested department data  
+        - 400: Invalid input  
+        - 500: Unexpected server error  
+    """
     permission_classes = [IsAuthenticated]
 
     def post(self, request):

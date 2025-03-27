@@ -3,6 +3,17 @@ from django.contrib.auth.models import User
 from .ticket import Ticket
 
 class TicketStatusHistory(models.Model):
+    """  
+    Maintains audit log of ticket status changes.
+
+Fields:
+    - ticket: Related Ticket instance
+    - old_status: Previous status value
+    - new_status: Updated status value
+    - changed_by_profile: User who made change
+    - changed_at: Timestamp of change
+    - notes: Optional change description
+    """  
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
     old_status = models.CharField(max_length=50, null=True)
     new_status = models.CharField(max_length=50)

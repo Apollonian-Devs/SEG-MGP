@@ -2,6 +2,17 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 
 class UserSerializer(serializers.ModelSerializer):
+    """  
+    Serializes user data with validation.
+
+Fields:
+    - Standard user fields
+    - password: Write-only field
+
+Methods:
+    - validate_username: Ensures username starts with '@'
+    - create: Handles user creation with validation
+    """  
     class Meta:
         model = User
         fields = ["id", "username", "first_name", "last_name", "email", "password", "is_staff", "is_superuser"]

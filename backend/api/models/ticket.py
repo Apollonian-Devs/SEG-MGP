@@ -20,6 +20,27 @@ def get_default_superuser():
     return User.objects.filter(is_superuser=True).first()
 
 class Ticket(models.Model):
+    """  
+    Represents a support ticket in the system.
+
+Fields:
+    - subject: Brief ticket summary
+    - description: Detailed ticket information
+    - created_by: User who opened the ticket
+    - assigned_to: User responsible for ticket
+    - status: Current workflow state
+    - priority: Importance level
+    - created_at/updated_at/closed_at: Timestamps
+    - due_date: Expected resolution time
+    - is_overdue: Flag for overdue tickets
+
+Methods:
+    - save: Validates ticket creator and updates timestamps
+    - __str__: Returns ticket subject
+
+Meta:
+    - Constraints: Validates status and priority values
+    """  
     subject = models.CharField(max_length=255)
     description = models.TextField()
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tickets_created')

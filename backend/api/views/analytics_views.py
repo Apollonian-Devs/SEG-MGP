@@ -5,6 +5,18 @@ from django.core.exceptions import PermissionDenied
 from api.helpers import get_tags
 
 class GroupTicketsView(views.APIView):
+    """  
+    Provides ticket clustering suggestions for admin users.
+
+    @permission: IsAuthenticated  
+    @method: GET - Retrieve ticket clusters for current user  
+
+    @return:  
+        - 200: Successful response with cluster data  
+        - 400: Error in clustering process  
+        - 403: Permission denied  
+        - 500: Unexpected server error  
+    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -14,9 +26,9 @@ class GroupTicketsView(views.APIView):
 
             if "error" in clusters:
                 print(f"❌ API Error: {clusters['error']}")
-                return Response({"error": clusters["error"]}, status=400)  # Return 400 Bad Request
+                return Response({"error": clusters["error"]}, status=400)
 
-            return Response({"clusters": clusters}, status=200)  # Return normal response
+            return Response({"clusters": clusters}, status=200)
 
         except PermissionDenied:
             return Response({"error": "Permission denied"}, status=403)

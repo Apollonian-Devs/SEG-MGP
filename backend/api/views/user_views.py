@@ -7,15 +7,21 @@ from api.models import Ticket, Notification
 from api.serializers import OfficerSerializer, UserSerializer, NotificationSerializer
 
 class UserTicketsView(views.APIView):
-    """
-    API endpoint to get all tickets associated with the logged-in user.
+    """  
+    Retrieves all tickets associated with the current user.
+
+    @permission: IsAuthenticated  
+    @method: GET - Get user's tickets  
+
+    @return:  
+        - 200: List of user's tickets  
+        - 500: Unexpected server error  
     """
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         try:
             user = request.user
-
             get_overdue_tickets(user)
             tickets = get_tickets_for_user(user)
             return Response({"tickets": tickets})
@@ -23,6 +29,22 @@ class UserTicketsView(views.APIView):
             return Response({"error": "An error has occurred"}, status=500)
 
 class UserNotificationsView(views.APIView):
+    """  
+    Manages user notifications.
+
+    @permission: IsAuthenticated  
+    @method:  
+        - GET - Retrieve unread notifications  
+        - POST - Mark notification as read  
+
+    @request_body (POST):  
+        - id (int) - Notification ID  
+
+    @return:  
+        - 200: List of notifications (GET)  
+        - 200: Success message (POST)  
+        - 500: Unexpected server error  
+    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -45,8 +67,15 @@ class UserNotificationsView(views.APIView):
             return Response({"error": "An error has occurred"}, status=500)
 
 class AllOfficersView(views.APIView):
-    """
-    API endpoint to get all officers currently registered.
+    """  
+    Retrieves officers in the same department as current user.
+
+    @permission: IsAuthenticated  
+    @method: GET - Get department officers  
+
+    @return:  
+        - 200: List of officers with admin data (if chief officer)  
+        - 500: Unexpected server error  
     """
     permission_classes = [IsAuthenticated]
 
